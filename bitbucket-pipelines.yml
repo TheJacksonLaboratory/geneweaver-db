@@ -21,7 +21,7 @@ definitions:
           - poetry install --no-interaction --no-ansi
           - poetry run pytest -v tests/
             --junitxml=test-reports/report.xml 
-            --cov geneweaver.db
+            --cov src/geneweaver/db
             --cov-report xml:coverage-reports/coverage-report.xml 
             --cov-report html:coverage-html/
           # SonarCloud scan
