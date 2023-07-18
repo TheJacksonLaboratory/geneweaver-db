@@ -1,3 +1,6 @@
+"""Constants for the publication unit tests."""
+
+
 PUBMED_PUBLICATIONS = [
     (
         123456,

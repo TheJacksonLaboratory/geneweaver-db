@@ -1,5 +1,7 @@
+"""Test the get_gene_id_types function."""
 import pytest
 from geneweaver.db.gene_id import get_gene_id_types
+
 from tests.unit.gene_id.const import GENE_ID_TYPES
 from tests.unit.utils import get_magic_mock_cursor
 
@@ -17,7 +19,7 @@ test_cases = [
 ]
 
 
-@pytest.mark.parametrize("species_id, expected_result", test_cases)
+@pytest.mark.parametrize(("species_id", "expected_result"), test_cases)
 def test_get_gene_id_types(species_id, expected_result):
     """Test getting all the Gene ID types from the database."""
     cursor = get_magic_mock_cursor(expected_result)
@@ -26,10 +28,10 @@ def test_get_gene_id_types(species_id, expected_result):
 
     assert result == expected_result
 
-    assert 'ORDER BY gdb_id' in cursor.execute.call_args[0][0]
+    assert "ORDER BY gdb_id" in cursor.execute.call_args[0][0]
 
     if species_id is None:
         assert len(cursor.execute.call_args[0]) == 1
     else:
         assert len(cursor.execute.call_args[0]) == 2
-        assert cursor.execute.call_args[0][1]['sp_id'] == species_id
+        assert cursor.execute.call_args[0][1]["sp_id"] == species_id

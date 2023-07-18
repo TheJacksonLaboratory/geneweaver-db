@@ -11,9 +11,12 @@ def format_geneset_values_for_file_insert(
 ) -> str:
     """Format geneset values for insertion into the database.
 
+     0.0003460909196257860
+
     :param geneset_values: List of geneset values to insert.
     :return: A string to insert into the database.
     """
+
     return "\n".join(
         (
             f"{geneset_value.symbol}\t{geneset_value.value}"

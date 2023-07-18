@@ -1,8 +1,19 @@
+"""Gene ID constants for testing."""
+
+# This example was taken straight from the database on July 18, 2023.
 GENE_ID_TYPES = [
     (1, "Entrez", 0, "entrez", "2011-03-14 14:17:13.49449", 2, None),
     (2, "Ensembl Gene", 0, "ensembl", "2011-03-14 14:17:13.49449", 2, None),
     (3, "Ensembl Protein", 0, "ensembl protein", "2011-03-14 14:17:13.49449", 2, None),
-    (4, "Ensembl Transcript", 0, "ensembl transcript", "2011-03-14 14:17:13.49449", 2, None),
+    (
+        4,
+        "Ensembl Transcript",
+        0,
+        "ensembl transcript",
+        "2011-03-14 14:17:13.49449",
+        2,
+        None,
+    ),
     (5, "Unigene", 0, "unigene", "2011-03-14 14:17:13.49449", 3, None),
     (7, "Gene Symbol", 0, "symbol", "2011-03-14 14:17:13.49449", 4, None),
     (8, "Unannotated", 0, "unannotated", "2011-03-14 14:17:13.49449", 4, None),

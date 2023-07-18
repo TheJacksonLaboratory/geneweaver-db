@@ -1,3 +1,4 @@
+"""Database interaction code relating to Gene IDs."""
 from typing import List, Optional
 
 from psycopg import Cursor
@@ -15,8 +16,8 @@ def get_gene_id_types(cursor: Cursor, species_id: Optional[int] = None) -> List:
         cursor.execute("""SELECT * FROM genedb ORDER BY gdb_id;""")
     else:
         cursor.execute(
-            """SELECT * FROM genedb 
-            WHERE sp_id=0 OR sp_id=%(sp_id)s 
+            """SELECT * FROM genedb
+            WHERE sp_id=0 OR sp_id=%(sp_id)s
             ORDER BY gdb_id;""",
             {"sp_id": species_id},
         )
