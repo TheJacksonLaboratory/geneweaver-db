@@ -7,7 +7,7 @@ from tests.unit.publication.const import (
     EDGE_CASE_PUBMED_PUBLICATIONS,
     PUBMED_PUBLICATIONS,
 )
-from tests.unit.db.utils import get_magic_mock_cursor
+from tests.unit.utils import get_magic_mock_cursor
 
 
 @pytest.mark.parametrize(

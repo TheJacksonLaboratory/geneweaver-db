@@ -1,6 +1,6 @@
 import pytest
 from geneweaver.db.geneset_value import insert_geneset_value
-from tests.unit.db.utils import get_magic_mock_cursor
+from tests.unit.utils import get_magic_mock_cursor
 
 
 @pytest.mark.parametrize(
