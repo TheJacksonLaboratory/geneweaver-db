@@ -24,6 +24,7 @@ definitions:
             --cov src/geneweaver/db
             --cov-report xml:coverage-reports/coverage-report.xml 
             --cov-report html:coverage-html/
+            --cov-report term
           # SonarCloud scan
           # - pipe: sonarsource/sonarcloud-scan:1.4.0
           # - pipe: sonarsource/sonarcloud-quality-gate:0.1.6
