@@ -1,6 +1,6 @@
 """Test the get_gene_id_types function."""
 import pytest
-from geneweaver.db.gene_id import get_gene_id_types
+from geneweaver.db import gene
 
 from tests.unit.gene_id.const import GENE_ID_TYPES
 from tests.unit.utils import get_magic_mock_cursor
@@ -24,7 +24,7 @@ def test_get_gene_id_types(species_id, expected_result):
     """Test getting all the Gene ID types from the database."""
     cursor = get_magic_mock_cursor(expected_result)
 
-    result = get_gene_id_types(cursor, species_id)
+    result = gene.id_types(cursor, species_id)
 
     assert result == expected_result
 

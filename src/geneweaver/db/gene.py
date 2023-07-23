@@ -4,7 +4,7 @@ from typing import List, Optional
 from psycopg import Cursor
 
 
-def get_gene_id_types(cursor: Cursor, species_id: Optional[int] = None) -> List:
+def id_types(cursor: Cursor, species_id: Optional[int] = None) -> List:
     """Get all the Gene ID types from the database.
 
     :param cursor: The database cursor.
