@@ -2,7 +2,7 @@
 import pytest
 from geneweaver.db import gene
 
-from tests.unit.gene_id.const import GENE_ID_TYPES
+from tests.unit.gene.const import GENE_ID_TYPES
 from tests.unit.utils import get_magic_mock_cursor
 
 test_cases = [
