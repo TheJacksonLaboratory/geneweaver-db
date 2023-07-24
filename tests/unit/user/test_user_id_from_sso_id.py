@@ -23,3 +23,25 @@ def test_by_api_key(sso_id, expected_result):
     # The function should unpack the tuple
     assert result == expected_result
     assert cursor.execute.call_count == 1
+
+
+def test_user_id_from_sso_id_execute_raises_error(all_psycopg_errors):
+    """Test that the function raises an error when cursor.execute raises an error."""
+    cursor = Mock()
+    cursor.execute.side_effect = all_psycopg_errors("Error message")
+    with pytest.raises(all_psycopg_errors, match="Error message"):
+        user_id_from_sso_id(cursor, "sso_id")
+
+    assert cursor.execute.call_count == 1
+    assert cursor.fetchone.call_count == 0
+
+
+def test_user_id_from_sso_id_fetchone_raises_error(all_psycopg_errors):
+    """Test that the function raises an error when cursor.fetchall raises an error."""
+    cursor = Mock()
+    cursor.fetchone.side_effect = all_psycopg_errors("Error message")
+    with pytest.raises(all_psycopg_errors, match="Error message"):
+        user_id_from_sso_id(cursor, "sso_id")
+
+    assert cursor.execute.call_count == 1
+    assert cursor.fetchone.call_count == 1
