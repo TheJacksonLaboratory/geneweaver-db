@@ -1,6 +1,7 @@
 """Const values for all db unit tests."""
-from psycopg import errors
 import inspect
+
+from psycopg import errors
 
 PSYCOPG_BASE_ERRORS = [
     errors.Error,
@@ -16,6 +17,8 @@ PSYCOPG_BASE_ERRORS = [
     errors.PipelineAborted,
 ]
 
-PSYCOPG_ALL_ERRORS = [cls for name, cls in inspect.getmembers(errors)
-                      if inspect.isclass(cls) and issubclass(cls, errors.Error)]
-
+PSYCOPG_ALL_ERRORS = [
+    cls
+    for name, cls in inspect.getmembers(errors)
+    if inspect.isclass(cls) and issubclass(cls, errors.Error)
+]

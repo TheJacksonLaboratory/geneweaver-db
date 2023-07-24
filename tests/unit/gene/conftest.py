@@ -1,6 +1,8 @@
+"""Fixtures for the gene db tests."""
 import random
-import pytest
 from typing import List
+
+import pytest
 
 from tests.unit.gene.const import GENE_SYMBOLS_01, GENE_SYMBOLS_02
 

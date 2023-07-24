@@ -1,8 +1,9 @@
 """Fixtures for all db unit tests."""
 import pytest
+
 from tests.unit.const import (
-    PSYCOPG_BASE_ERRORS,
     PSYCOPG_ALL_ERRORS,
+    PSYCOPG_BASE_ERRORS,
 )
 
 

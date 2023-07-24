@@ -1,13 +1,14 @@
 """Test the gene.info_by_id function."""
-import pytest
 from unittest.mock import Mock
+
+import pytest
 from geneweaver.db.gene import info_by_gene_id
 
 from .const import GENE_INFO
 
 
 @pytest.mark.parametrize(
-    "gene_id, expected",
+    ("gene_id", "expected"),
     [(item["ode_gene_id"], tuple(item.values())) for item in GENE_INFO],
 )
 def test_info_by_gene_id(gene_id, expected):

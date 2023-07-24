@@ -66,12 +66,13 @@ def symbols_by_geneset_id(cursor: Cursor, geneset_id: int) -> List:
 
     :return: list of results using `.fetchall()`
     """
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT g.ode_ref_id
-        FROM extsrc.gene g, extsrc.geneset_value gv 
-        WHERE gv.gs_id= %(geneset_id)s 
-        AND gv.ode_gene_id=g.ode_gene_id 
-        AND g.gdb_id=7 
+        FROM extsrc.gene g, extsrc.geneset_value gv
+        WHERE gv.gs_id= %(geneset_id)s
+        AND gv.ode_gene_id=g.ode_gene_id
+        AND g.gdb_id=7
         AND ode_pref='t';
         """,
         {"geneset_id": geneset_id},
@@ -87,7 +88,8 @@ def symbols_by_project_id(cursor: Cursor, project_id: int) -> List:
 
     :return: list of results using `.fetchall()`
     """
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT g.ode_ref_id
         FROM extsrc.gene g, extsrc.geneset_value gv
         WHERE (gv.gs_id IN
@@ -95,5 +97,7 @@ def symbols_by_project_id(cursor: Cursor, project_id: int) -> List:
                 FROM production.project2geneset
                 WHERE pj_id = %(project_id)s))
         AND gv.ode_gene_id=g.ode_gene_id AND g.gdb_id=7 AND ode_pref='t';
-    """, {"project_id": project_id})
+    """,
+        {"project_id": project_id},
+    )
     return cursor.fetchall()

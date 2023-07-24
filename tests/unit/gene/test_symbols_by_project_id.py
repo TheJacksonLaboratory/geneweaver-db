@@ -1,7 +1,7 @@
 """Test the gene.symbols_by_project_id function."""
-import pytest
 from unittest.mock import Mock
 
+import pytest
 from geneweaver.db.gene import symbols_by_project_id
 
 

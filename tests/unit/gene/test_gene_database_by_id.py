@@ -1,14 +1,15 @@
 """Test the gene.gene_database_by_id function."""
-import pytest
 from unittest.mock import Mock
-from tests.unit.gene.const import GENE_ID_TYPES
 
+import pytest
 from geneweaver.db.gene import gene_database_by_id
+
+from tests.unit.gene.const import GENE_ID_TYPES
 
 
 @pytest.mark.parametrize(
-    ("gene_id", "expected_result"),
-    [(item[0], item) for item in GENE_ID_TYPES])
+    ("gene_id", "expected_result"), [(item[0], item) for item in GENE_ID_TYPES]
+)
 def test_gene_database_by_id(gene_id, expected_result):
     """Test the gene_database_by_id function using a mock cursor."""
     cursor = Mock()
