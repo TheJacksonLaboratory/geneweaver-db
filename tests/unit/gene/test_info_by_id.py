@@ -23,7 +23,7 @@ def test_info_by_gene_id(gene_id, expected):
     assert cursor.fetchall.call_count == 1
 
 
-def test_gene_database_by_id_execute_raises_error(all_psycopg_errors):
+def test_info_by_gene_id_execute_raises_error(all_psycopg_errors):
     """Test that the function raises an error when cursor.execute raises an error."""
     cursor = Mock()
     cursor.execute.side_effect = all_psycopg_errors("Error message")
@@ -34,7 +34,7 @@ def test_gene_database_by_id_execute_raises_error(all_psycopg_errors):
     assert cursor.fetchall.call_count == 0
 
 
-def test_gene_database_by_id_fetchall_raises_error(all_psycopg_errors):
+def test_info_by_gene_id_fetchall_raises_error(all_psycopg_errors):
     """Test that the function raises an error when cursor.fetchall raises an error."""
     cursor = Mock()
     cursor.fetchall.side_effect = all_psycopg_errors("Error message")

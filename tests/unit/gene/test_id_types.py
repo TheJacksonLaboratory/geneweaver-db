@@ -1,4 +1,6 @@
 """Test the get_gene_id_types function."""
+from unittest.mock import Mock
+
 import pytest
 from geneweaver.db import gene
 
@@ -35,3 +37,25 @@ def test_get_gene_id_types(species_id, expected_result):
     else:
         assert len(cursor.execute.call_args[0]) == 2
         assert cursor.execute.call_args[0][1]["sp_id"] == species_id
+
+
+def test_gene_id_types_execute_raises_error(all_psycopg_errors):
+    """Test that the function raises an error when cursor.execute raises an error."""
+    cursor = Mock()
+    cursor.execute.side_effect = all_psycopg_errors("Error message")
+    with pytest.raises(all_psycopg_errors, match="Error message"):
+        gene.id_types(cursor, 1)
+
+    assert cursor.execute.call_count == 1
+    assert cursor.fetchall.call_count == 0
+
+
+def test_gene_id_types_fetchall_raises_error(all_psycopg_errors):
+    """Test that the function raises an error when cursor.fetchall raises an error."""
+    cursor = Mock()
+    cursor.fetchall.side_effect = all_psycopg_errors("Error message")
+    with pytest.raises(all_psycopg_errors, match="Error message"):
+        gene.id_types(cursor, 1)
+
+    assert cursor.execute.call_count == 1
+    assert cursor.fetchall.call_count == 1
