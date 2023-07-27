@@ -21,9 +21,9 @@ class Settings(BaseSettings):
     USER: str
     PASSWORD: str = ""
     NAME: str = ""
-    DATABASE_URI: Optional[PostgresDsn] = None
+    URI: Optional[PostgresDsn] = None
 
-    @validator("DATABASE_URI", pre=True)
+    @validator("URI", pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         """Build the database connection string, unless one is provided."""
         if isinstance(v, str):

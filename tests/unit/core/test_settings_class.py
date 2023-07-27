@@ -14,25 +14,25 @@ def test_can_import_settings_class():
 def test_settings_class_has_expected_attributes():
     """Test that the settings class has necessary attributes."""
     # Create a Settings instance
-    settings = Settings(SERVER="localhost", USER="admin")
+    settings = Settings(SERVER="localhost", USER="admin", _env_file=None)
 
     # Check for attribute existence
     assert hasattr(settings, "SERVER"), "Missing attribute SERVER"
     assert hasattr(settings, "USER"), "Missing attribute USER"
     assert hasattr(settings, "PASSWORD"), "Missing attribute PASSWORD"
     assert hasattr(settings, "NAME"), "Missing attribute NAME"
-    assert hasattr(settings, "DATABASE_URI"), "Missing attribute DATABASE_URI"
+    assert hasattr(settings, "URI"), "Missing attribute URI"
 
     # Check default values
     assert settings.PASSWORD == "", "Default for PASSWORD should be an empty string"
     assert settings.NAME == "", "Default for NAME should be an empty string"
     assert isinstance(
-        settings.DATABASE_URI, PostgresDsn
-    ), "DATABASE_URI should be a PostgresDsn"
+        settings.URI, PostgresDsn
+    ), "URI should be a PostgresDsn"
 
     assert (
-        str(settings.DATABASE_URI) == "postgresql://admin@localhost/"
-    ), "DATABASE_URI not formatted as expected"
+        str(settings.URI) == "postgresql://admin@localhost/"
+    ), "URI not formatted as expected"
 
     # Check the non-default values
     assert settings.SERVER == "localhost", "Incorrect value for SERVER"
@@ -40,11 +40,12 @@ def test_settings_class_has_expected_attributes():
 
 
 def test_settings_class_can_directly_set_database_uri():
-    """Test that the settings class DATABASE_URI attribute can be directly set."""
+    """Test that the settings class URI attribute can be directly set."""
     settings = Settings(
         SERVER="irrelevant",
         USER="also_irrelevant",
-        DATABASE_URI="postgresql://other_admin@non_localhost/",
+        URI="postgresql://other_admin@non_localhost/",
+        _env_file=None
     )
 
     # Check for attribute existence
@@ -52,18 +53,18 @@ def test_settings_class_can_directly_set_database_uri():
     assert hasattr(settings, "USER"), "Missing attribute USER"
     assert hasattr(settings, "PASSWORD"), "Missing attribute PASSWORD"
     assert hasattr(settings, "NAME"), "Missing attribute NAME"
-    assert hasattr(settings, "DATABASE_URI"), "Missing attribute DATABASE_URI"
+    assert hasattr(settings, "URI"), "Missing attribute URI"
 
     # Check default values
     assert settings.PASSWORD == "", "Default for PASSWORD should be an empty string"
     assert settings.NAME == "", "Default for NAME should be an empty string"
     assert isinstance(
-        settings.DATABASE_URI, PostgresDsn
-    ), "DATABASE_URI should be a PostgresDsn"
+        settings.URI, PostgresDsn
+    ), "URI should be a PostgresDsn"
 
     assert (
-        str(settings.DATABASE_URI) == "postgresql://other_admin@non_localhost/"
-    ), "DATABASE_URI not formatted as expected"
+        str(settings.URI) == "postgresql://other_admin@non_localhost/"
+    ), "URI not formatted as expected"
 
     # Check the non-default values
     assert settings.SERVER == "irrelevant", "Incorrect value for SERVER"
@@ -79,7 +80,7 @@ def test_settings_from_env(monkeypatch):
     monkeypatch.setenv("GWDB_NAME", "database")
 
     # Create a Settings instance
-    settings = Settings()
+    settings = Settings(_env_file=None)
 
     # Check if environment variables were correctly set
     assert settings.SERVER == "localhost", "Incorrect value for SERVER"
