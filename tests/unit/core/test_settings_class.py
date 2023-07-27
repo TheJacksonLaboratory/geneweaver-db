@@ -26,9 +26,7 @@ def test_settings_class_has_expected_attributes():
     # Check default values
     assert settings.PASSWORD == "", "Default for PASSWORD should be an empty string"
     assert settings.NAME == "", "Default for NAME should be an empty string"
-    assert isinstance(
-        settings.URI, PostgresDsn
-    ), "URI should be a PostgresDsn"
+    assert isinstance(settings.URI, PostgresDsn), "URI should be a PostgresDsn"
 
     assert (
         str(settings.URI) == "postgresql://admin@localhost/"
@@ -45,7 +43,7 @@ def test_settings_class_can_directly_set_database_uri():
         SERVER="irrelevant",
         USER="also_irrelevant",
         URI="postgresql://other_admin@non_localhost/",
-        _env_file=None
+        _env_file=None,
     )
 
     # Check for attribute existence
@@ -58,9 +56,7 @@ def test_settings_class_can_directly_set_database_uri():
     # Check default values
     assert settings.PASSWORD == "", "Default for PASSWORD should be an empty string"
     assert settings.NAME == "", "Default for NAME should be an empty string"
-    assert isinstance(
-        settings.URI, PostgresDsn
-    ), "URI should be a PostgresDsn"
+    assert isinstance(settings.URI, PostgresDsn), "URI should be a PostgresDsn"
 
     assert (
         str(settings.URI) == "postgresql://other_admin@non_localhost/"
