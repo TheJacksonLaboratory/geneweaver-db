@@ -71,6 +71,7 @@ def test_settings_class_can_directly_set_database_uri():
 
 
 def test_settings_from_env(monkeypatch):
+    """Test the settings class can be configured from environment variables."""
     # Set the environment variables
     monkeypatch.setenv("GWDB_SERVER", "localhost")
     monkeypatch.setenv("GWDB_USER", "admin")

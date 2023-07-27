@@ -8,6 +8,7 @@ GWDB_USER=your_user
 GWDB_PASSWORD=your_password
 GWDB_NAME=your_database_name
 """
+# ruff: noqa: N805, ANN101, ANN401
 from typing import Any, Dict, Optional
 
 from pydantic import BaseSettings, PostgresDsn, validator
@@ -24,6 +25,7 @@ class Settings(BaseSettings):
 
     @validator("DATABASE_URI", pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
+        """Build the database connection string, unless one is provided."""
         if isinstance(v, str):
             return v
         return PostgresDsn.build(
@@ -35,6 +37,8 @@ class Settings(BaseSettings):
         )
 
     class Config:
+        """Configuration for the BaseSettings class."""
+
         env_prefix = "GWDB_"
         env_file = ".env"
         case_sensitive = True
