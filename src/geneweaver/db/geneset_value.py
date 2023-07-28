@@ -58,6 +58,29 @@ def insert_file(
     return cursor.fetchone()[0]
 
 
+def get_file(cursor: Cursor, file_id: int) -> str:
+    """Retrieve the file contents of a geneset.
+
+    :param cursor: The database cursor.
+    :param file_id: File ID associated with a geneset
+
+    :return: A string formatted version of the geneset values. An empty string if the
+    file does not exist.
+    """
+    cursor.execute(
+        """
+        SELECT file_contents FROM file WHERE file_id = %(file_id)s;
+        """,
+        {"file_id": file_id},
+    )
+    contents = cursor.fetchone()
+
+    if not contents:
+        return ""
+
+    return contents[0]
+
+
 def insert_geneset_value(
     cursor: Cursor,
     geneset_id: int,
