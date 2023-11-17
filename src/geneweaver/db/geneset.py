@@ -97,7 +97,7 @@ def user_is_owner(cursor: Cursor, user_id: int, geneset_id: int) -> bool:
         {"user_id": user_id, "geneset_id": geneset_id},
     )
     result = cursor.fetchone()[0]
-    return result == 1 and type(result) is not bool
+    return result == 1 and not isinstance(result, bool)
 
 
 def update_date(cursor: Cursor, geneset_id: int) -> str:
