@@ -4,7 +4,7 @@ This class is intended to be used with environment variables, and will attempt t
 load them from a `.env` file in the root of the project. The following environment
 variables are used:
 GWDB_SERVER=your_server
-GWDB_USER=your_user
+GWDB_USERNAME=your_user
 GWDB_PASSWORD=your_password
 GWDB_NAME=your_database_name
 """
