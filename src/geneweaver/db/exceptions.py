@@ -12,3 +12,9 @@ class GeneweaverValueError(GeneweaverError):
     """Exception raised when a value error occurs."""
 
     pass
+
+
+class GeneweaverDoesNotExistError(GeneweaverError):
+    """Exception raised when an object does not exist."""
+
+    pass
