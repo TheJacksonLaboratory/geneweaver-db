@@ -17,23 +17,35 @@ from pydantic import BaseSettings, PostgresDsn, validator
 class Settings(BaseSettings):
     """Settings class for the GeneWeaver Database module."""
 
+    DEBUG_MODE = False
+
     SERVER: str
-    USER: str
+    USERNAME: str
     PASSWORD: str = ""
     NAME: str = ""
-    URI: Optional[PostgresDsn] = None
+    PORT: int = 5432
+    URI: Optional[str] = None
+
+    @validator("SERVER", pre=True)
+    def replace_localhost(cls, v: str) -> str:
+        """Replace localhost with 127.0.0.1."""
+        if v == "localhost":
+            return "127.0.0.1"
+        return v
 
     @validator("URI", pre=True)
-    def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
+    def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> str:
         """Build the database connection string, unless one is provided."""
         if isinstance(v, str):
             return v
-        return PostgresDsn.build(
-            scheme="postgresql",
-            user=values.get("USER"),
-            password=values.get("PASSWORD"),
-            host=values.get("SERVER"),
-            path=f"/{values.get('NAME') or ''}",
+        return str(
+            PostgresDsn.build(
+                scheme="postgresql",
+                user=values.get("USERNAME"),
+                password=values.get("PASSWORD"),
+                host=values.get("SERVER"),
+                path=f"/{values.get('NAME') or ''}",
+            )
         )
 
     class Config:
