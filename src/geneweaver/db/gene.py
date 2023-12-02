@@ -13,10 +13,10 @@ def id_types(cursor: Cursor, species_id: Optional[int] = None) -> List:
     :return: list of results using `.fetchall()`
     """
     if species_id is None:
-        cursor.execute("""SELECT * FROM genedb ORDER BY gdb_id;""")
+        cursor.execute("""SELECT * FROM odestatic.genedb ORDER BY gdb_id;""")
     else:
         cursor.execute(
-            """SELECT * FROM genedb
+            """SELECT * FROM odestatic.genedb
             WHERE sp_id=0 OR sp_id=%(sp_id)s
             ORDER BY gdb_id;""",
             {"sp_id": species_id},
