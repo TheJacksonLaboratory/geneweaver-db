@@ -1,6 +1,9 @@
 """Geneset database functions."""
 from typing import List, Optional
 
+from geneweaver.core.schema.geneset import GenesetUpload
+from geneweaver.db.geneset_value import format_geneset_values_for_file_insert
+from geneweaver.db.utils import temp_override_row_factory
 from psycopg import Cursor, rows
 
 
@@ -28,7 +31,7 @@ def by_user_id(cursor: Cursor, user_id: int) -> List:
     :return: list of results using `.fetchall()`
     """
     cursor.execute(
-        """SELECT * FROM production.geneset WHERE user_id = %(user_id)s;""",
+        """SELECT * FROM production.geneset WHERE usr_id = %(user_id)s;""",
         {"user_id": user_id},
     )
     return cursor.fetchall()
@@ -68,18 +71,38 @@ def by_project_id_and_user_id(cursor: Cursor, project_id: int, user_id: int) -> 
         """
         -- selects all genesets for the given project ID
         SELECT geneset.*
-        FROM geneset INNER JOIN project2geneset
+        FROM production.geneset INNER JOIN production.project2geneset
         ON geneset.gs_id=project2geneset.gs_id
         WHERE project2geneset.pj_id=%(project_id)s
             -- security check: make sure the authenticated user has the
             -- right to view the geneset
-        AND geneset_is_readable2(%(user_id)s, geneset.gs_id);
+        AND production.geneset_is_readable2(%(user_id)s, geneset.gs_id);
         """,
         {"project_id": project_id, "user_id": user_id},
     )
     return cursor.fetchall()
 
 
+@temp_override_row_factory(rows.tuple_row)
+def is_readable(cursor: Cursor, user_id: int, geneset_id: int) -> bool:
+    """Check if a geneset is readable by a user.
+
+    :param cursor: The database cursor.
+    :param user_id: The user id (internal) to check.
+    :param geneset_id: The geneset id to check.
+
+    :return: True if the geneset is readable by the user, False otherwise.
+    """
+    cursor.execute(
+        """
+        SELECT production.geneset_is_readable2(%(user_id)s, %(geneset_id)s);
+        """,
+        {"user_id": user_id, "geneset_id": geneset_id},
+    )
+    return cursor.fetchone()[0] is True
+
+
+@temp_override_row_factory(rows.tuple_row)
 def user_is_owner(cursor: Cursor, user_id: int, geneset_id: int) -> bool:
     """Check if a user is the owner of a geneset.
 
@@ -100,6 +123,7 @@ def user_is_owner(cursor: Cursor, user_id: int, geneset_id: int) -> bool:
     return result == 1 and not isinstance(result, bool)
 
 
+@temp_override_row_factory(rows.tuple_row)
 def update_date(cursor: Cursor, geneset_id: int) -> str:
     """Update the date of a geneset.
 
@@ -120,6 +144,7 @@ def update_date(cursor: Cursor, geneset_id: int) -> str:
     return cursor.fetchone()[0]
 
 
+@temp_override_row_factory(rows.tuple_row)
 def tier(cursor: Cursor, geneset_id: int) -> Optional[int]:
     """Get the tier of a geneset.
 
@@ -167,6 +192,7 @@ def homology_ids(cursor: Cursor, geneset_id: int) -> List:
 # TODO: reimplement `get_all_geneset_values`
 
 
+@temp_override_row_factory(rows.tuple_row)
 def num_genes(cursor: Cursor, geneset_id: int) -> int:
     """Get the number of genes associated with a geneset ID.
 
@@ -182,3 +208,55 @@ def num_genes(cursor: Cursor, geneset_id: int) -> int:
         {"geneset_id": geneset_id},
     )
     return cursor.fetchone()[0]
+
+
+@temp_override_row_factory(rows.tuple_row)
+def create_geneset(cursor: Cursor, user_id: int, geneset: GenesetUpload) -> int:
+    """Create a geneset.
+
+    :param cursor: The database cursor.
+    :param geneset: The geneset to create.
+    :return: The geneset ID.
+    """
+    gene_value_file = format_geneset_values_for_file_insert(geneset.gene_list)
+    cursor.execute(
+        """
+        SELECT production.create_geneset2(
+            %(user_id)s,
+            %(curation_id)s,
+            %(species_id)s,
+            %(threshold_type)s,
+            %(threshold)s,
+            %(groups)s,
+            %(status)s,
+            %(count)s,
+            %(uri)s,
+            %(gene_id_type)s,
+            %(name)s,
+            %(abbreviation)s,
+            %(description)s,
+            %(attribution)s,
+            %(file_contents)s
+        );
+        """,
+        {
+            "user_id": user_id,
+            "curation_id": geneset.tier,
+            "species_id": geneset.species_id,
+            "threshold_type": geneset.score_type.value,
+            "threshold": 0.5,
+            "groups": geneset.groups,
+            "status": geneset.status,
+            "count": geneset.count,
+            "uri": geneset.uri,
+            "gene_id_type": geneset.gene_id_type,
+            "name": geneset.name,
+            "abbreviation": geneset.abbreviation,
+            "description": geneset.description,
+            "attribution": geneset.attribution,
+            "file_contents": gene_value_file,
+        },
+    )
+    geneset_id = cursor.fetchone()[0]
+    cursor.connection.commit()
+    return geneset_id
