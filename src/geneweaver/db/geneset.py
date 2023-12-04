@@ -1,8 +1,6 @@
 """Geneset database functions."""
 from typing import List, Optional
 
-from geneweaver.core.schema.geneset import GenesetUpload
-from geneweaver.db.geneset_value import format_geneset_values_for_file_insert
 from geneweaver.db.utils import temp_override_row_factory
 from psycopg import Cursor, rows
 
@@ -210,53 +208,33 @@ def num_genes(cursor: Cursor, geneset_id: int) -> int:
     return cursor.fetchone()[0]
 
 
-@temp_override_row_factory(rows.tuple_row)
-def create_geneset(cursor: Cursor, user_id: int, geneset: GenesetUpload) -> int:
-    """Create a geneset.
-
-    :param cursor: The database cursor.
-    :param geneset: The geneset to create.
-    :return: The geneset ID.
-    """
-    gene_value_file = format_geneset_values_for_file_insert(geneset.gene_list)
-    cursor.execute(
-        """
-        SELECT production.create_geneset2(
-            %(user_id)s,
-            %(curation_id)s,
-            %(species_id)s,
-            %(threshold_type)s,
-            %(threshold)s,
-            %(groups)s,
-            %(status)s,
-            %(count)s,
-            %(uri)s,
-            %(gene_id_type)s,
-            %(name)s,
-            %(abbreviation)s,
-            %(description)s,
-            %(attribution)s,
-            %(file_contents)s
-        );
-        """,
-        {
-            "user_id": user_id,
-            "curation_id": geneset.tier,
-            "species_id": geneset.species_id,
-            "threshold_type": geneset.score_type.value,
-            "threshold": 0.5,
-            "groups": geneset.groups,
-            "status": geneset.status,
-            "count": geneset.count,
-            "uri": geneset.uri,
-            "gene_id_type": geneset.gene_id_type,
-            "name": geneset.name,
-            "abbreviation": geneset.abbreviation,
-            "description": geneset.description,
-            "attribution": geneset.attribution,
-            "file_contents": gene_value_file,
-        },
-    )
-    geneset_id = cursor.fetchone()[0]
-    cursor.connection.commit()
-    return geneset_id
+# TODO: Finish implementing the following create geneset function.
+# @temp_override_row_factory(rows.tuple_row)
+# def create_geneset(cursor: Cursor, user_id: int, geneset: GenesetUpload) -> int:
+#     """Create a geneset.
+#
+#     :param cursor: The database cursor.
+#     :param geneset: The geneset to create.
+#     :return: The geneset ID.
+#     """
+#     cursor.execute(
+#         """
+#         SELECT production.create_geneset2(
+#             %(user_id)s,
+#             %(curation_id)s,
+#             %(species_id)s,
+#             %(threshold_type)s,
+#             %(threshold)s,
+#             %(groups)s,
+#             %(status)s,
+#             %(count)s,
+#             %(uri)s,
+#             %(gene_id_type)s,
+#             %(name)s,
+#             %(abbreviation)s,
+#             %(description)s,
+#             %(attribution)s,
+#             %(file_contents)s
+#         );
+#         """,
+#         },
