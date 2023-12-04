@@ -3,7 +3,7 @@ import pytest
 from geneweaver.db.exceptions import GeneweaverTypeError
 from geneweaver.db.geneset_value import insert_file
 
-from tests.unit.utils import get_magic_mock_cursor
+from tests.unit.testing_utils import get_magic_mock_cursor
 
 
 @pytest.mark.parametrize(

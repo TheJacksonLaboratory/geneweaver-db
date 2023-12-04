@@ -5,7 +5,7 @@ import pytest
 from geneweaver.db import gene
 
 from tests.unit.gene.const import GENE_ID_TYPES
-from tests.unit.utils import get_magic_mock_cursor
+from tests.unit.testing_utils import get_magic_mock_cursor
 
 test_cases = [
     (None, GENE_ID_TYPES),
