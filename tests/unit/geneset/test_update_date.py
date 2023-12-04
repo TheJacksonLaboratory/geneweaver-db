@@ -14,7 +14,7 @@ from geneweaver.db.geneset import update_date
         ("2015-07-15 20:43:04.532024",),
         ("2018-01-19 10:50:09.552803",),
         ("2020-05-06 09:19:44.883323",),
-        ("2020-05-06 09:19:44.883323",),
+        ("2020-05-06 09:49:44.883323",),
     ],
 )
 def test_update_date(example_dates, cursor, example_primary_key):

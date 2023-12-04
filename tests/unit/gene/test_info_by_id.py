@@ -16,7 +16,7 @@ def test_info_by_gene_id(gene_id, expected):
     cursor = Mock()
     cursor.fetchall.return_value = [expected]
     result = info_by_gene_id(cursor, gene_id)
-    assert type(result) == list
+    assert isinstance(result, list)
     assert len(result) == 1
     assert result[0] == expected
     assert cursor.execute.call_count == 1
