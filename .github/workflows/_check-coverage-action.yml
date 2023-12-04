@@ -48,7 +48,8 @@ jobs:
           --cov=${{ inputs.coverage-module }} \
           --cov-report=term \
           --cov-report=html \
-          --cov-fail-under=${{ inputs.required-coverage }} > coverage_report.txt
+          --cov-fail-under=${{ inputs.required-coverage }} \
+          | awk '/- coverage: /{flag=1} flag' > coverage_report.txt
       - name: Upload coverage report
         if: '!cancelled()'
         uses: actions/upload-artifact@v3
