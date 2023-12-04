@@ -4,6 +4,11 @@ from pydantic import BaseModel, PostgresDsn
 
 
 class PostgresDsnExample(BaseModel):
+    """Example of a PostgresDsn.
+
+    Used to test that the postgres dsn string can be parsed.
+    """
+
     db: PostgresDsn
 
 
