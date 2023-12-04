@@ -178,13 +178,13 @@ pydantic = {version = ">=1.10.7,<2.0.0", extras = ["dotenv"]}
 
 [[package]]
 name = "geneweaver-testing"
-version = "0.0.2"
+version = "0.0.3"
 description = "A library to standardize testing of GeneWeaver pacakges."
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "geneweaver_testing-0.0.2-py3-none-any.whl", hash = "sha256:f7fb8902dc1db6af0e77ff28ca014be940f4b9dab643db4363440af1b5e777aa"},
-    {file = "geneweaver_testing-0.0.2.tar.gz", hash = "sha256:4a63b39b2f458cdaf54bfa708be1f309b05f37305c1e401c529d602ab837934f"},
+    {file = "geneweaver_testing-0.0.3-py3-none-any.whl", hash = "sha256:dd9d04cd9ff6366496a9f66ea3347121d0d810d9748936db736837d6f773d7f5"},
+    {file = "geneweaver_testing-0.0.3.tar.gz", hash = "sha256:e268462ced2d44ad213cae7cb2e669d5c0065e6bf82965730b7d3eb0f0f0e9a8"},
 ]
 
 [package.dependencies]
@@ -424,13 +424,13 @@ files = [
 
 [[package]]
 name = "platformdirs"
-version = "4.0.0"
+version = "4.1.0"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "platformdirs-4.0.0-py3-none-any.whl", hash = "sha256:118c954d7e949b35437270383a3f2531e99dd93cf7ce4dc8340d3356d30f173b"},
-    {file = "platformdirs-4.0.0.tar.gz", hash = "sha256:cb633b2bcf10c51af60beb0ab06d2f1d69064b43abf4c185ca6b28865f3f9731"},
+    {file = "platformdirs-4.1.0-py3-none-any.whl", hash = "sha256:11c8f37bcca40db96d8144522d925583bdb7a31f7b0e37e3ed4318400a8e2380"},
+    {file = "platformdirs-4.1.0.tar.gz", hash = "sha256:906d548203468492d432bcb294d4bc2fff751bf84971fbb2c10918cc206ee420"},
 ]
 
 [package.extras]
@@ -755,4 +755,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "d6d23663bc6cf7c1a6eaf1dd4cf2170cb4670d5af9e97659fbbdf6c389dc6ac8"
+content-hash = "ace09c2c2706fce6a0e9b46f4c3f9e7ad2139653f935aa05ed1e25d7a98227be"
