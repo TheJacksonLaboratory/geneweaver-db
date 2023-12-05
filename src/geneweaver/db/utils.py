@@ -29,6 +29,9 @@ def unpack_one_item_fetchall_results(results: List[Row]) -> List:
 def temp_override_row_factory(row_factory):
     """Temporarily override the row factory for a function.
 
+    This is useful for functions that use a cursor as an argument, but which process
+    cursor results internally and therefore need a specific row factory to be set.
+
     :param row_factory: The row factory to use.
 
     :return: The function wrapper.

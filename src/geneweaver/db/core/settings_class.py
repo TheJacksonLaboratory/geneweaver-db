@@ -44,6 +44,7 @@ class Settings(BaseSettings):
                 user=values.get("USERNAME"),
                 password=values.get("PASSWORD"),
                 host=values.get("SERVER"),
+                port=str(values.get("PORT")),
                 path=f"/{values.get('NAME') or ''}",
             )
         )

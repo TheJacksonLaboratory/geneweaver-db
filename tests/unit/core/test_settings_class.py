@@ -31,6 +31,7 @@ def test_settings_class_has_expected_attributes():
     assert hasattr(settings, "PASSWORD"), "Missing attribute PASSWORD"
     assert hasattr(settings, "NAME"), "Missing attribute NAME"
     assert hasattr(settings, "URI"), "Missing attribute URI"
+    assert hasattr(settings, "PORT"), "Missing attribute PORT"
 
     # Check default values
     assert settings.PASSWORD == "", "Default for PASSWORD should be an empty string"
@@ -44,7 +45,7 @@ def test_settings_class_has_expected_attributes():
 
     # "localhost" should be replaced with 127.0.0.1
     assert (
-        str(settings.URI) == "postgresql://admin@127.0.0.1/"
+        str(settings.URI) == "postgresql://admin@127.0.0.1:5432/"
     ), "URI not formatted as expected"
 
     # Check the non-default values
@@ -72,6 +73,7 @@ def test_settings_class_can_directly_set_database_uri():
     # Check default values
     assert settings.PASSWORD == "", "Default for PASSWORD should be an empty string"
     assert settings.NAME == "", "Default for NAME should be an empty string"
+    assert settings.PORT == 5432, "Default for PORT should be 5432"
     assert isinstance(settings.URI, str), "URI should be a string"
 
     # Postgres uri should be parsable as PostgresDsn
