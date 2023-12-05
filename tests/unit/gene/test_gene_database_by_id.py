@@ -15,7 +15,7 @@ def test_gene_database_by_id(gene_id, expected_result):
     cursor = Mock()
     cursor.fetchall.return_value = [expected_result]
     result = gene_database_by_id(cursor, gene_id)
-    assert type(result) == list
+    assert isinstance(result, list)
     assert result[0] == expected_result
     assert cursor.execute.call_count == 1
     assert cursor.fetchall.call_count == 1

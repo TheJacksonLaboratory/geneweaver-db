@@ -2,7 +2,7 @@
 
 from geneweaver.db.geneset import by_project_id
 
-from tests.unit.utils import (
+from tests.unit.testing_utils import (
     create_execute_raises_error_test,
     create_fetchall_raises_error_test,
 )

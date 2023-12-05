@@ -10,7 +10,7 @@ def test_symbols_by_geneset_id(geneset_gene_symbols):
     cursor = Mock()
     cursor.fetchall.return_value = geneset_gene_symbols
     result = symbols_by_geneset_id(cursor, 1)
-    assert type(result) == list
+    assert isinstance(result, list)
     assert len(result) == len(geneset_gene_symbols)
     assert result == geneset_gene_symbols
     assert cursor.execute.call_count == 1

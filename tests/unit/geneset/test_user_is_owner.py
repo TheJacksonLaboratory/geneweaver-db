@@ -2,7 +2,7 @@
 import pytest
 from geneweaver.db.geneset import user_is_owner
 
-from tests.unit.utils import (
+from tests.unit.testing_utils import (
     create_execute_raises_error_test,
     create_fetchone_raises_error_test,
 )

@@ -3,7 +3,7 @@ import pytest
 from geneweaver.db.geneset import by_id
 
 from tests.unit.geneset.const import GENESETS
-from tests.unit.utils import (
+from tests.unit.testing_utils import (
     create_execute_raises_error_test,
     create_fetchone_raises_error_test,
 )

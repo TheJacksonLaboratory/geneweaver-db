@@ -119,3 +119,25 @@ def insert_geneset_value(
     cursor.connection.commit()
 
     return cursor.fetchone()[0]
+
+
+def by_geneset_id(cursor: Cursor, geneset_id: int) -> list:
+    """Retrieve all geneset values associated with a geneset.
+
+    :param cursor: The database cursor.
+    :param geneset_id: The geneset ID to retrieve values for.
+
+    :return: A list of geneset values associated with the geneset.
+    """
+    cursor.execute(
+        """
+        SELECT DISTINCT ON (gv.ode_gene_id) gv.*, g.ode_ref_id
+        FROM        extsrc.geneset_value gv
+        INNER JOIN  extsrc.gene g
+        USING       (ode_gene_id)
+        WHERE  gs_id = %(geneset_id)s AND
+               g.ode_pref;
+        """,
+        {"geneset_id": geneset_id},
+    )
+    return cursor.fetchall()
