@@ -1,6 +1,7 @@
 """Test the geneset_values.by_genest_id function."""
-import pytest
 from unittest.mock import patch
+
+import pytest
 from geneweaver.core.enum import GeneIdentifier
 from geneweaver.db.geneset_value import by_geneset_id
 
@@ -30,7 +31,9 @@ def test_by_geneset_id(geneset_id, geneset_value, cursor):
 
 @patch("geneweaver.db.geneset_value.by_geneset_id_and_identifier")
 @patch("geneweaver.db.geneset_value.by_geneset_id_as_uploaded")
-def test_by_geneset_id_calls_correct_function(mock_as_uploaded, mock_identifier, cursor):
+def test_by_geneset_id_calls_correct_function(
+    mock_as_uploaded, mock_identifier, cursor
+):
     """Test that the by_geneset_id function calls the correct function.
 
     It should call the by_geneset_id_and_identifier function if an identifier is
@@ -55,6 +58,8 @@ test_by_geneset_id_fetchall_raises_error = create_fetchall_raises_error_test(
 test_by_geneset_id_w_identifier_execute_raises_error = create_execute_raises_error_test(
     by_geneset_id, 1, identifier=GeneIdentifier.ENSEMBLE_GENE
 )
-test_by_geneset_id_w_identifier_fetchall_raises_error = create_fetchall_raises_error_test(
-    by_geneset_id, 1, identifier=GeneIdentifier.ENSEMBLE_GENE
+test_by_geneset_id_w_identifier_fetchall_raises_error = (
+    create_fetchall_raises_error_test(
+        by_geneset_id, 1, identifier=GeneIdentifier.ENSEMBLE_GENE
+    )
 )

@@ -1,5 +1,5 @@
 """Database interaction code relating to Gene IDs."""
-from typing import List, Optional, Iterable
+from typing import Iterable, List, Optional
 
 from geneweaver.core.enum import GeneIdentifier
 from psycopg import Cursor

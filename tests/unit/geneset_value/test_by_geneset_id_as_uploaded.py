@@ -29,6 +29,6 @@ def test_by_geneset_id(geneset_id, geneset_value, cursor):
 test_by_geneset_id_as_uploaded_execute_raises_error = create_execute_raises_error_test(
     by_geneset_id_as_uploaded, 1
 )
-test_by_geneset_id_as_uploaded_fetchall_raises_error = create_fetchall_raises_error_test(
-    by_geneset_id_as_uploaded, 1
+test_by_geneset_id_as_uploaded_fetchall_raises_error = (
+    create_fetchall_raises_error_test(by_geneset_id_as_uploaded, 1)
 )
