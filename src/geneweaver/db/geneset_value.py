@@ -1,6 +1,7 @@
 """Database functions for geneset values."""
-from typing import List
+from typing import List, Optional
 
+from geneweaver.core.enum import GeneIdentifier
 from geneweaver.core.schema.batch import GenesetValueInput
 from geneweaver.db.exceptions import GeneweaverTypeError
 from psycopg import Cursor
@@ -121,7 +122,24 @@ def insert_geneset_value(
     return cursor.fetchone()[0]
 
 
-def by_geneset_id(cursor: Cursor, geneset_id: int) -> list:
+def by_geneset_id(
+    cursor: Cursor, geneset_id: int, identifier: Optional[GeneIdentifier] = None
+) -> list:
+    """Retrieve all geneset values associated with a geneset.
+
+    :param cursor: The database cursor.
+    :param geneset_id: The geneset ID to retrieve values for.
+    :param identifier: The gene identifier to return.
+
+    :return: A list of geneset values associated with the geneset.
+    """
+    if identifier is not None:
+        return by_geneset_id_and_identifier(cursor, geneset_id, identifier)
+    else:
+        return by_geneset_id_as_uploaded(cursor, geneset_id)
+
+
+def by_geneset_id_as_uploaded(cursor: Cursor, geneset_id: int) -> list:
     """Retrieve all geneset values associated with a geneset.
 
     :param cursor: The database cursor.
@@ -135,9 +153,85 @@ def by_geneset_id(cursor: Cursor, geneset_id: int) -> list:
         FROM        extsrc.geneset_value gv
         INNER JOIN  extsrc.gene g
         USING       (ode_gene_id)
-        WHERE  gs_id = %(geneset_id)s AND
-               g.ode_pref;
+        WHERE  gs_id = %(geneset_id)s;
         """,
         {"geneset_id": geneset_id},
+    )
+    return cursor.fetchall()
+
+
+def by_geneset_id_and_identifier(
+    cursor: Cursor, geneset_id: int, identifier: GeneIdentifier
+) -> list:
+    """Retrieve all geneset values associated with a geneset.
+
+    NOTE: If you are mapping identifiers across species, you will need to use the
+    `geneweaver.db.gene.get_homolog_ids_by_ode_id` function to get the homolog ids
+    for the geneset values after processing the results of this function.
+
+    :param cursor: The database cursor.
+    :param geneset_id: The geneset ID to retrieve values for.
+    :param identifier: The gene identifier to use.
+
+    :return: A list of geneset values associated with the geneset.
+    """
+    cursor.execute(
+        """
+            SELECT gsv.gs_id, gsv.ode_gene_id, gsv.gsv_value, gsv.gsv_hits,
+                   gsv.gsv_source_list, gsv.gsv_value_list,
+                   gsv.gsv_in_threshold, gsv.gsv_date, h.hom_id, gi.gene_rank,
+                   gsv.ode_ref_id, gsv.gdb_id
+
+            --
+            -- Use a subquery here so we can prevent duplicate gene identifiers
+            -- of the same type from being returned (the DISTINCT ON section)
+            -- otherwise when we try to change identifier types from the view
+            -- GS page, duplicate entries screw things up
+            --
+            FROM (
+                SELECT DISTINCT ON (g.ode_gene_id, g.gdb_id)
+                        gsv.*, g.ode_ref_id, g.gdb_id, g.ode_pref
+                FROM    geneset_value as gsv, gene as g
+                WHERE   gsv.gs_id = %(geneset_id)s AND
+                        g.ode_gene_id = gsv.ode_gene_id AND
+                        g.gdb_id = (SELECT COALESCE (
+                            (SELECT gdb_id
+                             FROM   gene AS g2
+                             WHERE g2.ode_gene_id = gsv.ode_gene_id AND
+                                   g2.gdb_id = %(gdb_id)s
+                             LIMIT 1),
+                            (SELECT gdb_id
+                             FROM   gene AS g2
+                             WHERE g2.ode_gene_id = gsv.ode_gene_id AND
+                                   g2.gdb_id = 7
+                             LIMIT 1)
+                        )) AND
+
+                        --
+                        -- When viewing symbols, always pick the preferred gene symbol
+                        --
+                        CASE
+                            WHEN g.gdb_id = 7 THEN g.ode_pref = 't'
+                            ELSE true
+                        END
+            ) gsv
+
+            --
+            -- gene_info necessary for the priority scores
+            --
+            INNER JOIN  gene_info AS gi
+            ON          gsv.ode_gene_id = gi.ode_gene_id
+
+            --
+            -- Have to use a left outer join because some genes may not have homologs
+            --
+            LEFT OUTER JOIN homology AS h
+            ON          gsv.ode_gene_id = h.ode_gene_id
+
+            WHERE h.hom_source_name = 'Homologene' OR
+                  -- In case the gene doesn't have any homologs
+                  h.hom_source_name IS NULL
+        """,
+        {"geneset_id": geneset_id, "gdb_id": identifier.value},
     )
     return cursor.fetchall()

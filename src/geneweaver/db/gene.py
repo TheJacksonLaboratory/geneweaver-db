@@ -1,6 +1,7 @@
 """Database interaction code relating to Gene IDs."""
-from typing import List, Optional
+from typing import List, Optional, Iterable
 
+from geneweaver.core.enum import GeneIdentifier
 from psycopg import Cursor
 
 
@@ -58,6 +59,21 @@ def gene_database_by_id(cursor: Cursor, genedb_id: int) -> List:
     return cursor.fetchall()
 
 
+def gene_database_id(cursor: Cursor, identifier: GeneIdentifier) -> List:
+    """Get all gene database info by gene database name.
+
+    :param cursor: The database cursor.
+    :param identifier: The gene database name to search for.
+
+    :return: list of results using `.fetchall()`
+    """
+    cursor.execute(
+        """SELECT gdb_id FROM odestatic.genedb WHERE gdb_shortname = %(gdb_name)s;""",
+        {"gdb_name": identifier.name.lower},
+    )
+    return cursor.fetchall()
+
+
 def symbols_by_geneset_id(cursor: Cursor, geneset_id: int) -> List:
     """Get all gene symbols associated with a specific geneset id.
 
@@ -99,5 +115,121 @@ def symbols_by_project_id(cursor: Cursor, project_id: int) -> List:
         AND gv.ode_gene_id=g.ode_gene_id AND g.gdb_id=7 AND ode_pref='t';
     """,
         {"project_id": project_id},
+    )
+    return cursor.fetchall()
+
+
+def get_homolog_ids_by_ode_id(
+    cursor: Cursor, ode_gene_ids: Iterable[str], identifier: GeneIdentifier
+) -> List:
+    """Get all homolog ids associated with a specific gene id.
+
+    :param cursor: The database cursor.
+    :param ode_gene_ids: The gene ids to search for.
+    :param identifier: The identifier to return genes in.
+
+    :return: list of results using `.fetchall()`
+    """
+    cursor.execute(
+        """
+        SELECT DISTINCT     h.ode_gene_id, g.ode_ref_id
+        FROM                homology AS h
+        INNER JOIN          homology AS h2
+        ON                  h.hom_id = h2.hom_id
+        INNER JOIN          gene AS g
+        ON                  g.ode_gene_id = h2.ode_gene_id
+        WHERE               h.ode_gene_id in %(ode_gene_ids)s AND
+                            g.gdb_id = %(genedb_id)s;
+        """,
+        {"ode_gene_ids": tuple(ode_gene_ids), "genedb_id": identifier.value},
+    )
+    return cursor.fetchall()
+
+
+def get_homolog_ids(
+    cursor: Cursor,
+    source_ids: Iterable[str],
+    result_identifier: GeneIdentifier,
+    source_identifier: Optional[GeneIdentifier] = None,
+) -> list:
+    """Get homologous GeneIDs for a list of source IDs.
+
+    :param cursor: The database cursor.
+    :param source_ids: The gene ids to search for.
+    :param result_identifier: The identifier to return genes in.
+    :param source_identifier: The identifier to search for genes in (optional).
+    """
+    if source_identifier is not None:
+        return get_homolog_ids_with_source_identifier(
+            cursor,
+            source_ids,
+            result_identifier=result_identifier,
+            source_identifier=source_identifier,
+        )
+    else:
+        return get_homolog_ids_without_source_identifier(
+            cursor, source_ids, result_identifier=result_identifier
+        )
+
+
+def get_homolog_ids_with_source_identifier(
+    cursor: Cursor,
+    source_ids: Iterable[str],
+    result_identifier: GeneIdentifier,
+    source_identifier: GeneIdentifier,
+) -> list:
+    """Get homologous GeneIDs for a list of source IDs.
+
+    :param cursor: The database cursor.
+    :param source_ids: The gene ids to search for.
+    :param result_identifier: The identifier to return genes in.
+    :param source_identifier: The identifier to search for genes in (optional).
+    """
+    cursor.execute(
+        """
+        SELECT DISTINCT result_gene.ode_ref_id, source_gene.ode_ref_id
+        FROM homology AS source_homology
+            INNER JOIN homology AS result_homology
+                ON source_homology.hom_id = result_homology.hom_id
+            INNER JOIN gene AS result_gene
+                ON result_gene.ode_gene_id = result_homology.ode_gene_id
+            INNER JOIN gene AS source_gene
+                ON source_gene.ode_gene_id = source_homology.ode_gene_id
+        WHERE result_gene.gdb_id = %(result_genedb_id)s
+            AND source_gene.gdb_id = %(source_genedb_id)s
+            AND source_gene.ode_ref_id IN %(source_ids)s;
+        """,
+        {
+            "result_genedb_id": result_identifier.value,
+            "source_genedb_id": source_identifier.value,
+            "source_ids": tuple(source_ids),
+        },
+    )
+    return cursor.fetchall()
+
+
+def get_homolog_ids_without_source_identifier(
+    cursor: Cursor, source_ids: Iterable[str], result_identifier: GeneIdentifier
+) -> list:
+    """Get homologous GeneIDs for a list of source IDs.
+
+    :param cursor: The database cursor.
+    :param source_ids: The gene ids to search for.
+    :param result_identifier: The identifier to return genes in.
+    """
+    cursor.execute(
+        """
+        SELECT DISTINCT result_gene.ode_ref_id, source_gene.ode_ref_id
+        FROM homology AS source_homology
+            INNER JOIN homology AS result_homology
+                ON source_homology.hom_id = result_homology.hom_id
+            INNER JOIN gene AS result_gene
+                ON result_gene.ode_gene_id = result_homology.ode_gene_id
+            INNER JOIN gene AS source_gene
+                ON source_gene.ode_gene_id = source_homology.ode_gene_id
+        WHERE result_gene.gdb_id = %(result_genedb_id)s
+            AND source_gene.ode_ref_id IN %(source_ids)s;
+        """,
+        {"result_genedb_id": result_identifier.value, "source_ids": tuple(source_ids)},
     )
     return cursor.fetchall()
