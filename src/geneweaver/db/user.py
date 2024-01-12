@@ -113,3 +113,85 @@ def by_email(cursor: Cursor, email: str) -> List:
         {"email": email},
     )
     return cursor.fetchall()
+
+
+def sso_id_exists(cursor: Cursor, sso_id: str) -> bool:
+    """Check if sso id exists.
+
+    :param cursor: The database cursor.
+    :param sso_id: The sso id to check.
+
+    :return: True if the sso id exists, otherwise False.
+    """
+    cursor.execute(
+        """ SELECT count(*) FROM usr
+            WHERE usr_sso_id = %s
+        """,
+        (sso_id,),
+    )
+    existing = int(cursor.fetchone()[0])
+
+    return existing > 0
+
+
+def link_user_id_with_sso_id(cursor: Cursor, user_id: int, sso_id: str) -> int:
+    """Link a user id with an sso id.
+
+    :param cursor: The database cursor.
+    :param user_id: The user id (internal) to link.
+    :param sso_id: The sso id to link.
+
+    :return: The user id (internal) of the user that was linked.
+
+    :raises ValueError: If the sso id is already linked to a different account.
+    """
+    if sso_id_exists(cursor, sso_id):
+        raise ValueError("SSO ID is already linked to a different account")
+
+    cursor.execute(
+        """UPDATE usr
+       SET usr_sso_id = %s
+       WHERE usr_id = %s
+       RETURNING usr_id;
+       """,
+        (sso_id, user_id),
+    )
+    cursor.connection.commit()
+    return cursor.fetchone()[0]
+
+
+def create_sso_user(cursor: Cursor, name: str, email: str, sso_id: str) -> int:
+    """Create a new user with sso id.
+
+    :param cursor: The database cursor.
+    :param name: The user's name.
+    :param email: The user's email address.
+    :param sso_id: The user's sso id.
+
+    :return: The user id (internal) of the newly created user.
+    """
+    split_name = name.split(" ")
+    first_name = split_name[0]
+    last_name = " ".join(split_name[1:])
+
+    cursor.execute(
+        """INSERT INTO usr
+           (usr_first_name, usr_last_name,
+           usr_email, usr_admin, usr_sso_id,
+           usr_last_seen, usr_created, is_guest)
+           VALUES
+           (%(user_first_name)s, %(user_last_name)s,
+           %(user_email)s, '0', %(user_sso_id)s,
+           NOW(), NOW(), 'f')
+           RETURNING usr_id;
+        """,
+        {
+            "user_first_name": first_name,
+            "user_last_name": last_name,
+            "user_email": email.lower(),
+            "user_sso_id": sso_id,
+        },
+    )
+    cursor.connection.commit()
+
+    return cursor.fetchone()[0]
