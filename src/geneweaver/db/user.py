@@ -20,9 +20,12 @@ The functions that return a single value from a user record are:
 """
 from typing import List, Optional
 
-from psycopg import Cursor
+from psycopg import Cursor, rows
+from geneweaver.db.utils import temp_override_row_factory
 
 
+
+@temp_override_row_factory(rows.tuple_row)
 def user_id_from_api_key(cursor: Cursor, api_key: str) -> Optional[int]:
     """Get user id from api key.
 
@@ -39,6 +42,7 @@ def user_id_from_api_key(cursor: Cursor, api_key: str) -> Optional[int]:
     return result[0] if result else None
 
 
+@temp_override_row_factory(rows.tuple_row)
 def user_id_from_sso_id(cursor: Cursor, sso_id: str) -> Optional[int]:
     """Get user id from sso id.
 
@@ -85,6 +89,25 @@ def by_sso_id(cursor: Cursor, sso_id: str) -> List:
     return cursor.fetchall()
 
 
+def by_sso_id_and_email(cursor: Cursor, sso_id: str, email: str) -> List:
+    """Get user info by sso id and email.
+
+    :param cursor: The database cursor.
+    :param sso_id: The sso id to search for.
+    :param email: The email to search for.
+
+    :return: list of results using `.fetchall()`
+    """
+    cursor.execute(
+        """
+        SELECT * FROM production.usr 
+        WHERE usr_sso_id = %(sso_id)s AND usr_email = %(email)s;
+        """,
+        {"sso_id": sso_id, "email": email},
+    )
+    return cursor.fetchall()
+
+
 def by_user_id(cursor: Cursor, user_id: int) -> List:
     """Get user info by user id.
 
@@ -115,6 +138,27 @@ def by_email(cursor: Cursor, email: str) -> List:
     return cursor.fetchall()
 
 
+@temp_override_row_factory(rows.tuple_row)
+def email_exists(cursor: Cursor, email: str) -> bool:
+    """Check if email exists.
+
+    :param cursor: The database cursor.
+    :param email: The email to check.
+
+    :return: True if the email exists, otherwise False.
+    """
+    cursor.execute(
+        """ SELECT count(*) FROM usr
+            WHERE usr_email = %s
+        """,
+        (email,),
+    )
+    existing = int(cursor.fetchone()[0])
+
+    return existing > 0
+
+
+@temp_override_row_factory(rows.tuple_row)
 def sso_id_exists(cursor: Cursor, sso_id: str) -> bool:
     """Check if sso id exists.
 
@@ -134,6 +178,7 @@ def sso_id_exists(cursor: Cursor, sso_id: str) -> bool:
     return existing > 0
 
 
+@temp_override_row_factory(rows.tuple_row)
 def link_user_id_with_sso_id(cursor: Cursor, user_id: int, sso_id: str) -> int:
     """Link a user id with an sso id.
 
@@ -160,6 +205,7 @@ def link_user_id_with_sso_id(cursor: Cursor, user_id: int, sso_id: str) -> int:
     return cursor.fetchone()[0]
 
 
+@temp_override_row_factory(rows.tuple_row)
 def create_sso_user(cursor: Cursor, name: str, email: str, sso_id: str) -> int:
     """Create a new user with sso id.
 
