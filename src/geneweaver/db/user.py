@@ -20,9 +20,8 @@ The functions that return a single value from a user record are:
 """
 from typing import List, Optional
 
-from psycopg import Cursor, rows
 from geneweaver.db.utils import temp_override_row_factory
-
+from psycopg import Cursor, rows
 
 
 @temp_override_row_factory(rows.tuple_row)
@@ -100,7 +99,7 @@ def by_sso_id_and_email(cursor: Cursor, sso_id: str, email: str) -> List:
     """
     cursor.execute(
         """
-        SELECT * FROM production.usr 
+        SELECT * FROM production.usr
         WHERE usr_sso_id = %(sso_id)s AND usr_email = %(email)s;
         """,
         {"sso_id": sso_id, "email": email},
