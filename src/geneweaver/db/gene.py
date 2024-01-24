@@ -154,6 +154,7 @@ def get_homolog_ids(
     source_identifier: Optional[GeneIdentifier] = None,
     result_species: Optional[Species] = None,
     source_species: Optional[Species] = None,
+    only_preferred_ids: bool = True,
 ) -> list:
     """Get homologous GeneIDs for a list of source IDs.
 
@@ -164,6 +165,7 @@ def get_homolog_ids(
     :param result_species: The species to return genes in (optional, but recommended).
     :param source_species: The species to search for genes in (optional, but
                            recommended).
+    :param only_preferred_ids: Whether to return only genes with  preferred identifiers.
     """
     base_query = SQL(
         """
@@ -180,12 +182,14 @@ def get_homolog_ids(
                 ON source_gene.ode_gene_id = source_homology.ode_gene_id
         WHERE source_gene.ode_ref_id = ANY(%(source_ids)s)
             AND result_gene.gdb_id = %(result_genedb_id)s
+            AND result_gene.ode_pref = %(ode_pref)
     """
     )
 
     params = {
         "source_ids": list(source_ids),
         "result_genedb_id": result_identifier.value,
+        "ode_pref": "f" if only_preferred_ids is False else "t",
     }
 
     if source_identifier is not None:
