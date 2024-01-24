@@ -182,7 +182,7 @@ def get_homolog_ids(
                 ON source_gene.ode_gene_id = source_homology.ode_gene_id
         WHERE source_gene.ode_ref_id = ANY(%(source_ids)s)
             AND result_gene.gdb_id = %(result_genedb_id)s
-            AND result_gene.ode_pref = %(ode_pref)
+            AND result_gene.ode_pref = %(ode_pref)s
     """
     )
 
