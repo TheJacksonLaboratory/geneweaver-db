@@ -139,10 +139,10 @@ def get_homolog_ids_by_ode_id(
         ON                  h.hom_id = h2.hom_id
         INNER JOIN          gene AS g
         ON                  g.ode_gene_id = h2.ode_gene_id
-        WHERE               h.ode_gene_id in %(ode_gene_ids)s AND
+        WHERE               h.ode_gene_id = ANY(%(ode_gene_ids)s) AND
                             g.gdb_id = %(genedb_id)s;
         """,
-        {"ode_gene_ids": tuple(ode_gene_ids), "genedb_id": identifier.value},
+        {"ode_gene_ids": list(ode_gene_ids), "genedb_id": identifier.value},
     )
     return cursor.fetchall()
 
