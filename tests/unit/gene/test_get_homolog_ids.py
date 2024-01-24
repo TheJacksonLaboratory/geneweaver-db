@@ -26,7 +26,7 @@ def test_no_optional_args(cursor, source_identifier):
             {
                 "source_ids": ["1", "2"],
                 "result_genedb_id": source_identifier.value,
-                "ode_pref": "t"
+                "ode_pref": "t",
             },
         )
 
@@ -55,7 +55,7 @@ def test_with_source_identifier(cursor, result_identifier, source_identifier):
                 "source_ids": ["1", "2"],
                 "result_genedb_id": result_identifier.value,
                 "source_genedb_id": source_identifier.value,
-                "ode_pref": "t"
+                "ode_pref": "t",
             },
         )
 
@@ -84,7 +84,7 @@ def test_with_result_species(cursor, result_identifier, result_species):
                 "source_ids": ["1", "2"],
                 "result_genedb_id": result_identifier.value,
                 "result_sp_id": result_species.value,
-                "ode_pref": "t"
+                "ode_pref": "t",
             },
         )
 
@@ -109,7 +109,7 @@ def test_with_source_species(cursor, result_identifier, source_species):
                 "source_ids": ["1", "2"],
                 "result_genedb_id": result_identifier.value,
                 "source_sp_id": source_species.value,
-                "ode_pref": "t"
+                "ode_pref": "t",
             },
         )
 
@@ -139,6 +139,6 @@ def test_with_all_args(cursor, source_identifier, result_species, source_species
                 "source_genedb_id": source_identifier.value,
                 "result_sp_id": result_species.value,
                 "source_sp_id": source_species.value,
-                "ode_pref": "t"
+                "ode_pref": "t",
             },
         )
