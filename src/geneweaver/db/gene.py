@@ -189,7 +189,7 @@ def get_homolog_ids(
     params = {
         "source_ids": list(source_ids),
         "result_genedb_id": result_identifier.value,
-        "ode_pref": 'f' if only_preferred_ids is False else 't',
+        "ode_pref": "f" if only_preferred_ids is False else "t",
     }
 
     if source_identifier is not None:
