@@ -1,9 +1,10 @@
 """Utilities for the GeneWeaver database functions."""
 # ruff: noqa: ANN001, ANN002, ANN003, ANN201, ANN202
 import functools
-from typing import List
+from typing import List, Optional
 
 from geneweaver.db.exceptions import GeneweaverDoesNotExistError, GeneweaverValueError
+from psycopg import sql
 from psycopg.rows import Row
 
 
@@ -65,3 +66,22 @@ def temp_override_row_factory(row_factory):
         return wrapper
 
     return decorator
+
+
+def format_sql_fields(
+    fields_map: dict,
+    query_table: Optional[str] = None,
+    resp_prefix: Optional[str] = None,
+) -> List[sql.Composed]:
+    """Format SQL fields for a query."""
+    select_prefix = query_table or ""
+    resp_prefix = resp_prefix or ""
+
+    return [
+        sql.SQL("{select_prefix}.{field} AS {resp_prefix}_{field}").format(
+            select_prefix=sql.Identifier(select_prefix),
+            resp_prefix=sql.Identifier(resp_prefix),
+            field=sql.Identifier(field),
+        )
+        for field in fields_map.keys()
+    ]
