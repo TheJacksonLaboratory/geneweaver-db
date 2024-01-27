@@ -31,7 +31,7 @@ def by_pubmed_id(cursor: Cursor, pubmed_id: str) -> Optional[rows.Row]:
 
     :return: optional row using `.fetchone()`
     """
-    query = PUB_QUERY + SQL("WHERE pub_pubmed = %(pmid)s")
+    query = (PUB_QUERY + SQL("WHERE pub_pubmed = %(pmid)s")).join(" ")
     cursor.execute(query, {"pmid": pubmed_id})
     return cursor.fetchone()
 
@@ -44,7 +44,7 @@ def by_pubmed_ids(cursor: Cursor, pubmed_ids: Iterable[str]) -> List[rows.Row]:
 
     :return: list of results using `.fetchall()`
     """
-    query = PUB_QUERY + SQL("WHERE pub_pubmed = ANY(%(pubmed_ids)s)")
+    query = (PUB_QUERY + SQL("WHERE pub_pubmed = ANY(%(pubmed_ids)s)")).join(" ")
     cursor.execute(query, {"pubmed_ids": list(pubmed_ids)})
     return cursor.fetchall()
 
@@ -57,7 +57,7 @@ def by_id(cursor: Cursor, pub_id: int) -> Optional[rows.Row]:
 
     :return: optional row using `.fetchone()`
     """
-    query = PUB_QUERY + SQL("WHERE pub_id = %(pub_id)s")
+    query = (PUB_QUERY + SQL("WHERE pub_id = %(pub_id)s")).join(" ")
     cursor.execute(query, {"pub_id": pub_id})
     return cursor.fetchone()
 
@@ -74,6 +74,7 @@ def by_geneset_id(cursor: Cursor, geneset_id: int) -> Optional[rows.Row]:
         PUB_QUERY
         + SQL("JOIN geneset ON publication.pub_id = geneset.pub_id")
         + SQL("WHERE gs_id = %(geneset_id)s")
-    )
+    ).join(" ")
+
     cursor.execute(query, {"geneset_id": geneset_id})
     return cursor.fetchone()

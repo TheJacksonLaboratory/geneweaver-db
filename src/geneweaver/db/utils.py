@@ -75,13 +75,13 @@ def format_sql_fields(
 ) -> List[sql.Composed]:
     """Format SQL fields for a query."""
     select_prefix = query_table or ""
-    resp_prefix = resp_prefix or ""
+    resp_prefix = "" if resp_prefix is None else f"{resp_prefix}_"
 
     return [
-        sql.SQL("{select_prefix}.{field} AS {resp_prefix}_{field}").format(
+        sql.SQL("{select_prefix}.{source_field} AS {to_field}").format(
             select_prefix=sql.Identifier(select_prefix),
-            resp_prefix=sql.Identifier(resp_prefix),
-            field=sql.Identifier(field),
+            source_field=sql.Identifier(source),
+            to_field=sql.Identifier(f"{resp_prefix}{mapping}"),
         )
-        for field in fields_map.keys()
+        for source, mapping in fields_map.items()
     ]

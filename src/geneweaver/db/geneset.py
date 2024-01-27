@@ -29,7 +29,7 @@ GENESET_FIELDS_MAP = {
 
 GENESET_FIELDS = format_sql_fields(GENESET_FIELDS_MAP, query_table="geneset")
 PUB_FIELDS = format_sql_fields(
-    PUB_FIELD_MAP, query_table="publication", resp_prefix="publication_"
+    PUB_FIELD_MAP, query_table="publication", resp_prefix="publication"
 )
 
 
@@ -46,14 +46,16 @@ def by_id(
     """
     query = SQL("SELECT")
     if with_publication_info:
-        query += SQL(",").join(GENESET_FIELDS + PUB_FIELDS)
-        query += SQL("FROM geneset JOIN publication")
-        query += SQL("ON geneset.pub_id = publication.pub_id")
+        query = (
+            query
+            + SQL(",").join(GENESET_FIELDS + PUB_FIELDS)
+            + SQL("FROM geneset JOIN publication")
+            + SQL("ON geneset.pub_id = publication.pub_id")
+        )
     else:
-        query += SQL(",").join(GENESET_FIELDS)
-        query += SQL("FROM geneset")
+        query = query + SQL(",").join(GENESET_FIELDS) + SQL("FROM geneset")
 
-    query += SQL("WHERE gs_id = %(geneset_id)s")
+    query = (query + SQL("WHERE gs_id = %(geneset_id)s")).join(" ")
     cursor.execute(query, {"geneset_id": geneset_id})
     return cursor.fetchone()
 
@@ -70,7 +72,7 @@ def by_user_id(cursor: Cursor, user_id: int) -> List:
         SQL("SELECT")
         + SQL(",").join(GENESET_FIELDS)
         + SQL("FROM geneset WHERE usr_id = %(user_id)s")
-    )
+    ).join(" ")
     cursor.execute(query, {"user_id": user_id})
     return cursor.fetchall()
 
