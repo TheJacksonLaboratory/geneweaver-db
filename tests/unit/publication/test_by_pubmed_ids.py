@@ -9,11 +9,10 @@ from tests.unit.publication.const import (
     PUBMED_PUBLICATIONS,
 )
 from tests.unit.testing_utils import (
-    get_magic_mock_cursor,
     create_execute_raises_error_test,
-    create_fetchall_raises_error_test
+    create_fetchall_raises_error_test,
+    get_magic_mock_cursor,
 )
-
 
 test_by_pubmed_id_execute_raises_error = create_execute_raises_error_test(
     by_pubmed_ids, ["12345678", "23456"]
