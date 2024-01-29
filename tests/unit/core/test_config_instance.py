@@ -8,7 +8,7 @@ def test_is_importable_and_initialized(monkeypatch):
     monkeypatch.setenv("GWDB_NAME", "test_db_name")
     monkeypatch.setenv("GWDB_SERVER", "test_host")
 
-    from geneweaver.db.core.settings import Settings, config
+    from geneweaver.db.core.settings import Settings, settings
 
-    assert config is not None
-    assert isinstance(config, Settings)
+    assert settings is not None
+    assert isinstance(settings, Settings)
