@@ -1,14 +1,24 @@
 """Test the get_publication_by_pubmed_id function."""
 import pytest
-from geneweaver.db.publication import (
-    get_publication_by_pubmed_id,
-)
+from geneweaver.db.publication import by_pubmed_id
 
 from tests.unit.publication.const import (
     EDGE_CASE_PUBMED_PUBLICATIONS,
     PUBMED_PUBLICATIONS,
 )
-from tests.unit.testing_utils import get_magic_mock_cursor
+from tests.unit.testing_utils import (
+    create_execute_raises_error_test,
+    create_fetchone_raises_error_test,
+    get_magic_mock_cursor,
+)
+
+test_by_pubmed_id_execute_raises_error = create_execute_raises_error_test(
+    by_pubmed_id, "12345678"
+)
+
+test_by_pubmed_id_fetchone_raises_error = create_fetchone_raises_error_test(
+    by_pubmed_id, "12345678"
+)
 
 
 @pytest.mark.parametrize(
@@ -19,8 +29,7 @@ def test_get_publication_by_pubmed_id(pmid, expected_result):
     # Prepare the mock cursor
     cursor = get_magic_mock_cursor(expected_result)
 
-    result = get_publication_by_pubmed_id(cursor, pmid)
+    result = by_pubmed_id(cursor, pmid)
 
     assert result == expected_result
-    assert "publication" in cursor.execute.call_args[0][0]
-    assert pmid in cursor.execute.call_args[0][1]
+    assert pmid in cursor.execute.call_args[0][1].values()

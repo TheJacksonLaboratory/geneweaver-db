@@ -1,22 +1,62 @@
 """Geneset database functions."""
 from typing import List, Optional
 
-from geneweaver.db.utils import temp_override_row_factory
+from geneweaver.db.publication import PUB_FIELD_MAP
+from geneweaver.db.utils import format_sql_fields, temp_override_row_factory
 from psycopg import Cursor, rows
+from psycopg.sql import SQL
+
+GENESET_FIELDS_MAP = {
+    "gs_id": "id",
+    "usr_id": "user_id",
+    "file_id": "file_id",
+    "cur_id": "curation_id",
+    "sp_id": "species_id",
+    "gs_name": "name",
+    "gs_abbreviation": "abbreviation",
+    "pub_id": "pub_id",
+    "gs_description": "description",
+    "gs_count": "count",
+    "gs_threshold_type": "threshold_type",
+    "gs_threshold": "threshold",
+    "gs_groups": "groups",
+    "gs_status": "status",
+    "gs_gene_id_type": "gene_id_type",
+    "gs_attribution": "attribution",
+    "gs_created": "created",
+    "gs_updated": "updated",
+}
+
+GENESET_FIELDS = format_sql_fields(GENESET_FIELDS_MAP, query_table="geneset")
+PUB_FIELDS = format_sql_fields(
+    PUB_FIELD_MAP, query_table="publication", resp_prefix="publication"
+)
 
 
-def by_id(cursor: Cursor, geneset_id: int) -> Optional[rows.Row]:
+def by_id(
+    cursor: Cursor, geneset_id: int, with_publication_info: bool = False
+) -> Optional[rows.Row]:
     """Get geneset info by geneset id.
 
     :param cursor: The database cursor.
     :param geneset_id: The geneset id to search for.
+    :param with_publication_info: Whether to include publication info.
 
     :return: optional row using `.fetchone()`
     """
-    cursor.execute(
-        """SELECT * FROM production.geneset WHERE gs_id = %(geneset_id)s;""",
-        {"geneset_id": geneset_id},
-    )
+    query = SQL("SELECT")
+    if with_publication_info:
+        query = (
+            query
+            + SQL(",").join(GENESET_FIELDS + PUB_FIELDS)
+            + SQL("FROM geneset JOIN publication")
+            + SQL("ON geneset.pub_id = publication.pub_id")
+        )
+    else:
+        query = query + SQL(",").join(GENESET_FIELDS) + SQL("FROM geneset")
+
+    query = (query + SQL("WHERE gs_id = %(geneset_id)s")).join(" ")
+    cursor.execute(query, {"geneset_id": geneset_id})
     return cursor.fetchone()
 
 
@@ -28,10 +68,12 @@ def by_user_id(cursor: Cursor, user_id: int) -> List:
 
     :return: list of results using `.fetchall()`
     """
-    cursor.execute(
-        """SELECT * FROM production.geneset WHERE usr_id = %(user_id)s;""",
-        {"user_id": user_id},
-    )
+    query = (
+        SQL("SELECT")
+        + SQL(",").join(GENESET_FIELDS)
+        + SQL("FROM geneset WHERE usr_id = %(user_id)s")
+    ).join(" ")
+    cursor.execute(query, {"user_id": user_id})
     return cursor.fetchall()
 
 
@@ -206,35 +248,3 @@ def num_genes(cursor: Cursor, geneset_id: int) -> int:
         {"geneset_id": geneset_id},
     )
     return cursor.fetchone()[0]
-
-
-# TODO: Finish implementing the following create geneset function.
-# @temp_override_row_factory(rows.tuple_row)
-# def create_geneset(cursor: Cursor, user_id: int, geneset: GenesetUpload) -> int:
-#     """Create a geneset.
-#
-#     :param cursor: The database cursor.
-#     :param geneset: The geneset to create.
-#     :return: The geneset ID.
-#     """
-#     cursor.execute(
-#         """
-#         SELECT production.create_geneset2(
-#             %(user_id)s,
-#             %(curation_id)s,
-#             %(species_id)s,
-#             %(threshold_type)s,
-#             %(threshold)s,
-#             %(groups)s,
-#             %(status)s,
-#             %(count)s,
-#             %(uri)s,
-#             %(gene_id_type)s,
-#             %(name)s,
-#             %(abbreviation)s,
-#             %(description)s,
-#             %(attribution)s,
-#             %(file_contents)s
-#         );
-#         """,
-#         },
