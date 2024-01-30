@@ -1,10 +1,11 @@
 """Geneset database functions."""
 from typing import List, Optional
 
+from geneweaver.db.ontology import ONTOLOGY_FIELDS_MAP
 from geneweaver.db.publication import PUB_FIELD_MAP
 from geneweaver.db.utils import format_sql_fields, temp_override_row_factory
 from psycopg import Cursor, rows
-from psycopg.sql import SQL
+from psycopg.sql import SQL, Composed
 
 GENESET_FIELDS_MAP = {
     "gs_id": "id",
@@ -31,6 +32,29 @@ GENESET_FIELDS = format_sql_fields(GENESET_FIELDS_MAP, query_table="geneset")
 PUB_FIELDS = format_sql_fields(
     PUB_FIELD_MAP, query_table="publication", resp_prefix="publication"
 )
+ONTOLOGY_FIELDS = format_sql_fields(
+    ONTOLOGY_FIELDS_MAP, query_table="ontology", resp_prefix="ontology"
+)
+
+
+def _format_geneset_query(with_publication_info: bool = False) -> Composed:
+    """Format the geneset query.
+
+    :param with_publication_info: Whether to include publication info.
+
+    :return: The formatted query.
+    """
+    query = SQL("SELECT")
+    if with_publication_info:
+        query = (
+            query
+            + SQL(",").join(GENESET_FIELDS + PUB_FIELDS)
+            + SQL("FROM geneset LEFT OUTER JOIN publication")
+            + SQL("ON geneset.pub_id = publication.pub_id")
+        )
+    else:
+        query = query + SQL(",").join(GENESET_FIELDS) + SQL("FROM geneset")
+    return query
 
 
 def by_id(
@@ -44,35 +68,25 @@ def by_id(
 
     :return: optional row using `.fetchone()`
     """
-    query = SQL("SELECT")
-    if with_publication_info:
-        query = (
-            query
-            + SQL(",").join(GENESET_FIELDS + PUB_FIELDS)
-            + SQL("FROM geneset JOIN publication")
-            + SQL("ON geneset.pub_id = publication.pub_id")
-        )
-    else:
-        query = query + SQL(",").join(GENESET_FIELDS) + SQL("FROM geneset")
-
+    query = _format_geneset_query(with_publication_info=with_publication_info)
     query = (query + SQL("WHERE gs_id = %(geneset_id)s")).join(" ")
     cursor.execute(query, {"geneset_id": geneset_id})
     return cursor.fetchone()
 
 
-def by_user_id(cursor: Cursor, user_id: int) -> List:
+def by_user_id(
+    cursor: Cursor, user_id: int, with_publication_info: bool = False
+) -> List[rows.Row]:
     """Get geneset info by user id.
 
     :param cursor: The database cursor.
     :param user_id: The user id (internal) to search for.
+    :param with_publication_info: Whether to include publication info.
 
     :return: list of results using `.fetchall()`
     """
-    query = (
-        SQL("SELECT")
-        + SQL(",").join(GENESET_FIELDS)
-        + SQL("FROM geneset WHERE usr_id = %(user_id)s")
-    ).join(" ")
+    query = _format_geneset_query(with_publication_info=with_publication_info)
+    query = (query + SQL("WHERE usr_id = %(user_id)s")).join(" ")
     cursor.execute(query, {"user_id": user_id})
     return cursor.fetchall()
 
