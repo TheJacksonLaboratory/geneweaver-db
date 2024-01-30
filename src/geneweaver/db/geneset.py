@@ -1,7 +1,6 @@
 """Geneset database functions."""
 from typing import List, Optional
 
-from geneweaver.db.ontology import ONTOLOGY_FIELDS_MAP
 from geneweaver.db.publication import PUB_FIELD_MAP
 from geneweaver.db.utils import format_sql_fields, temp_override_row_factory
 from psycopg import Cursor, rows
@@ -31,9 +30,6 @@ GENESET_FIELDS_MAP = {
 GENESET_FIELDS = format_sql_fields(GENESET_FIELDS_MAP, query_table="geneset")
 PUB_FIELDS = format_sql_fields(
     PUB_FIELD_MAP, query_table="publication", resp_prefix="publication"
-)
-ONTOLOGY_FIELDS = format_sql_fields(
-    ONTOLOGY_FIELDS_MAP, query_table="ontology", resp_prefix="ontology"
 )
 
 
