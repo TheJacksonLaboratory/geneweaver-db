@@ -25,7 +25,7 @@ def test_no_optional_args(cursor, source_identifier):
             "mock query",
             {
                 "source_ids": ["1", "2"],
-                "result_genedb_id": source_identifier.value,
+                "result_genedb_id": int(source_identifier),
                 "ode_pref": "t",
             },
         )
@@ -53,8 +53,8 @@ def test_with_source_identifier(cursor, result_identifier, source_identifier):
             "mock query" * 2,
             {
                 "source_ids": ["1", "2"],
-                "result_genedb_id": result_identifier.value,
-                "source_genedb_id": source_identifier.value,
+                "result_genedb_id": int(result_identifier),
+                "source_genedb_id": int(source_identifier),
                 "ode_pref": "t",
             },
         )
@@ -82,8 +82,8 @@ def test_with_result_species(cursor, result_identifier, result_species):
             "mock query" * 2,
             {
                 "source_ids": ["1", "2"],
-                "result_genedb_id": result_identifier.value,
-                "result_sp_id": result_species.value,
+                "result_genedb_id": int(result_identifier),
+                "result_sp_id": int(result_species),
                 "ode_pref": "t",
             },
         )
@@ -107,8 +107,8 @@ def test_with_source_species(cursor, result_identifier, source_species):
             "mock query" * 2,
             {
                 "source_ids": ["1", "2"],
-                "result_genedb_id": result_identifier.value,
-                "source_sp_id": source_species.value,
+                "result_genedb_id": int(result_identifier),
+                "source_sp_id": int(source_species),
                 "ode_pref": "t",
             },
         )
@@ -135,10 +135,10 @@ def test_with_all_args(cursor, source_identifier, result_species, source_species
             "mock query" * 4,
             {
                 "source_ids": ["1", "2"],
-                "result_genedb_id": GeneIdentifier.ENSEMBLE_GENE.value,
-                "source_genedb_id": source_identifier.value,
-                "result_sp_id": result_species.value,
-                "source_sp_id": source_species.value,
+                "result_genedb_id": int(GeneIdentifier.ENSEMBLE_GENE),
+                "source_genedb_id": int(source_identifier),
+                "result_sp_id": int(result_species),
+                "source_sp_id": int(source_species),
                 "ode_pref": "t",
             },
         )
