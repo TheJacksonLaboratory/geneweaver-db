@@ -6,22 +6,22 @@ from psycopg import Cursor
 from psycopg.sql import SQL
 
 
-def id_types(cursor: Cursor, species_id: Optional[int] = None) -> List:
+def id_types(cursor: Cursor, species: Optional[Species] = None) -> List:
     """Get all the Gene ID types from the database.
 
     :param cursor: The database cursor.
-    :param species_id: Limit to additional species other than mouse
+    :param species: Limit to additional species other than mouse
 
     :return: list of results using `.fetchall()`
     """
-    if species_id is None:
+    if species is None:
         cursor.execute("""SELECT * FROM odestatic.genedb ORDER BY gdb_id;""")
     else:
         cursor.execute(
             """SELECT * FROM odestatic.genedb
             WHERE sp_id=0 OR sp_id=%(sp_id)s
             ORDER BY gdb_id;""",
-            {"sp_id": species_id},
+            {"sp_id": int(species)},
         )
 
     return cursor.fetchall()
@@ -45,7 +45,7 @@ def info_by_gene_id(cursor: Cursor, gene_id: int) -> List:
     return cursor.fetchall()
 
 
-def gene_database_by_id(cursor: Cursor, genedb_id: int) -> List:
+def gene_database_by_id(cursor: Cursor, genedb_id: GeneIdentifier) -> List:
     """Get all gene database info by gene database id.
 
     :param cursor: The database cursor.
@@ -55,7 +55,7 @@ def gene_database_by_id(cursor: Cursor, genedb_id: int) -> List:
     """
     cursor.execute(
         """SELECT * FROM odestatic.genedb WHERE gdb_id = %(gdb_id)s;""",
-        {"gdb_id": genedb_id},
+        {"gdb_id": int(genedb_id)},
     )
     return cursor.fetchall()
 
@@ -69,8 +69,8 @@ def gene_database_id(cursor: Cursor, identifier: GeneIdentifier) -> List:
     :return: list of results using `.fetchall()`
     """
     cursor.execute(
-        """SELECT gdb_id FROM odestatic.genedb WHERE gdb_shortname = %(gdb_name)s;""",
-        {"gdb_name": identifier.name.lower},
+        """SELECT gdb_id FROM odestatic.genedb WHERE gdb_name = %(gdb_name)s;""",
+        {"gdb_name": str(identifier)},
     )
     return cursor.fetchall()
 
@@ -142,7 +142,7 @@ def get_homolog_ids_by_ode_id(
         WHERE               h.ode_gene_id = ANY(%(ode_gene_ids)s) AND
                             g.gdb_id = %(genedb_id)s;
         """,
-        {"ode_gene_ids": list(ode_gene_ids), "genedb_id": identifier.value},
+        {"ode_gene_ids": list(ode_gene_ids), "genedb_id": int(identifier)},
     )
     return cursor.fetchall()
 
@@ -188,21 +188,21 @@ def get_homolog_ids(
 
     params = {
         "source_ids": list(source_ids),
-        "result_genedb_id": result_identifier.value,
+        "result_genedb_id": int(result_identifier),
         "ode_pref": "f" if only_preferred_ids is False else "t",
     }
 
     if source_identifier is not None:
         base_query += SQL("AND source_gene.gdb_id = %(source_genedb_id)s")
-        params["source_genedb_id"] = source_identifier.value
+        params["source_genedb_id"] = int(source_identifier)
 
     if result_species is not None:
         base_query += SQL("AND result_gene.sp_id = %(result_sp_id)s")
-        params["result_sp_id"] = result_species.value
+        params["result_sp_id"] = int(result_species)
 
     if source_species is not None:
         base_query += SQL("AND source_gene.sp_id = %(source_sp_id)s")
-        params["source_sp_id"] = source_species.value
+        params["source_sp_id"] = int(source_species)
 
     cursor.execute(base_query, params)
     return cursor.fetchall()

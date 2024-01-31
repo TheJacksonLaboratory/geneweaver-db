@@ -232,6 +232,6 @@ def by_geneset_id_and_identifier(
                   -- In case the gene doesn't have any homologs
                   h.hom_source_name IS NULL
         """,
-        {"geneset_id": geneset_id, "gdb_id": identifier.value},
+        {"geneset_id": geneset_id, "gdb_id": int(identifier)},
     )
     return cursor.fetchall()
