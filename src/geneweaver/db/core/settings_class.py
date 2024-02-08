@@ -19,6 +19,8 @@ class Settings(BaseSettings):
 
     DEBUG_MODE = False
 
+    CONNECTION_SCHEME: str = "postgresql"
+
     SERVER: str
     USERNAME: str
     PASSWORD: str = ""
@@ -40,7 +42,7 @@ class Settings(BaseSettings):
             return v
         return str(
             PostgresDsn.build(
-                scheme="postgresql",
+                scheme=values.get("CONNECTION_SCHEME"),
                 user=values.get("USERNAME"),
                 password=values.get("PASSWORD"),
                 host=values.get("SERVER"),
