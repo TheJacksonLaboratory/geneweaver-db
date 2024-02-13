@@ -20,25 +20,36 @@ GENE_FIELDS = format_sql_fields(GENE_FIELDS_MAP, query_table="gene")
 
 def get_genes(
     cursor: Cursor,
-    ref_id: Optional[str] = None,
-    gene_db: Optional[GeneIdentifier] = None,
+    reference_id: Optional[str] = None,
+    gene_database: Optional[GeneIdentifier] = None,
     species: Optional[Species] = None,
     preferred: Optional[bool] = None,
     limit: Optional[int] = None,
     offset: Optional[int] = None,
 ) -> List:
+    """ Get genes from the database.
+
+    :param cursor: The database cursor.
+    :param reference_id: The reference id to search for.
+    :param gene_database: The gene database to search for.
+    :param species: The species to search for.
+    :param preferred: Whether to search for preferred genes.
+    :param limit: The limit of results to return.
+    :param offset: The offset of results to return.
+    :return: list of results using `.fetchall()`
+    """
     params = {}
     query = SQL("SELECT") + SQL(",").join(GENE_FIELDS) + SQL("FROM gene")
 
     filtering = []
 
-    if ref_id:
+    if reference_id:
         filtering.append(SQL("ode_ref_id = %(ref_id)s"))
-        params["ref_id"] = ref_id
+        params["ref_id"] = reference_id
 
-    if gene_db:
+    if gene_database:
         filtering.append(SQL("gdb_id = %(gene_db_id)s"))
-        params["gene_db_id"] = int(gene_db)
+        params["gene_db_id"] = int(gene_database)
 
     if species:
         filtering.append(SQL("sp_id = %(species_id)s"))
@@ -64,6 +75,14 @@ def get_preferred_gene(
     limit: Optional[int] = None,
     offset: Optional[int] = None,
 ) -> Optional[rows.Row]:
+    """ Get the preferred gene from the database for a given ode_id.
+
+    :param cursor: The database cursor.
+    :param gene_id: The id of the gene to get.
+    :param limit: The limit of results to return.
+    :param offset: The offset of results to return.
+    :return:
+    """
     query = (
         SQL("SELECT")
         + SQL(",").join(GENE_FIELDS)
