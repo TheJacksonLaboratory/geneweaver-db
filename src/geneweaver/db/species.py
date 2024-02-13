@@ -1,7 +1,8 @@
 """Species database functions."""
-from typing import Optional, List
-from geneweaver.core.enum import Species, GeneIdentifier
-from geneweaver.db.utils import format_sql_fields, temp_override_row_factory
+from typing import List, Optional
+
+from geneweaver.core.enum import GeneIdentifier, Species
+from geneweaver.db.utils import format_sql_fields
 from psycopg import Cursor, rows
 from psycopg.sql import SQL
 
@@ -22,11 +23,7 @@ def get(
     reference_gene_db_id: Optional[GeneIdentifier] = None,
     species: Optional[Species] = None,
 ) -> List:
-    query = (
-        SQL("SELECT")
-        + SQL(",").join(SPECIES_FIELDS)
-        + SQL("FROM species")
-    )
+    query = SQL("SELECT") + SQL(",").join(SPECIES_FIELDS) + SQL("FROM species")
 
     if species:
         query += SQL("WHERE sp_id = %(species_id)s")
@@ -45,8 +42,8 @@ def get(
 
 
 def get_by_id(
-        cursor: Cursor,
-        species: Species,
+    cursor: Cursor,
+    species: Species,
 ) -> Optional[rows.Row]:
     query = (
         SQL("SELECT")

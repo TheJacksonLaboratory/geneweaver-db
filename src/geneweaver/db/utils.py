@@ -93,7 +93,6 @@ def limit_and_offset(
     offset: Optional[int] = None,
 ) -> sql.Composed:
     """Format SQL limit and offset clauses."""
-
     if limit is not None:
         query = query + sql.SQL("LIMIT {limit}").format(limit=limit)
     if offset is not None:
