@@ -27,7 +27,7 @@ def get_genes(
     limit: Optional[int] = None,
     offset: Optional[int] = None,
 ) -> List:
-    """ Get genes from the database.
+    """Get genes from the database.
 
     :param cursor: The database cursor.
     :param reference_id: The reference id to search for.
@@ -36,6 +36,7 @@ def get_genes(
     :param preferred: Whether to search for preferred genes.
     :param limit: The limit of results to return.
     :param offset: The offset of results to return.
+
     :return: list of results using `.fetchall()`
     """
     params = {}
@@ -75,13 +76,14 @@ def get_preferred_gene(
     limit: Optional[int] = None,
     offset: Optional[int] = None,
 ) -> Optional[rows.Row]:
-    """ Get the preferred gene from the database for a given ode_id.
+    """Get the preferred gene from the database for a given ode_id.
 
     :param cursor: The database cursor.
     :param gene_id: The id of the gene to get.
     :param limit: The limit of results to return.
     :param offset: The offset of results to return.
-    :return:
+
+    :return: The preferred gene using `.fetchone()`
     """
     query = (
         SQL("SELECT")
