@@ -2,7 +2,7 @@
 from typing import List, Optional
 
 from geneweaver.core.enum import GeneIdentifier, Species
-from geneweaver.db.query.species import get
+from geneweaver.db.query.species as species_query
 from psycopg import Cursor, rows
 
 
@@ -22,7 +22,7 @@ def get(
     :return: All species that match the queries.
     """
     cursor.execute(
-        *get(
+        *species_query.get(
             taxonomic_id=taxonomic_id,
             reference_gene_db_id=reference_gene_db_id,
             species=species,
@@ -42,6 +42,6 @@ def get_by_id(
     :param species: The species enum to query info for.
     :return: The species info for the provided enum.
     """
-    cursor.execute(*get(species=species))
+    cursor.execute(*species_query.get(species=species))
 
     return cursor.fetchone()
