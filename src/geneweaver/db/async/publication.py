@@ -17,7 +17,9 @@ async def by_pubmed_id(cursor: AsyncCursor, pubmed_id: str) -> Optional[rows.Row
     return await cursor.fetchone()
 
 
-async def by_pubmed_ids(cursor: AsyncCursor, pubmed_ids: Iterable[str]) -> List[rows.Row]:
+async def by_pubmed_ids(
+    cursor: AsyncCursor, pubmed_ids: Iterable[str]
+) -> List[rows.Row]:
     """Get publications by a list of PubMed IDs.
 
     :param cursor: The database cursor.

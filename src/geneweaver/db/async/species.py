@@ -42,7 +42,6 @@ async def get_by_id(
     :param species: The species enum to query info for.
     :return: The species info for the provided enum.
     """
-
     await cursor.execute(*species_query.get(species=species))
 
     return await cursor.fetchone()

@@ -1,8 +1,8 @@
 """Generate SQL queries for publications."""
-from typing import Iterable, Tuple, Optional
+from typing import Iterable, Optional, Tuple
 
 from geneweaver.db.utils import format_sql_fields
-from psycopg import Cursor, rows
+from psycopg import rows
 from psycopg.sql import SQL, Composed
 
 PUB_FIELD_MAP = {

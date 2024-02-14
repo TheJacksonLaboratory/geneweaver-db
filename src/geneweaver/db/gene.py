@@ -28,14 +28,16 @@ def get(
 
     :return: list of results using `.fetchall()`
     """
-    cursor.execute(*gene_query.get(
-        reference_id=reference_id,
-        gene_database=gene_database,
-        species=species,
-        preferred=preferred,
-        limit=limit,
-        offset=offset,
-    ))
+    cursor.execute(
+        *gene_query.get(
+            reference_id=reference_id,
+            gene_database=gene_database,
+            species=species,
+            preferred=preferred,
+            limit=limit,
+            offset=offset,
+        )
+    )
 
     return cursor.fetchall()
 
@@ -55,12 +57,14 @@ def get_preferred(
 
     :return: The preferred gene using `.fetchone()`
     """
-    cursor.execute(*gene_query.get(
-        gene_id=gene_id,
-        preferred=True,
-        limit=limit,
-        offset=offset,
-    ))
+    cursor.execute(
+        *gene_query.get(
+            gene_id=gene_id,
+            preferred=True,
+            limit=limit,
+            offset=offset,
+        )
+    )
 
     return cursor.fetchone()
 

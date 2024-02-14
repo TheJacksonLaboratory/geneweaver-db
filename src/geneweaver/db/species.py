@@ -42,7 +42,6 @@ def get_by_id(
     :param species: The species enum to query info for.
     :return: The species info for the provided enum.
     """
-
     cursor.execute(*get(species=species))
 
     return cursor.fetchone()

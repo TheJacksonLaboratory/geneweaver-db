@@ -27,15 +27,16 @@ async def get(
 
     :return: list of results using `.fetchall()`
     """
-
-    await cursor.execute(*gene_query.get(
-        reference_id=reference_id,
-        gene_database=gene_database,
-        species=species,
-        preferred=preferred,
-        limit=limit,
-        offset=offset,
-    ))
+    await cursor.execute(
+        *gene_query.get(
+            reference_id=reference_id,
+            gene_database=gene_database,
+            species=species,
+            preferred=preferred,
+            limit=limit,
+            offset=offset,
+        )
+    )
 
     return await cursor.fetchall()
 
@@ -55,12 +56,13 @@ async def get_preferred(
 
     :return: The preferred gene using `.fetchone()`
     """
-
-    await cursor.execute(*gene_query.get(
-        gene_id=gene_id,
-        preferred=True,
-        limit=limit,
-        offset=offset,
-    ))
+    await cursor.execute(
+        *gene_query.get(
+            gene_id=gene_id,
+            preferred=True,
+            limit=limit,
+            offset=offset,
+        )
+    )
 
     return await cursor.fetchone()
