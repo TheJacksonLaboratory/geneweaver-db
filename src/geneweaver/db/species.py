@@ -2,7 +2,7 @@
 from typing import List, Optional
 
 from geneweaver.core.enum import GeneIdentifier, Species
-from geneweaver.db.query.species as species_query
+from geneweaver.db.query import species as species_query
 from psycopg import Cursor, rows
 
 
