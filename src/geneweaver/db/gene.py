@@ -2,8 +2,102 @@
 from typing import Iterable, List, Optional
 
 from geneweaver.core.enum import GeneIdentifier, Species
-from psycopg import Cursor
+from geneweaver.db.utils import format_sql_fields, limit_and_offset
+from psycopg import Cursor, rows
 from psycopg.sql import SQL
+
+GENE_FIELDS_MAP = {
+    "ode_gene_id": "id",
+    "ode_ref_id": "reference_id",
+    "gdb_id": "gene_database",
+    "sp_id": "species",
+    "ode_pref": "preferred",
+    "ode_date": "date",
+}
+
+GENE_FIELDS = format_sql_fields(GENE_FIELDS_MAP, query_table="gene")
+
+
+def get_genes(
+    cursor: Cursor,
+    reference_id: Optional[str] = None,
+    gene_database: Optional[GeneIdentifier] = None,
+    species: Optional[Species] = None,
+    preferred: Optional[bool] = None,
+    limit: Optional[int] = None,
+    offset: Optional[int] = None,
+) -> List:
+    """Get genes from the database.
+
+    :param cursor: The database cursor.
+    :param reference_id: The reference id to search for.
+    :param gene_database: The gene database to search for.
+    :param species: The species to search for.
+    :param preferred: Whether to search for preferred genes.
+    :param limit: The limit of results to return.
+    :param offset: The offset of results to return.
+
+    :return: list of results using `.fetchall()`
+    """
+    params = {}
+    query = SQL("SELECT") + SQL(",").join(GENE_FIELDS) + SQL("FROM gene")
+
+    filtering = []
+
+    if reference_id:
+        filtering.append(SQL("ode_ref_id = %(ref_id)s"))
+        params["ref_id"] = reference_id
+
+    if gene_database:
+        filtering.append(SQL("gdb_id = %(gene_db_id)s"))
+        params["gene_db_id"] = int(gene_database)
+
+    if species:
+        filtering.append(SQL("sp_id = %(species_id)s"))
+        params["species_id"] = int(species)
+
+    if preferred is not None:
+        filtering.append(SQL("ode_pref = %(preferred)s"))
+        params["preferred"] = preferred
+
+    if len(filtering) > 0:
+        query += SQL("WHERE") + SQL(" AND ").join(filtering)
+
+    query = limit_and_offset(query, limit, offset).join(" ")
+
+    cursor.execute(query)
+
+    return cursor.fetchall()
+
+
+def get_preferred_gene(
+    cursor: Cursor,
+    gene_id: int,
+    limit: Optional[int] = None,
+    offset: Optional[int] = None,
+) -> Optional[rows.Row]:
+    """Get the preferred gene from the database for a given ode_id.
+
+    :param cursor: The database cursor.
+    :param gene_id: The id of the gene to get.
+    :param limit: The limit of results to return.
+    :param offset: The offset of results to return.
+
+    :return: The preferred gene using `.fetchone()`
+    """
+    query = (
+        SQL("SELECT")
+        + SQL(",").join(GENE_FIELDS)
+        + SQL("FROM gene")
+        + SQL("WHERE ode_gene_id = %(gene_id)s")
+        + SQL("AND ode_pref = TRUE")
+    )
+
+    query = limit_and_offset(query, limit, offset).join(" ")
+
+    cursor.execute(query, {"gene_id": gene_id})
+
+    return cursor.fetchone()
 
 
 def id_types(cursor: Cursor, species: Optional[Species] = None) -> List:

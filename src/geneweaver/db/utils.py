@@ -85,3 +85,17 @@ def format_sql_fields(
         )
         for source, mapping in fields_map.items()
     ]
+
+
+def limit_and_offset(
+    query: sql.Composed,
+    limit: Optional[int] = None,
+    offset: Optional[int] = None,
+) -> sql.Composed:
+    """Format SQL limit and offset clauses."""
+    if limit is not None:
+        query = query + sql.SQL("LIMIT {limit}").format(limit=limit)
+    if offset is not None:
+        query = query + sql.SQL("OFFSET {offset}").format(offset=offset)
+
+    return query
