@@ -1,7 +1,7 @@
 """Geneset database functions."""
 from typing import List, Optional
 
-from geneweaver.db.publication import PUB_FIELD_MAP
+from geneweaver.db.query.publication import PUB_FIELD_MAP
 from geneweaver.db.utils import format_sql_fields, temp_override_row_factory
 from psycopg import Cursor, rows
 from psycopg.sql import SQL, Composed
