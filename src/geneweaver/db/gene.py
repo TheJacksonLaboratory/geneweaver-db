@@ -65,7 +65,7 @@ def get_genes(
 
     query = limit_and_offset(query, limit, offset).join(" ")
 
-    cursor.execute(query)
+    cursor.execute(query, params)
 
     return cursor.fetchall()
 
