@@ -2,10 +2,10 @@
 from typing import Iterable, List, Optional
 
 from geneweaver.db.query import publication as publication_query
-from psycopg import Cursor, rows
+from psycopg import AsyncCursor, rows
 
 
-def by_pubmed_id(cursor: Cursor, pubmed_id: str) -> Optional[rows.Row]:
+async def by_pubmed_id(cursor: AsyncCursor, pubmed_id: str) -> Optional[rows.Row]:
     """Get a publication by PubMed ID.
 
     :param cursor: The database cursor.
@@ -13,11 +13,11 @@ def by_pubmed_id(cursor: Cursor, pubmed_id: str) -> Optional[rows.Row]:
 
     :return: optional row using `.fetchone()`
     """
-    cursor.execute(*publication_query.by_pubmed_id(pubmed_id))
-    return cursor.fetchone()
+    await cursor.execute(*publication_query.by_pubmed_id(pubmed_id))
+    return await cursor.fetchone()
 
 
-def by_pubmed_ids(cursor: Cursor, pubmed_ids: Iterable[str]) -> List[rows.Row]:
+async def by_pubmed_ids(cursor: AsyncCursor, pubmed_ids: Iterable[str]) -> List[rows.Row]:
     """Get publications by a list of PubMed IDs.
 
     :param cursor: The database cursor.
@@ -25,11 +25,11 @@ def by_pubmed_ids(cursor: Cursor, pubmed_ids: Iterable[str]) -> List[rows.Row]:
 
     :return: list of results using `.fetchall()`
     """
-    cursor.execute(*publication_query.by_pubmed_ids(pubmed_ids))
-    return cursor.fetchall()
+    await cursor.execute(*publication_query.by_pubmed_ids(pubmed_ids))
+    return await cursor.fetchall()
 
 
-def by_id(cursor: Cursor, pub_id: int) -> Optional[rows.Row]:
+async def by_id(cursor: AsyncCursor, pub_id: int) -> Optional[rows.Row]:
     """Get a publication by ID.
 
     :param cursor: The database cursor.
@@ -37,11 +37,11 @@ def by_id(cursor: Cursor, pub_id: int) -> Optional[rows.Row]:
 
     :return: optional row using `.fetchone()`
     """
-    cursor.execute(*publication_query.by_id(pub_id))
-    return cursor.fetchone()
+    await cursor.execute(*publication_query.by_id(pub_id))
+    return await cursor.fetchone()
 
 
-def by_geneset_id(cursor: Cursor, geneset_id: int) -> Optional[rows.Row]:
+async def by_geneset_id(cursor: AsyncCursor, geneset_id: int) -> Optional[rows.Row]:
     """Get a publication by geneset ID.
 
     :param cursor: The database cursor.
@@ -49,5 +49,5 @@ def by_geneset_id(cursor: Cursor, geneset_id: int) -> Optional[rows.Row]:
 
     :return: optional row using `.fetchone()`
     """
-    cursor.execute(*publication_query.by_geneset_id(geneset_id))
-    return cursor.fetchone()
+    await cursor.execute(*publication_query.by_geneset_id(geneset_id))
+    return await cursor.fetchone()
