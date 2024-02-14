@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "geneweaver-db"
-version = "0.3.0a4"
+version = "0.3.0a5"
 description = "Database Interaction Services for GeneWeaver"
 authors = ["Jax Computational Sciences <cssc@jax.org>"]
 readme = "README.md"
