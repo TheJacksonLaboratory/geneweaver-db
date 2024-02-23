@@ -1,7 +1,8 @@
 """Generate SQL queries to get Gene information."""
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 
 from geneweaver.core.enum import GeneIdentifier, Species
+from geneweaver.core.mapping import AON_ID_TYPE_FOR_SPECIES
 from geneweaver.db.utils import format_sql_fields, limit_and_offset
 from psycopg.sql import SQL, Composed
 
@@ -69,3 +70,28 @@ def get(
     query = limit_and_offset(query, limit, offset).join(" ")
 
     return query, params
+
+
+def mapping(
+    source_ids: List[str],
+    target_gene_id_type: GeneIdentifier,
+):
+    params = {}
+    query = (
+        SQL("SELECT g1.ode_ref_id, g2.ode_ref_id") +
+        SQL("FROM gene g1 JOIN gene g2") +
+        SQL("ON g1.ode_gene_id = g2.ode_gene_id AND g1.ode_ref_id != g2.ode_ref_id") +
+        SQL("WHERE g1.ode_ref_id = ANY(%(source_ids)s)") +
+        SQL("AND g2.gdb_id = %(target_gene_id_type)s")
+    ).join(" ")
+    params["source_ids"] = source_ids
+    params["target_gene_id_type"] = int(target_gene_id_type)
+    return query, params
+
+
+def aon_mapping(
+        source_ids: List[str],
+        source_species: Species,
+):
+    target_gene_id_type = AON_ID_TYPE_FOR_SPECIES[source_species]
+    return mapping(source_ids, target_gene_id_type)

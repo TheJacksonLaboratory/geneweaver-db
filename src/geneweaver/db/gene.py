@@ -69,6 +69,57 @@ def get_preferred(
     return cursor.fetchone()
 
 
+def mapping(
+    cursor: Cursor,
+    source_ids: List[str],
+    target_gene_id_type:GeneIdentifier
+) -> List:
+    """Get gene mappings from the database.
+
+    :param cursor: An async database cursor.
+    :param source_ids: The list of gene ids to get mappings for.
+    :param target_gene_id_type: The gene id type to return.
+
+    :return: list of results using `.fetchall()`
+    """
+    cursor.execute(
+        *gene_query.mapping(
+            source_ids=source_ids,
+            target_gene_id_type=target_gene_id_type,
+        )
+    )
+
+    return cursor.fetchall()
+
+
+def aon_mapping(
+    cursor: Cursor,
+    source_ids: List[str],
+    source_species: Species,
+) -> List:
+    """Get gene mappings in the default identifier type for that species in AON.
+
+    :param cursor: An async database cursor.
+    :param source_ids: The list of gene ids to get mappings for.
+    :param source_species: The species of the identifiers.
+
+    :return: list of results using `.fetchall()`
+    """
+    cursor.execute(
+        *gene_query.aon_mapping(
+            source_ids=source_ids,
+            source_species=source_species,
+        )
+    )
+
+    return cursor.fetchall()
+
+
+# --------------------------------------------------------------------------------------
+# NOTE: The following functions are not yet migrated to the new query/execute pattern.
+# --------------------------------------------------------------------------------------
+
+
 def id_types(cursor: Cursor, species: Optional[Species] = None) -> List:
     """Get all the Gene ID types from the database.
 
