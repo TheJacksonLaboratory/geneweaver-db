@@ -69,9 +69,7 @@ async def get_preferred(
 
 
 async def mapping(
-    cursor: AsyncCursor,
-    source_ids: List[str],
-    target_gene_id_type:GeneIdentifier
+    cursor: AsyncCursor, source_ids: List[str], target_gene_id_type: GeneIdentifier
 ) -> List:
     """Get gene mappings from the database.
 

@@ -70,9 +70,7 @@ def get_preferred(
 
 
 def mapping(
-    cursor: Cursor,
-    source_ids: List[str],
-    target_gene_id_type:GeneIdentifier
+    cursor: Cursor, source_ids: List[str], target_gene_id_type: GeneIdentifier
 ) -> List:
     """Get gene mappings from the database.
 

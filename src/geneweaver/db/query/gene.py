@@ -1,5 +1,5 @@
 """Generate SQL queries to get Gene information."""
-from typing import Optional, Tuple, List
+from typing import List, Optional, Tuple
 
 from geneweaver.core.enum import GeneIdentifier, Species
 from geneweaver.core.mapping import AON_ID_TYPE_FOR_SPECIES
@@ -75,14 +75,22 @@ def get(
 def mapping(
     source_ids: List[str],
     target_gene_id_type: GeneIdentifier,
-):
+) -> Tuple[Composed, dict]:
+    """Create a query to get a list of gene IDs in an alternate identifier type.
+
+    :param source_ids: The list of gene IDs to map.
+    :param target_gene_id_type: The gene identifier type to map to.
+    :return: A query (and params) that can be executed on a cursor.
+    """
     params = {}
     query = (
-        SQL("SELECT g1.ode_ref_id, g2.ode_ref_id") +
-        SQL("FROM gene g1 JOIN gene g2") +
-        SQL("ON g1.ode_gene_id = g2.ode_gene_id AND g1.ode_ref_id != g2.ode_ref_id") +
-        SQL("WHERE g1.ode_ref_id = ANY(%(source_ids)s)") +
-        SQL("AND g2.gdb_id = %(target_gene_id_type)s")
+        SQL("SELECT g1.ode_ref_id, g2.ode_ref_id")
+        + SQL("FROM gene g1 JOIN gene g2")
+        + SQL("ON g1.ode_gene_id = g2.ode_gene_id")
+        + SQL("AND g1.ode_ref_id != g2.ode_ref_id")
+        + SQL("AND g1.sp_id = g2.sp_id")
+        + SQL("WHERE g1.ode_ref_id = ANY(%(source_ids)s)")
+        + SQL("AND g2.gdb_id = %(target_gene_id_type)s")
     ).join(" ")
     params["source_ids"] = source_ids
     params["target_gene_id_type"] = int(target_gene_id_type)
@@ -90,8 +98,14 @@ def mapping(
 
 
 def aon_mapping(
-        source_ids: List[str],
-        source_species: Species,
-):
+    source_ids: List[str],
+    source_species: Species,
+) -> Tuple[Composed, dict]:
+    """Create a query to get a list of gene IDs the AON preferred identifier type.
+
+    :param source_ids: The list of gene IDs to map.
+    :param source_species: The species to map from.
+    :return: A query (and params) that can be executed on a cursor.
+    """
     target_gene_id_type = AON_ID_TYPE_FOR_SPECIES[source_species]
     return mapping(source_ids, target_gene_id_type)
