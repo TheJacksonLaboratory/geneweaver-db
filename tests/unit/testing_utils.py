@@ -58,3 +58,54 @@ def create_fetchall_raises_error_test(function, *args, **kwargs) -> Callable:
     test_function.__name__ = f"test_{function.__name__}_fetchall_raises_error"
 
     return test_function
+
+
+def async_create_execute_raises_error_test(function, *args, **kwargs) -> Callable:
+    """Return a test function that tests the execute error path."""
+
+    async def test_function(
+        all_psycopg_errors, async_cursor_execute_raises_error
+    ) -> None:
+        with pytest.raises(all_psycopg_errors, match="Error message"):
+            await function(async_cursor_execute_raises_error, *args, **kwargs)
+        assert async_cursor_execute_raises_error.execute.call_count == 1
+        assert async_cursor_execute_raises_error.fetchone.call_count == 0
+        assert async_cursor_execute_raises_error.fetchall.call_count == 0
+
+    test_function.__name__ = f"test_{function.__name__}_execute_raises_error"
+
+    return test_function
+
+
+def async_create_fetchone_raises_error_test(function, *args, **kwargs) -> Callable:
+    """Return a test function that tests the fetchone error path."""
+
+    async def test_function(
+        all_psycopg_errors, async_cursor_fetchone_raises_error
+    ) -> None:
+        with pytest.raises(all_psycopg_errors, match="Error message"):
+            await function(async_cursor_fetchone_raises_error, *args, **kwargs)
+        assert async_cursor_fetchone_raises_error.execute.call_count == 1
+        assert async_cursor_fetchone_raises_error.fetchone.call_count == 1
+        assert async_cursor_fetchone_raises_error.fetchall.call_count == 0
+
+    test_function.__name__ = f"test_{function.__name__}_fetchone_raises_error"
+
+    return test_function
+
+
+def async_create_fetchall_raises_error_test(function, *args, **kwargs) -> Callable:
+    """Return a test function that tests the fetchall error path."""
+
+    async def test_function(
+        all_psycopg_errors, async_cursor_fetchall_raises_error
+    ) -> None:
+        with pytest.raises(all_psycopg_errors, match="Error message"):
+            await function(async_cursor_fetchall_raises_error, *args, **kwargs)
+        assert async_cursor_fetchall_raises_error.execute.call_count == 1
+        assert async_cursor_fetchall_raises_error.fetchone.call_count == 0
+        assert async_cursor_fetchall_raises_error.fetchall.call_count == 1
+
+    test_function.__name__ = f"test_{function.__name__}_fetchall_raises_error"
+
+    return test_function

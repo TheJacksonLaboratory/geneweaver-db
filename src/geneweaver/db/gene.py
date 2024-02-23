@@ -2,23 +2,12 @@
 from typing import Iterable, List, Optional
 
 from geneweaver.core.enum import GeneIdentifier, Species
-from geneweaver.db.utils import format_sql_fields, limit_and_offset
+from geneweaver.db.query import gene as gene_query
 from psycopg import Cursor, rows
 from psycopg.sql import SQL
 
-GENE_FIELDS_MAP = {
-    "ode_gene_id": "id",
-    "ode_ref_id": "reference_id",
-    "gdb_id": "gene_database",
-    "sp_id": "species",
-    "ode_pref": "preferred",
-    "ode_date": "date",
-}
 
-GENE_FIELDS = format_sql_fields(GENE_FIELDS_MAP, query_table="gene")
-
-
-def get_genes(
+def get(
     cursor: Cursor,
     reference_id: Optional[str] = None,
     gene_database: Optional[GeneIdentifier] = None,
@@ -39,38 +28,21 @@ def get_genes(
 
     :return: list of results using `.fetchall()`
     """
-    params = {}
-    query = SQL("SELECT") + SQL(",").join(GENE_FIELDS) + SQL("FROM gene")
-
-    filtering = []
-
-    if reference_id:
-        filtering.append(SQL("ode_ref_id = %(ref_id)s"))
-        params["ref_id"] = reference_id
-
-    if gene_database:
-        filtering.append(SQL("gdb_id = %(gene_db_id)s"))
-        params["gene_db_id"] = int(gene_database)
-
-    if species:
-        filtering.append(SQL("sp_id = %(species_id)s"))
-        params["species_id"] = int(species)
-
-    if preferred is not None:
-        filtering.append(SQL("ode_pref = %(preferred)s"))
-        params["preferred"] = preferred
-
-    if len(filtering) > 0:
-        query += SQL("WHERE") + SQL(" AND ").join(filtering)
-
-    query = limit_and_offset(query, limit, offset).join(" ")
-
-    cursor.execute(query, params)
+    cursor.execute(
+        *gene_query.get(
+            reference_id=reference_id,
+            gene_database=gene_database,
+            species=species,
+            preferred=preferred,
+            limit=limit,
+            offset=offset,
+        )
+    )
 
     return cursor.fetchall()
 
 
-def get_preferred_gene(
+def get_preferred(
     cursor: Cursor,
     gene_id: int,
     limit: Optional[int] = None,
@@ -85,19 +57,65 @@ def get_preferred_gene(
 
     :return: The preferred gene using `.fetchone()`
     """
-    query = (
-        SQL("SELECT")
-        + SQL(",").join(GENE_FIELDS)
-        + SQL("FROM gene")
-        + SQL("WHERE ode_gene_id = %(gene_id)s")
-        + SQL("AND ode_pref = TRUE")
+    cursor.execute(
+        *gene_query.get(
+            gene_id=gene_id,
+            preferred=True,
+            limit=limit,
+            offset=offset,
+        )
     )
 
-    query = limit_and_offset(query, limit, offset).join(" ")
-
-    cursor.execute(query, {"gene_id": gene_id})
-
     return cursor.fetchone()
+
+
+def mapping(
+    cursor: Cursor, source_ids: List[str], target_gene_id_type: GeneIdentifier
+) -> List:
+    """Get gene mappings from the database.
+
+    :param cursor: An async database cursor.
+    :param source_ids: The list of gene ids to get mappings for.
+    :param target_gene_id_type: The gene id type to return.
+
+    :return: list of results using `.fetchall()`
+    """
+    cursor.execute(
+        *gene_query.mapping(
+            source_ids=source_ids,
+            target_gene_id_type=target_gene_id_type,
+        )
+    )
+
+    return cursor.fetchall()
+
+
+def aon_mapping(
+    cursor: Cursor,
+    source_ids: List[str],
+    source_species: Species,
+) -> List:
+    """Get gene mappings in the default identifier type for that species in AON.
+
+    :param cursor: An async database cursor.
+    :param source_ids: The list of gene ids to get mappings for.
+    :param source_species: The species of the identifiers.
+
+    :return: list of results using `.fetchall()`
+    """
+    cursor.execute(
+        *gene_query.aon_mapping(
+            source_ids=source_ids,
+            source_species=source_species,
+        )
+    )
+
+    return cursor.fetchall()
+
+
+# --------------------------------------------------------------------------------------
+# NOTE: The following functions are not yet migrated to the new query/execute pattern.
+# --------------------------------------------------------------------------------------
 
 
 def id_types(cursor: Cursor, species: Optional[Species] = None) -> List:

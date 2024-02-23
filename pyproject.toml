@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "geneweaver-db"
-version = "0.3.0a6"
+version = "0.3.0a7"
 description = "Database Interaction Services for GeneWeaver"
 authors = ["Jax Computational Sciences <cssc@jax.org>"]
 readme = "README.md"
@@ -14,18 +14,22 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.9"
-geneweaver-core = "^0.9.0a0"
+geneweaver-core = "^0.9.0a5"
 psycopg = {extras = ["binary"], version = "^3.1.13"}
 
 
 [tool.poetry.group.dev.dependencies]
 geneweaver-testing = "^0.0.3"
+pytest-asyncio = "^0.23.5"
 
 [tool.ruff]
 select = ['F', 'E', 'W', 'A', 'C90', 'N', 'B', 'ANN', 'D', 'I', 'ERA', 'PD', 'NPY', 'PT']
 
 [tool.ruff.per-file-ignores]
 "tests/*" = ["ANN001", "ANN201"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
 
 [build-system]
 requires = ["poetry-core"]
