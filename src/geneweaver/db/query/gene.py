@@ -74,38 +74,42 @@ def get(
 
 def mapping(
     source_ids: List[str],
+    species: Species,
     target_gene_id_type: GeneIdentifier,
 ) -> Tuple[Composed, dict]:
     """Create a query to get a list of gene IDs in an alternate identifier type.
 
     :param source_ids: The list of gene IDs to map.
     :param target_gene_id_type: The gene identifier type to map to.
+    :param species: The species of the identifiers.
     :return: A query (and params) that can be executed on a cursor.
     """
     params = {}
     query = (
-        SQL("SELECT g1.ode_ref_id, g2.ode_ref_id")
+        SQL("SELECT g1.ode_ref_id AS original_ref_id, g2.ode_ref_id AS mapped_ref_id")
         + SQL("FROM gene g1 JOIN gene g2")
         + SQL("ON g1.ode_gene_id = g2.ode_gene_id")
         + SQL("AND g1.ode_ref_id != g2.ode_ref_id")
         + SQL("AND g1.sp_id = g2.sp_id")
         + SQL("WHERE g1.ode_ref_id = ANY(%(source_ids)s)")
         + SQL("AND g2.gdb_id = %(target_gene_id_type)s")
+        + SQL("AND g2.sp_id = %(species_id)s")
     ).join(" ")
     params["source_ids"] = source_ids
     params["target_gene_id_type"] = int(target_gene_id_type)
+    params["species_id"] = int(species)
     return query, params
 
 
 def aon_mapping(
     source_ids: List[str],
-    source_species: Species,
+    species: Species,
 ) -> Tuple[Composed, dict]:
     """Create a query to get a list of gene IDs the AON preferred identifier type.
 
     :param source_ids: The list of gene IDs to map.
-    :param source_species: The species to map from.
+    :param species: The species to map from.
     :return: A query (and params) that can be executed on a cursor.
     """
-    target_gene_id_type = AON_ID_TYPE_FOR_SPECIES[source_species]
-    return mapping(source_ids, target_gene_id_type)
+    target_gene_id_type = AON_ID_TYPE_FOR_SPECIES[species]
+    return mapping(source_ids, species, target_gene_id_type)
