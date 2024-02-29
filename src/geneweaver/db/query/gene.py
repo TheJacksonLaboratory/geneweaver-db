@@ -94,6 +94,7 @@ def mapping(
         + SQL("WHERE g1.ode_ref_id = ANY(%(source_ids)s)")
         + SQL("AND g2.gdb_id = %(target_gene_id_type)s")
         + SQL("AND g2.sp_id = %(species_id)s")
+        + SQL("AND g2.ode_pref = TRUE")
     ).join(" ")
     params["source_ids"] = source_ids
     params["target_gene_id_type"] = int(target_gene_id_type)
