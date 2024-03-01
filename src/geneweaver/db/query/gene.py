@@ -84,21 +84,52 @@ def mapping(
     :param species: The species of the identifiers.
     :return: A query (and params) that can be executed on a cursor.
     """
-    params = {}
     query = (
-        SQL("SELECT g1.ode_ref_id AS original_ref_id, g2.ode_ref_id AS mapped_ref_id")
-        + SQL("FROM gene g1 JOIN gene g2")
-        + SQL("ON g1.ode_gene_id = g2.ode_gene_id")
-        + SQL("AND g1.ode_ref_id != g2.ode_ref_id")
-        + SQL("AND g1.sp_id = g2.sp_id")
-        + SQL("WHERE g1.ode_ref_id = ANY(%(source_ids)s)")
-        + SQL("AND g2.gdb_id = %(target_gene_id_type)s")
-        + SQL("AND g2.sp_id = %(species_id)s")
-        + SQL("AND (g1.ode_pref = TRUE OR g2.ode_pref = TRUE)")
+        SQL(
+            """
+    WITH PrefTrueCheck AS
+        (SELECT CASE
+                WHEN EXISTS(SELECT 1
+                            FROM extsrc.gene AS g1
+                                   JOIN extsrc.gene AS g2
+                                        ON g1.ode_gene_id = g2.ode_gene_id
+                                        AND g1.ode_ref_id != g2.ode_ref_id
+                                        AND g1.sp_id = g2.sp_id
+                             WHERE g1.ode_ref_id = ANY(%(source_ids)s)
+                               AND g2.gdb_id = %(target_gene_id_type)s
+                               AND g2.sp_id = %(species_id)s
+                               AND g2.ode_pref = True)
+                  THEN True ELSE False
+                  END AS PrefExists)
+    """
+        )
+        + SQL(
+            """
+    SELECT g1.ode_ref_id AS original_ref_id,
+           g2.ode_ref_id AS mapped_ref_id
+    FROM extsrc.gene AS g1
+             JOIN extsrc.gene AS g2
+                  ON g1.ode_gene_id = g2.ode_gene_id
+                  AND g1.ode_ref_id != g2.ode_ref_id
+                  AND g1.sp_id = g2.sp_id,
+         PrefTrueCheck
+    WHERE g1.ode_ref_id = ANY (%(source_ids)s)
+      AND g2.gdb_id = %(target_gene_id_type)s
+      AND g2.sp_id = %(species_id)s
+      AND (
+        (PrefTrueCheck.PrefExists AND g2.ode_pref = True)
+            OR
+        (NOT PrefTrueCheck.PrefExists)
+        );
+    """
+        )
     ).join(" ")
-    params["source_ids"] = source_ids
-    params["target_gene_id_type"] = int(target_gene_id_type)
-    params["species_id"] = int(species)
+
+    params = {
+        "source_ids": source_ids,
+        "target_gene_id_type": int(target_gene_id_type),
+        "species_id": int(species),
+    }
     return query, params
 
 
