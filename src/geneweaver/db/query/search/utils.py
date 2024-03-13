@@ -11,7 +11,7 @@ class SearchConfig(Enum):
     SIMPLE = "simple"
     ENGLISH = "english"
 
-    def __str__(self: 'SearchConfig') -> str:
+    def __str__(self: "SearchConfig") -> str:
         """Render the value as a string."""
         return self.value
 
@@ -23,7 +23,7 @@ class QueryType(Enum):
     PHRASETO = "phraseto_tsquery"
     WEBSEARCH = "websearch_to_tsquery"
 
-    def __str__(self: 'SearchConfig') -> str:
+    def __str__(self: "SearchConfig") -> str:
         """Render the value as a string."""
         return self.value
 

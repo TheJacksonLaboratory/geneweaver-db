@@ -24,7 +24,9 @@ def construct_filter(
     :return: The constructed filters and parameters.
     """
     if filter_value is not None:
-        filters.append(SQL("{filter_name} = %({filter_name})s").format(filter_name))
+        filters.append(
+            SQL("{filter_name} = %({filter_name})s").format(filter_name=filter_name)
+        )
         params[filter_name] = filter_value
     return filters, params
 
