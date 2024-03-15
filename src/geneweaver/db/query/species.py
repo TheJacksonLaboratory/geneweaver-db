@@ -32,17 +32,22 @@ def get(
     params = {}
     query = SQL("SELECT") + SQL(",").join(SPECIES_FIELDS) + SQL("FROM species")
 
+    filters = []
+
     if species:
-        query += SQL("WHERE sp_id = %(species_id)s")
+        filters.append(SQL("sp_id = %(species_id)s"))
         params["species_id"] = int(species)
 
     if taxonomic_id:
-        query += SQL("WHERE sp_taxid = %(taxonomic_id)s")
+        filters.append(SQL("sp_taxid = %(taxonomic_id)s"))
         params["taxonomic_id"] = taxonomic_id
 
     if reference_gene_db_id:
-        query += SQL("WHERE sp_ref_gdb_id = %(reference_gene_db_id)s")
+        filters.append(SQL("sp_ref_gdb_id = %(reference_gene_db_id)s"))
         params["reference_gene_db_id"] = int(reference_gene_db_id)
+
+    if len(filters) > 0:
+        query += SQL("WHERE") + SQL("AND").join(filters)
 
     query = query.join(" ")
 
