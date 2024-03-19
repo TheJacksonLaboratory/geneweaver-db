@@ -1,4 +1,5 @@
 """Test the sso_id_exists function."""
+
 from geneweaver.db.user import sso_id_exists
 
 from tests.unit.testing_utils import (

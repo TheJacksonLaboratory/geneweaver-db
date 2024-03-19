@@ -1,4 +1,5 @@
 """Utility functions for the SQL generation functions."""
+
 from typing import Dict, List, Optional, Tuple, Union
 
 from psycopg.sql import SQL, Composed

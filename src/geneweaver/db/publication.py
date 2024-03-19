@@ -1,4 +1,5 @@
 """Database code for interacting with Publication table."""
+
 from typing import Iterable, List, Optional
 
 from geneweaver.db.query import publication as publication_query

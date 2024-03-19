@@ -1,4 +1,5 @@
 """Test the mapping gene db exec functions (sync and async)."""
+
 from geneweaver.core.enum import GeneIdentifier, Species
 from geneweaver.db.aio.gene import mapping as async_mapping
 from geneweaver.db.gene import mapping

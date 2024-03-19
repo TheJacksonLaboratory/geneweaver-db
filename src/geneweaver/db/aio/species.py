@@ -1,4 +1,5 @@
 """Species database functions."""
+
 from typing import List, Optional
 
 from geneweaver.core.enum import GeneIdentifier, Species

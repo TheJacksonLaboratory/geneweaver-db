@@ -1,4 +1,5 @@
 """Generate SQL queries for publications."""
+
 from typing import Iterable, Optional, Tuple
 
 from geneweaver.db.utils import format_sql_fields

@@ -18,6 +18,7 @@ The functions that return a single value from a user record are:
 - user_id_from_api_key
 - user_id_from_sso_id
 """
+
 from typing import List, Optional
 
 from geneweaver.db.utils import temp_override_row_factory

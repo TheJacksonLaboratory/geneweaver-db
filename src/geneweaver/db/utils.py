@@ -1,4 +1,5 @@
 """Utilities for the GeneWeaver database functions."""
+
 # ruff: noqa: ANN001, ANN002, ANN003, ANN201, ANN202
 import functools
 from typing import List, Optional

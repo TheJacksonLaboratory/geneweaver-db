@@ -1,4 +1,5 @@
 """Test the link_user_id_with_sso_id function."""
+
 from unittest.mock import patch
 
 import pytest

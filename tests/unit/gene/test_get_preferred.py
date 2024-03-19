@@ -1,4 +1,5 @@
 """Test the get_preferred db exec functions (sync and async)."""
+
 from geneweaver.core.enum import Species
 from geneweaver.db.aio.gene import get_preferred as async_get_preferred
 from geneweaver.db.gene import get_preferred

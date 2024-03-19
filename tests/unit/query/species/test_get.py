@@ -1,4 +1,5 @@
 """Test the species `get` query function generation function."""
+
 import pytest
 from geneweaver.core.enum import GeneIdentifier, Species
 from geneweaver.db.query.species import get

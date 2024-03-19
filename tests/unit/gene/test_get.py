@@ -1,4 +1,5 @@
 """Test the get db exec functions (sync and async)."""
+
 from geneweaver.core.enum import Species
 from geneweaver.db.aio.gene import get as async_get
 from geneweaver.db.gene import get

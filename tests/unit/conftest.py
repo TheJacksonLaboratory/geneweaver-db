@@ -1,4 +1,5 @@
 """Fixtures for all db unit tests."""
+
 import random
 from unittest.mock import AsyncMock, MagicMock
 

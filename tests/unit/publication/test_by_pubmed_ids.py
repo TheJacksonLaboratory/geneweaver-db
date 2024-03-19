@@ -1,4 +1,5 @@
 """Test the test_get_publications_by_pubmed_ids function."""
+
 import random
 
 import pytest

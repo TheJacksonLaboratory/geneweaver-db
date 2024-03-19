@@ -1,4 +1,5 @@
 """Test the GeneWeaver Database module's settings class."""
+
 from geneweaver.db.core.settings_class import Settings
 from pydantic import BaseModel, PostgresDsn
 

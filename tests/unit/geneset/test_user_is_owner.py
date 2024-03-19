@@ -1,4 +1,5 @@
 """Test the geneset.user_is_owner function."""
+
 import pytest
 from geneweaver.db.geneset import user_is_owner
 

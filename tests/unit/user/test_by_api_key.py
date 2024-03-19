@@ -1,4 +1,5 @@
 """Test for the user.by_api_key function."""
+
 from unittest.mock import Mock
 
 import pytest
