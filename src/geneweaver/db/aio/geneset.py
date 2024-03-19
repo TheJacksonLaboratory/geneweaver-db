@@ -1,6 +1,6 @@
 """Async database interaction code relating to Genesets."""
 
-from typing import Optional
+from typing import List, Optional
 
 from geneweaver.core.enum import GeneIdentifier, GenesetTier, Species
 from geneweaver.db.query import geneset as geneset_query
