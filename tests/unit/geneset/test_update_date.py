@@ -1,4 +1,5 @@
 """Test the geneset.update_date function."""
+
 import pytest
 from geneweaver.db.geneset import update_date
 

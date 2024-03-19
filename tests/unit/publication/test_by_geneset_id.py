@@ -1,4 +1,5 @@
 """Test the publication.by_geneset_id function."""
+
 from geneweaver.db.aio.publication import by_geneset_id as async_by_geneset_id
 from geneweaver.db.publication import by_geneset_id
 

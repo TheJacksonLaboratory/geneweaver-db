@@ -1,4 +1,5 @@
 """Test the format_select_query sql generation function."""
+
 # ruff: noqa: C901
 import pytest
 from geneweaver.db.query.geneset import GENESET_FIELDS_MAP, format_select_query

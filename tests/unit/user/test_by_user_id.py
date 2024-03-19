@@ -1,4 +1,5 @@
 """Test for the user.by_user_id function."""
+
 from unittest.mock import Mock
 
 import pytest

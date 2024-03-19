@@ -1,4 +1,5 @@
 """Test the internal _search function for geneset sql generation."""
+
 import pytest
 from geneweaver.db.query.geneset import _search
 

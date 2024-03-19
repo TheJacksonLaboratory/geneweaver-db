@@ -1,4 +1,5 @@
 """Test the geneset.tier function."""
+
 from geneweaver.db.geneset import tier
 
 from tests.unit.testing_utils import (

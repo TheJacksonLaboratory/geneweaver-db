@@ -1,4 +1,5 @@
 """Test the create_sso_user function."""
+
 from geneweaver.db.user import create_sso_user
 
 from tests.unit.testing_utils import (

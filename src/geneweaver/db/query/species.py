@@ -1,4 +1,5 @@
 """Generate SQL queries to get Species information."""
+
 from typing import Optional, Tuple
 
 from geneweaver.core.enum import GeneIdentifier, Species

@@ -1,4 +1,5 @@
 """Fixtures for the gene db tests."""
+
 import random
 from typing import List
 

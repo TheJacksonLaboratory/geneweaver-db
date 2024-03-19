@@ -1,5 +1,6 @@
 """SQL query generation code for genesets."""
-from typing import Optional, Tuple
+
+from typing import List, Optional, Tuple
 
 from geneweaver.core.enum import GeneIdentifier, GenesetTier, Species
 from geneweaver.db.query.publication import PUB_FIELD_MAP

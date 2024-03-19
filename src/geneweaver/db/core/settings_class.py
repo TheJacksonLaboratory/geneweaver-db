@@ -8,6 +8,7 @@ GWDB_USERNAME=your_user
 GWDB_PASSWORD=your_password
 GWDB_NAME=your_database_name
 """
+
 # ruff: noqa: N805, ANN101, ANN401
 from typing import Any, Dict, Optional
 

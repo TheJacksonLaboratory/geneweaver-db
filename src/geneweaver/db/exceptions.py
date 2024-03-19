@@ -1,4 +1,5 @@
 """Exceptions for the geneweaver db module."""
+
 from geneweaver.core.exc import GeneweaverError
 
 

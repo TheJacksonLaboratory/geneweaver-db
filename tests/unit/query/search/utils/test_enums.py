@@ -1,4 +1,5 @@
 """Tests for the search query util enums module."""
+
 import pytest
 from geneweaver.db.query.search.utils import (
     QueryType,

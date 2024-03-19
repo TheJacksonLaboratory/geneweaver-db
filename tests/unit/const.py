@@ -1,4 +1,5 @@
 """Const values for all db unit tests."""
+
 import inspect
 
 from psycopg import errors

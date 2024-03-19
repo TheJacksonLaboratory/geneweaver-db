@@ -1,4 +1,5 @@
 """Test the general geneset.get function."""
+
 from geneweaver.db.aio.geneset import get as async_get
 from geneweaver.db.geneset import get
 

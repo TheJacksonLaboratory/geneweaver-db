@@ -1,4 +1,5 @@
 """Test the get_homolog_ids_by_ode_id function."""
+
 from geneweaver.core.enum import GeneIdentifier
 from geneweaver.db.gene import get_homolog_ids_by_ode_id
 

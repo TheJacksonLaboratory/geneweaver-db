@@ -1,4 +1,5 @@
 """Test the get_publication_by_pubmed_id function."""
+
 import pytest
 from geneweaver.db.aio.publication import by_pubmed_id as async_by_pubmed_id
 from geneweaver.db.publication import by_pubmed_id

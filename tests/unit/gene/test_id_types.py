@@ -1,4 +1,5 @@
 """Test the get_gene_id_types function."""
+
 from unittest.mock import Mock
 
 import pytest

@@ -1,4 +1,5 @@
 """Test the temp_override_row_factory decorator."""
+
 from unittest.mock import Mock
 
 import pytest

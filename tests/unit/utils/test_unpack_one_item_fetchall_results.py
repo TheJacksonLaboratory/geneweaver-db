@@ -1,4 +1,5 @@
 """Test the unpack_one_item_fetchall_results function."""
+
 import pytest
 from geneweaver.db.exceptions import GeneweaverDoesNotExistError, GeneweaverValueError
 from geneweaver.db.utils import unpack_one_item_fetchall_results

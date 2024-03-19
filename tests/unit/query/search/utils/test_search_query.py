@@ -1,4 +1,5 @@
 """Test the query generation search_query util function."""
+
 import pytest
 from geneweaver.db.query.search.utils import search_query
 

@@ -1,4 +1,5 @@
 """Test the get_homolog_ids function."""
+
 from unittest.mock import Mock, patch
 
 import pytest

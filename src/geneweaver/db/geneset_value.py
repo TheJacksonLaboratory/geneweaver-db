@@ -1,4 +1,5 @@
 """Database functions for geneset values."""
+
 from typing import List, Optional
 
 from geneweaver.core.enum import GeneIdentifier

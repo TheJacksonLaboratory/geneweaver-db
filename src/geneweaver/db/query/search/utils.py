@@ -1,4 +1,5 @@
 """Functions for generating search queries."""
+
 from enum import Enum
 from typing import Tuple
 

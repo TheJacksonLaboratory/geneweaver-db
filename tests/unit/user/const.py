@@ -1,4 +1,5 @@
 """Example data that matches the production.usr table schema."""
+
 from datetime import datetime, timedelta
 
 MOCK_USER_DATA = [

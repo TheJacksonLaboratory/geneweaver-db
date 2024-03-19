@@ -1,4 +1,5 @@
 """Test the get_database_id function."""
+
 from geneweaver.core.enum import GeneIdentifier
 from geneweaver.db.gene import gene_database_id
 

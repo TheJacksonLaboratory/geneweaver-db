@@ -1,4 +1,5 @@
 """Utilities for testing the database module."""
+
 # ruff: noqa: ANN002, ANN003, ANN101, D102, D107
 from typing import Callable
 from unittest.mock import MagicMock
