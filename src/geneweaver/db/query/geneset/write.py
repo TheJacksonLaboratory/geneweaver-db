@@ -40,7 +40,6 @@ def add(
 
     :return: A query (and params) that can be executed on a cursor.
     """
-
     query_cols = SQL(
         """
         (usr_id, file_id, gs_name, gs_abbreviation, pub_id, cur_id,
@@ -89,6 +88,15 @@ def render_and_add_geneset_file(
     values: List[GeneValue],
     comments: str = "",
 ) -> Tuple[Composed, dict]:
+    """Render and add a geneset file to the database.
+
+    This function takes a list of gene values and renders them into a string
+    that can be added to the database as a geneset file.
+
+    :param values: The gene values to render.
+    :param comments: The comments for the file.
+    :return: A query (and params) that can be executed on a cursor.
+    """
     contents = "\n".join(f"{value.symbol}\t{value.value}" for value in values)
     size = len(contents)
     return add_geneset_file(size, contents, comments)
