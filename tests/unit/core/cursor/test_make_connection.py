@@ -1,6 +1,7 @@
 """Test the make_connection convenience function."""
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
+
 from geneweaver.db.core.cursor import make_connection
 
 

@@ -1,6 +1,7 @@
 """Test the convenience cursor context manager."""
 
 from unittest.mock import MagicMock, patch
+
 from geneweaver.db.core.cursor import cursor
 
 
@@ -8,7 +9,6 @@ from geneweaver.db.core.cursor import cursor
 @patch("geneweaver.db.core.cursor.psycopg.connect")
 def test_cursor(mock_connect):
     """Test the cursor context manager."""
-
     mock_connection = MagicMock()
     mock_cursor = MagicMock()
     mock_connect.return_value.__enter__.return_value = mock_connection
