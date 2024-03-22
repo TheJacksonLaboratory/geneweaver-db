@@ -2,14 +2,14 @@
 
 from unittest.mock import MagicMock, patch
 
-from geneweaver.db.core.cursor import make_connection
 
-
-@patch("geneweaver.db.core.cursor.psycopg.connect")
-@patch("geneweaver.db.core.settings_class.Settings", MagicMock)
 @patch("geneweaver.db.core.cursor.settings.URI", "test_uri")
+@patch("geneweaver.db.core.cursor.psycopg.connect")
+@patch("geneweaver.db.core.settings_class.Settings", MagicMock())
 def test_make_connection(mock_connect):
     """Test the make_connection function."""
+    from geneweaver.db.core.cursor import make_connection
+
     mock_connect.return_value = "test_connection"
 
     connection = make_connection()
