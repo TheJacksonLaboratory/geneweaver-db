@@ -45,15 +45,11 @@ async def get(
 async def get_preferred(
     cursor: AsyncCursor,
     gene_id: int,
-    limit: Optional[int] = None,
-    offset: Optional[int] = None,
 ) -> Optional[rows.Row]:
     """Get the preferred gene from the database for a given ode_id.
 
     :param cursor: An async database cursor.
     :param gene_id: The id of the gene to get.
-    :param limit: The limit of results to return.
-    :param offset: The offset of results to return.
 
     :return: The preferred gene using `.fetchone()`
     """
@@ -61,8 +57,6 @@ async def get_preferred(
         *gene_query.get(
             gene_id=gene_id,
             preferred=True,
-            limit=limit,
-            offset=offset,
         )
     )
 
