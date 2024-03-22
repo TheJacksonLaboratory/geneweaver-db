@@ -2,7 +2,7 @@
 
 from typing import Dict, List, Optional, Tuple, Union
 
-from psycopg.sql import SQL, Composed
+from psycopg.sql import SQL, Composed, Identifier, Placeholder
 
 SQLList = List[Union[Composed, SQL]]
 ParamDict = Dict[str, Union[str, int]]
@@ -26,7 +26,9 @@ def construct_filter(
     """
     if filter_value is not None:
         filters.append(
-            SQL("{filter_name} = %({filter_name})s").format(filter_name=filter_name)
+            SQL("{filter_name} = {param_name}").format(
+                filter_name=Identifier(filter_name), param_name=Placeholder(filter_name)
+            )
         )
         params[filter_name] = filter_value
     return filters, params
