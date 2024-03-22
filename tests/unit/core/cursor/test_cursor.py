@@ -6,6 +6,7 @@ from geneweaver.db.core.cursor import cursor
 
 
 @patch("geneweaver.db.core.cursor.settings.URI", "test_uri")
+@patch("geneweaver.db.core.settings_class.Settings", MagicMock)
 @patch("geneweaver.db.core.cursor.psycopg.connect")
 def test_cursor(mock_connect):
     """Test the cursor context manager."""

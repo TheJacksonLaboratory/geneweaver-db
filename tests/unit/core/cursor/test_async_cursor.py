@@ -7,6 +7,7 @@ from psycopg.cursor_async import AsyncCursor
 
 
 @patch("geneweaver.db.core.cursor.settings.URI", "test_uri")
+@patch("geneweaver.db.core.settings_class.Settings", MagicMock)
 @patch("geneweaver.db.core.cursor.psycopg.AsyncConnection.connect")
 async def test_async_cursor(mock_connect):
     """Test the cursor context manager."""
