@@ -46,15 +46,11 @@ def get(
 def get_preferred(
     cursor: Cursor,
     gene_id: int,
-    limit: Optional[int] = None,
-    offset: Optional[int] = None,
 ) -> Optional[rows.Row]:
     """Get the preferred gene from the database for a given ode_id.
 
     :param cursor: The database cursor.
     :param gene_id: The id of the gene to get.
-    :param limit: The limit of results to return.
-    :param offset: The offset of results to return.
 
     :return: The preferred gene using `.fetchone()`
     """
@@ -62,8 +58,6 @@ def get_preferred(
         *gene_query.get(
             gene_id=gene_id,
             preferred=True,
-            limit=limit,
-            offset=offset,
         )
     )
 

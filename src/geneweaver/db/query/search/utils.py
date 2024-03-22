@@ -29,8 +29,15 @@ class QueryType(Enum):
         return self.value
 
 
+SEARCH_QUERIES = {
+    QueryType.PLAINTO: SQL("@@ plainto_tsquery({search_config}, %(search)s)"),
+    QueryType.PHRASETO: SQL("@@ phraseto_tsquery({search_config}, %(search)s)"),
+    QueryType.WEBSEARCH: SQL("@@ websearch_to_tsquery({search_config}, %(search)s)"),
+}
+
+
 def search_query(
-    search_column: str,
+    search_column: Composed,
     search_string: str,
     search_config: SearchConfig = SearchConfig.SIMPLE,
     query_type: QueryType = QueryType.WEBSEARCH,
@@ -44,11 +51,5 @@ def search_query(
     :param search_config: The search configuration to use.
     :param query_type: The query type to use.
     """
-    query = SQL(
-        "{search_column} @@ {query_type}('{search_config}', '$(search)s')"
-    ).format(
-        search_column=search_column,
-        query_type=str(query_type),
-        search_config=str(search_config),
-    )
-    return query, {"search": search_string}
+    query = SEARCH_QUERIES[query_type].format(search_config=str(search_config))
+    return search_column + query, {"search": search_string}

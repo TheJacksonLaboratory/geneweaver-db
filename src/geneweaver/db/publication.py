@@ -2,6 +2,7 @@
 
 from typing import Iterable, List, Optional
 
+from geneweaver.core.schema.publication import PublicationInfo
 from geneweaver.db.query import publication as publication_query
 from psycopg import Cursor, rows
 
@@ -51,4 +52,16 @@ def by_geneset_id(cursor: Cursor, geneset_id: int) -> Optional[rows.Row]:
     :return: optional row using `.fetchone()`
     """
     cursor.execute(*publication_query.by_geneset_id(geneset_id))
+    return cursor.fetchone()
+
+
+def add(cursor: Cursor, publication: PublicationInfo) -> Optional[rows.Row]:
+    """Add a publication to the database.
+
+    :param cursor: The database cursor.
+    :param publication: The publication to add.
+
+    :return: optional row using `.fetchone()`
+    """
+    cursor.execute(*publication_query.add(**publication.dict()))
     return cursor.fetchone()

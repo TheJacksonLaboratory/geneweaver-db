@@ -165,20 +165,20 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "geneweaver-core"
-version = "0.9.0a5"
+version = "0.9.0a7"
 description = "The core of the Jax-Geneweaver Python library"
 optional = false
-python-versions = ">=3.9,<4.0"
+python-versions = "<4.0,>=3.9"
 files = [
-    {file = "geneweaver_core-0.9.0a5-py3-none-any.whl", hash = "sha256:6a0381309d33450c6a0cdee6dc8d247bfa97509a300a35a896e914e8a6b911f9"},
-    {file = "geneweaver_core-0.9.0a5.tar.gz", hash = "sha256:e2b2f5bb993a72664551247a7dae9e1097a890ffee6309167dc51ffcbc8ab0ed"},
+    {file = "geneweaver_core-0.9.0a7-py3-none-any.whl", hash = "sha256:6e4f583c8a1dc9c6d8e62f83d120bcef111e14b8fe9c33f7f53a996a03de68de"},
+    {file = "geneweaver_core-0.9.0a7.tar.gz", hash = "sha256:bdd2d6337e9b6cf64aed1fe04151c504505c39d9e5bc372278d2c5335c744443"},
 ]
 
 [package.dependencies]
-numpy = ">=1.22,<1.24"
+numpy = ">=1.22,<2"
 openpyxl = ">=3.1.2,<4.0.0"
-pandas = ">=1.5,<2.1"
-pydantic = {version = ">=1.10.7,<2.0.0", extras = ["dotenv"]}
+pandas = ">=1.5,<3"
+pydantic = {version = ">=1.10,<2.0", extras = ["dotenv"]}
 
 [[package]]
 name = "geneweaver-testing"
@@ -810,4 +810,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "e4df62904ed7598b171712080a2aa22e1fffb805e11921d7c0c61ccf12444609"
+content-hash = "a3705e6902813aa7aff41ea841f2430f5c1626fdfde40cbeb9f6f59bc5155f5b"
