@@ -89,11 +89,11 @@ def add(
     title: str,
     abstract: str,
     journal: str,
-    volume: Optional[str],
-    pages: Optional[str],
-    month: Optional[str],
-    year: Optional[int],
-    pubmed_id: Optional[str],
+    pubmed_id: str,
+    volume: Optional[str] = None,
+    pages: Optional[str] = None,
+    month: Optional[str] = None,
+    year: Optional[int] = None,
 ) -> Tuple[Composed, dict]:
     """Create a psycopg query to add a publication to the database.
 
