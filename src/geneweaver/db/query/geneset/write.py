@@ -22,6 +22,24 @@ def add(
     gene_id_type: GeneIdentifier,
     attribution: str,
 ) -> Tuple[Composed, dict]:
+    """Add a geneset to the database.
+
+    :param user_id: The user ID of the geneset owner.
+    :param file_id: The file ID of the geneset file.
+    :param name: The name of the geneset.
+    :param abbreviation: The abbreviation of the geneset.
+    :param publication_id: The publication ID of the geneset.
+    :param tier: The curation tier of the geneset.
+    :param description: The description of the geneset.
+    :param species: The species of the geneset.
+    :param count: The count of the geneset.
+    :param threshold_type: The threshold type of the geneset.
+    :param threshold: The threshold of the geneset.
+    :param gene_id_type: The gene ID type of the geneset.
+    :param attribution: The attribution of the geneset.
+
+    :return: A query (and params) that can be executed on a cursor.
+    """
 
     query_cols = SQL(
         """
