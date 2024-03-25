@@ -2,10 +2,13 @@
 
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 
 @patch("geneweaver.db.core.cursor.settings.URI", "test_uri")
 @patch("geneweaver.db.core.cursor.psycopg.connect")
-def test_cursor(mock_connect, monkeypatch_settings_env):
+@pytest.mark.usefixtures("_monkeypatch_settings_env")
+def test_cursor(mock_connect):
     """Test the cursor context manager."""
     from geneweaver.db.core.cursor import cursor
 

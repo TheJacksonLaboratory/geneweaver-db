@@ -2,10 +2,13 @@
 
 from unittest.mock import patch
 
+import pytest
+
 
 @patch("geneweaver.db.core.cursor.settings.URI", "test_uri")
 @patch("geneweaver.db.core.cursor.psycopg.connect")
-def test_make_connection(mock_connect, monkeypatch_settings_env):
+@pytest.mark.usefixtures("_monkeypatch_settings_env")
+def test_make_connection(mock_connect):
     """Test the make_connection function."""
     from geneweaver.db.core.cursor import make_connection
 
