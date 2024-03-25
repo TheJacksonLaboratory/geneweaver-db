@@ -7,7 +7,7 @@ from geneweaver.db.query import publication as publication_query
 from psycopg import Cursor, rows
 
 
-def by_pubmed_id(cursor: Cursor, pubmed_id: str) -> Optional[rows.Row]:
+def by_pubmed_id(cursor: Cursor, pubmed_id: int) -> Optional[rows.Row]:
     """Get a publication by PubMed ID.
 
     :param cursor: The database cursor.
@@ -19,7 +19,7 @@ def by_pubmed_id(cursor: Cursor, pubmed_id: str) -> Optional[rows.Row]:
     return cursor.fetchone()
 
 
-def by_pubmed_ids(cursor: Cursor, pubmed_ids: Iterable[str]) -> List[rows.Row]:
+def by_pubmed_ids(cursor: Cursor, pubmed_ids: Iterable[int]) -> List[rows.Row]:
     """Get publications by a list of PubMed IDs.
 
     :param cursor: The database cursor.

@@ -60,7 +60,7 @@ def by_geneset_id(geneset_id: int) -> Tuple[Composed, dict]:
     return query, params
 
 
-def by_pubmed_id(pubmed_id: str) -> Tuple[Composed, dict]:
+def by_pubmed_id(pubmed_id: int) -> Tuple[Composed, dict]:
     """Create a psycopg query to get a publication by PubMed ID.
 
     :param pubmed_id: The PubMed ID to search for.
@@ -72,7 +72,7 @@ def by_pubmed_id(pubmed_id: str) -> Tuple[Composed, dict]:
     return query, params
 
 
-def by_pubmed_ids(pubmed_ids: Iterable[str]) -> Tuple[Composed, dict]:
+def by_pubmed_ids(pubmed_ids: Iterable[int]) -> Tuple[Composed, dict]:
     """Create a psycopg query to get publications by a list of PubMed IDs.
 
     :param pubmed_ids: The PubMed IDs to search for.
