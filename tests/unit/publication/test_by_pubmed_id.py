@@ -43,7 +43,7 @@ def test_get_publication_by_pubmed_id(pmid, expected_result, cursor):
     result = by_pubmed_id(cursor, pmid)
 
     assert result == expected_result
-    assert pmid in cursor.execute.call_args[0][1].values()
+    assert str(pmid) in cursor.execute.call_args[0][1].values()
 
 
 @pytest.mark.parametrize(
@@ -57,4 +57,4 @@ async def test_async_get_publication_by_pubmed_id(pmid, expected_result, async_c
     result = await async_by_pubmed_id(async_cursor, pmid)
 
     assert result == expected_result
-    assert pmid in async_cursor.execute.call_args[0][1].values()
+    assert str(pmid) in async_cursor.execute.call_args[0][1].values()

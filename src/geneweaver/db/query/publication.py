@@ -68,6 +68,7 @@ def by_pubmed_id(pubmed_id: int) -> Tuple[Composed, dict]:
     :return: A query (and params) that can be executed on a cursor.
     """
     query = (PUB_QUERY + SQL("WHERE pub_pubmed = %(pmid)s")).join(" ")
+    # PubMed IDs are integers, but are stored as strings in the database.
     params = {"pmid": str(pubmed_id)}
     return query, params
 
