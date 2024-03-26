@@ -1,11 +1,13 @@
 """Test the make_connection convenience function."""
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
+
+import pytest
 
 
 @patch("geneweaver.db.core.cursor.settings.URI", "test_uri")
 @patch("geneweaver.db.core.cursor.psycopg.connect")
-@patch("geneweaver.db.core.settings_class.Settings", MagicMock())
+@pytest.mark.usefixtures("_monkeypatch_settings_env")
 def test_make_connection(mock_connect):
     """Test the make_connection function."""
     from geneweaver.db.core.cursor import make_connection
