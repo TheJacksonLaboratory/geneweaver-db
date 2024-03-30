@@ -81,6 +81,19 @@ def get(
     return query, params
 
 
+def shared_with_user(
+    user_id: int,
+    limit: Optional[int] = None,
+    offset: Optional[int] = None,
+    with_publication_info: bool = True,
+) -> Tuple[Composed, dict]:
+    """Get Genesets that are shared with a user.
+
+    NOTE: NOT IMPLEMENTED
+    """
+    raise NotImplementedError()
+
+
 def by_project_id(
     project_id: int,
     limit: Optional[int] = None,
