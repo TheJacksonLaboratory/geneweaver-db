@@ -31,6 +31,28 @@ PUB_INSERT_VALS = SQL(",").join(
 )
 
 
+def get(
+    pub_id: Optional[int] = None,
+    authors: Optional[str] = None,
+    title: Optional[str] = None,
+    abstract: Optional[str] = None,
+    journal: Optional[str] = None,
+    volume: Optional[str] = None,
+    pages: Optional[str] = None,
+    month: Optional[str] = None,
+    year: Optional[str] = None,
+    pubmed: Optional[str] = None,
+    search_text: Optional[str] = None,
+    limit: Optional[int] = None,
+    offset: Optional[int] = None,
+) -> Tuple[Composed, dict]:
+    """Get publications by some criteria.
+
+    NOTE: NOT IMPLEMENTED
+    """
+    raise NotImplementedError()
+
+
 def by_id(pub_id: int) -> Optional[rows.Row]:
     """Create a psycopg query to get a publication by ID.
 
