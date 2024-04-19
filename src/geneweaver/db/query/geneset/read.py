@@ -2,10 +2,12 @@
 
 from typing import Optional, Tuple
 
-from geneweaver.core.enum import GeneIdentifier, GenesetTier, Species
+from geneweaver.core.enum import GeneIdentifier, Species
 from geneweaver.db.query.geneset.utils import (
+    GenesetTierOrTiers,
     format_select_query,
     is_readable,
+    restrict_tier,
     search,
 )
 from geneweaver.db.query.utils import construct_filters
@@ -16,7 +18,7 @@ from psycopg.sql import SQL, Composed
 def get(
     gs_id: Optional[int] = None,
     owner_id: Optional[int] = None,
-    curation_tier: Optional[GenesetTier] = None,
+    curation_tier: Optional[GenesetTierOrTiers] = None,
     species: Optional[Species] = None,
     name: Optional[str] = None,
     abbreviation: Optional[str] = None,
@@ -56,6 +58,7 @@ def get(
 
     filtering, params = is_readable(filtering, params, is_readable_by)
     filtering, params = search(filtering, params, search_text)
+    filtering, params = restrict_tier(filtering, params, curation_tier)
 
     filtering, params = construct_filters(
         filtering,
@@ -63,7 +66,6 @@ def get(
         {
             "gs_id": gs_id,
             "usr_id": owner_id,
-            "cur_id": int(curation_tier) if curation_tier is not None else None,
             "sp_id": int(species) if species is not None else None,
             "gs_name": name,
             "gs_abbreviation": abbreviation,
