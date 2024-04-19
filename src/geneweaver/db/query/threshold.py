@@ -1,4 +1,5 @@
 """Query functions related to thresholding and score type."""
+
 from typing import Tuple
 
 from geneweaver.core.schema.score import GenesetScoreType

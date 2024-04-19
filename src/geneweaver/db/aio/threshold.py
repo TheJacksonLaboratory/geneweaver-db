@@ -5,7 +5,7 @@ from geneweaver.db.query import threshold as threshold_query
 from psycopg import AsyncCursor
 
 
-async def update_threshold(
+async def set_geneset_threshold(
     cursor: AsyncCursor,
     geneset_id: int,
     geneset_score_type: GenesetScoreType,
