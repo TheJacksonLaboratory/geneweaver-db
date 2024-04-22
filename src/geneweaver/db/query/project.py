@@ -1,6 +1,7 @@
 """Query generation functions for projects."""
 
 from typing import Optional, Tuple
+
 from psycopg.sql import Composed
 
 
