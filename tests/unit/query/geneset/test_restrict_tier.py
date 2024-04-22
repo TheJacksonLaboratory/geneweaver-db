@@ -37,6 +37,11 @@ from src.geneweaver.db.query.geneset.utils import restrict_tier
     [
         None,
         set(),
+        GenesetTier.TIER1,
+        GenesetTier.TIER2,
+        GenesetTier.TIER3,
+        GenesetTier.TIER4,
+        GenesetTier.TIER5,
         {GenesetTier.TIER1},
         {GenesetTier.TIER1, GenesetTier.TIER2},
         {GenesetTier.TIER1, GenesetTier.TIER2, GenesetTier.TIER3},
@@ -75,4 +80,7 @@ def test_restrict_tier(existing_filters, existing_params, curation_tier):
 
         # The params should be updated with the curation tier
         assert "curation_tier" in params
-        assert params["curation_tier"] == [int(tier) for tier in curation_tier]
+        if isinstance(curation_tier, GenesetTier):
+            assert params["curation_tier"] == [int(curation_tier)]
+        else:
+            assert params["curation_tier"] == [int(tier) for tier in curation_tier]
