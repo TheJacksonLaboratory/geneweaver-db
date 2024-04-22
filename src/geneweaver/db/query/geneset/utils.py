@@ -1,7 +1,8 @@
 """Utility functions for the geneset query."""
 
-from typing import Optional, Tuple
+from typing import Optional, Set, Tuple, Union
 
+from geneweaver.core.enum import GenesetTier
 from geneweaver.db.query.geneset.const import (
     GENESET_FIELDS,
     GENESET_TSVECTOR,
@@ -13,6 +14,8 @@ from geneweaver.db.query.utils import (
     SQLList,
 )
 from psycopg.sql import SQL, Composed
+
+GenesetTierOrTiers = Union[GenesetTier, Set[GenesetTier]]
 
 
 def format_select_query(
@@ -90,4 +93,23 @@ def search(
         search_sql, search_params = utils.search_query(GENESET_TSVECTOR, search_text)
         existing_filters.append(search_sql)
         existing_params.update(search_params)
+    return existing_filters, existing_params
+
+
+def restrict_tier(
+    existing_filters: SQLList,
+    existing_params: ParamDict,
+    curation_tier: Optional[GenesetTierOrTiers] = None,
+) -> Tuple[SQLList, ParamDict]:
+    """Restrict the query by curation tier.
+
+    :param existing_filters: The existing filters.
+    :param existing_params: The existing parameters.
+    :param curation_tier: The curation tier to filter by.
+    """
+    if isinstance(curation_tier, GenesetTier):
+        curation_tier = {curation_tier}
+    if curation_tier is not None:
+        existing_filters.append(SQL("geneset.cur_id = ANY(%(curation_tier)s)"))
+        existing_params["curation_tier"] = [int(tier) for tier in curation_tier]
     return existing_filters, existing_params
