@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "geneweaver-db"
-version = "0.3.0"
+version = "0.3.1"
 description = "Database Interaction Services for GeneWeaver"
 authors = ["Jax Computational Sciences <cssc@jax.org>"]
 readme = "README.md"
@@ -13,11 +13,11 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.9"
-geneweaver-core = "^0.9.1"
+geneweaver-core = ">=0.9.1,<1.0.0"
 psycopg = {extras = ["binary"], version = "^3.1.13"}
 
 [tool.poetry.group.dev.dependencies]
-geneweaver-testing = "^0.1.2"
+geneweaver-testing = ">=0.1.2,<1.0.0"
 pytest-asyncio = "^0.23.5"
 
 [tool.ruff]
