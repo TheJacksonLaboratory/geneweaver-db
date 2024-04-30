@@ -10,7 +10,10 @@ def set_geneset_threshold(
     geneset_id: int,
     geneset_score_type: GenesetScoreType,
 ) -> Tuple[Composed, dict]:
-    """Update the threshold of a geneset and its values.
+    """Update the threshold of a geneset.
+
+    After calling this query, the query in `update_geneset_value_threshold` should be
+    called.
 
     :param geneset_id: The ID of the geneset to update.
     :param geneset_score_type: An instance of GenesetScoreType, representing the new
@@ -21,15 +24,38 @@ def set_geneset_threshold(
         "geneset_id": geneset_id,
         "score_type": int(geneset_score_type.score_type),
         "threshold_str": geneset_score_type.threshold_as_db_string(),
+    }
+    query = (
+        SQL("UPDATE geneset")
+        + SQL("SET gs_threshold_type = %(score_type)s,")
+        + SQL("gs_threshold = %(threshold_str)s")
+        + SQL("WHERE id = %(geneset_id)s;")
+    )
+
+    query = query.join(" ")
+
+    return query, params
+
+
+def update_geneset_value_threshold(
+    geneset_id: int,
+    geneset_score_type: GenesetScoreType,
+) -> Tuple[Composed, dict]:
+    """Update the threshold a geneset values.
+
+    :param geneset_id: The ID of the geneset to update.
+    :param geneset_score_type: An instance of GenesetScoreType, representing the new
+    threshold to set.
+    :return:  A query (and params) that can be executed on a cursor.
+    """
+    params = {
+        "geneset_id": geneset_id,
+        "score_type": int(geneset_score_type.score_type),
         "threshold_high": geneset_score_type.threshold,
     }
 
     query = SQL(
         """
-        UPDATE geneset
-        SET gs_threshold_type = %(score_type)s,
-            gs_threshold = %(threshold_str)s
-        WHERE id = %(geneset_id)s;
         UPDATE geneset_value
             SET gsv_in_threshold = CASE
         """
