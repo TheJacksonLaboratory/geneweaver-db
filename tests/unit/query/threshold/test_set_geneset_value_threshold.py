@@ -3,7 +3,9 @@
 import pytest
 from geneweaver.core.enum import ScoreType
 from geneweaver.core.schema.score import GenesetScoreType
-from geneweaver.db.query.threshold import set_geneset_threshold
+from geneweaver.db.query.threshold import (
+    set_geneset_value_threshold,
+)
 
 
 @pytest.mark.parametrize(
@@ -34,7 +36,7 @@ from geneweaver.db.query.threshold import set_geneset_threshold
 def test_set_geneset_threshold(geneset_id, score_type, threshold):
     """Test the set_geneset_threshold function for both async and sync."""
     geneset_score_type = GenesetScoreType(score_type=score_type, **threshold)
-    sql, params = set_geneset_threshold(geneset_id, geneset_score_type)
+    sql, params = set_geneset_value_threshold(geneset_id, geneset_score_type)
 
     # Ensure that the SQL query and params are not None
     assert sql is not None
@@ -44,33 +46,34 @@ def test_set_geneset_threshold(geneset_id, score_type, threshold):
 
     # SQL query should contain the threshold, score_type, and geneset_id
     for query_item in [
-        "%(threshold_str)s",
-        "%(score_type)s",
+        "%(threshold_high)s",
         "%(geneset_id)s",
     ]:
         assert query_item in str_sql
 
     # Params should contain the threshold, score_type, and geneset_id
-    for param_item in ["threshold_str", "score_type", "geneset_id"]:
+    for param_item in ["threshold_high", "geneset_id"]:
         assert param_item in params
 
-    assert params["score_type"] == int(score_type)
     assert params["geneset_id"] == geneset_id
 
     # SQL should always contain code to update gsv_in_threshold
-    for case_item in ["gs_threshold_type", "gs_threshold", "UPDATE geneset"]:
+    for case_item in ["gsv_in_threshold", "WHEN", "THEN TRUE", "ELSE FALSE", "END"]:
         assert case_item in str_sql
 
     # If threshold_low is in the threshold, the SQL query should contain threshold_low
     if "threshold_low" in threshold:
-        assert str(threshold["threshold_low"]) in params["threshold_str"]
-        assert str(threshold["threshold"]) in params["threshold_str"]
-        assert (
-            params["threshold_str"]
-            == f"{threshold['threshold_low']},{threshold['threshold']}"
-        )
+        assert "threshold_low" in params
+        assert params["threshold_low"] == threshold["threshold_low"]
+
+        for query_item in ["%(threshold_low)s", "AND", "BETWEEN"]:
+            assert query_item in str_sql
+    # If threshold_low is not in the threshold, the SQL query should not contain
+    # threshold_low
     else:
-        assert params["threshold_str"] == str(threshold["threshold"])
+        assert "threshold_low" not in params
+        assert "%(threshold_low)s" not in str_sql
+        assert params["threshold_high"] == threshold["threshold"]
 
 
 @pytest.mark.parametrize(
@@ -111,4 +114,4 @@ def test_set_geneset_threshold_error(geneset_id, score_type, threshold):
     )
 
     with pytest.raises(ValueError, match=error_str):
-        set_geneset_threshold(geneset_id, geneset_score_type)
+        set_geneset_value_threshold(geneset_id, geneset_score_type)
