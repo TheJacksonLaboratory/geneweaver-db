@@ -20,6 +20,15 @@ def set_geneset_threshold(
     threshold to set.
     :return:  A query (and params) that can be executed on a cursor.
     """
+    if (
+        geneset_score_type.threshold_low
+        and geneset_score_type.threshold_low > geneset_score_type.threshold
+    ):
+        raise ValueError(
+            "geneset_score_type.threshold must be larger than "
+            "geneset_score_type.threshold_low"
+        )
+
     params = {
         "geneset_id": geneset_id,
         "score_type": int(geneset_score_type.score_type),
@@ -37,7 +46,7 @@ def set_geneset_threshold(
     return query, params
 
 
-def update_geneset_value_threshold(
+def set_geneset_value_threshold(
     geneset_id: int,
     geneset_score_type: GenesetScoreType,
 ) -> Tuple[Composed, dict]:
@@ -50,7 +59,6 @@ def update_geneset_value_threshold(
     """
     params = {
         "geneset_id": geneset_id,
-        "score_type": int(geneset_score_type.score_type),
         "threshold_high": geneset_score_type.threshold,
     }
 

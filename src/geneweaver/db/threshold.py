@@ -21,5 +21,5 @@ def set_geneset_threshold(
         *threshold_query.set_geneset_threshold(geneset_id, geneset_score_type)
     )
     cursor.execute(
-        *threshold_query.update_geneset_value_threshold(geneset_id, geneset_score_type)
+        *threshold_query.set_geneset_value_threshold(geneset_id, geneset_score_type)
     )
