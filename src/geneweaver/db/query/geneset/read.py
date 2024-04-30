@@ -26,6 +26,7 @@ def get(
     pubmed_id: Optional[int] = None,
     gene_id_type: Optional[GeneIdentifier] = None,
     search_text: Optional[str] = None,
+    status: Optional[str] = "normal",
     limit: Optional[int] = None,
     offset: Optional[int] = None,
     is_readable_by: Optional[int] = None,
@@ -44,6 +45,7 @@ def get(
     :param gene_id_type: Show only results with this gene ID type.
     :param search_text: Return genesets that match this search text (using PostgreSQL
                         full-text search).
+    :param status: Show only results with this status. Default is "normal".
     :param limit: Limit the number of results.
     :param offset: Offset the results.
     :param is_readable_by: A user ID to check if the user can read the results.
@@ -72,6 +74,7 @@ def get(
             "pub_id": publication_id,
             "publication.pubmed_id": pubmed_id,
             "gs_gene_id_type": int(gene_id_type) if gene_id_type is not None else None,
+            "gs_status": status,
         },
     )
 
