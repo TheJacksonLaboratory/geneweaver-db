@@ -38,7 +38,7 @@ def set_geneset_threshold(
         SQL("UPDATE geneset")
         + SQL("SET gs_threshold_type = %(score_type)s,")
         + SQL("gs_threshold = %(threshold_str)s")
-        + SQL("WHERE id = %(geneset_id)s;")
+        + SQL("WHERE gs_id = %(geneset_id)s;")
     )
 
     query = query.join(" ")
