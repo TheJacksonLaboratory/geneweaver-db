@@ -47,8 +47,13 @@ def test_set_geneset_threshold(geneset_id, score_type, threshold):
         "%(threshold_str)s",
         "%(score_type)s",
         "%(geneset_id)s",
+        " gs_id ",
+        " gs_threshold_type ",
     ]:
         assert query_item in str_sql
+
+    assert " id =" not in str_sql
+    assert " threshold_type =" not in str_sql
 
     # Params should contain the threshold, score_type, and geneset_id
     for param_item in ["threshold_str", "score_type", "geneset_id"]:
