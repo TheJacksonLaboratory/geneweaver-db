@@ -1,7 +1,7 @@
 """Test the geneset.write.add_geneset_file query generation function."""
 
 import pytest
-from geneweaver.db.query.geneset.write import add_geneset_file
+from geneweaver.db.query.geneset.write import add_geneset_file_raw
 from psycopg.sql import SQL
 
 
@@ -12,7 +12,7 @@ from psycopg.sql import SQL
 )
 def test_add_geneset_file(size, comments, contents):
     """Test the add_geneset_file query generation function."""
-    query, params = add_geneset_file(
+    query, params = add_geneset_file_raw(
         size=size,
         comments=comments,
         contents=contents,

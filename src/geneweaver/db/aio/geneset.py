@@ -3,7 +3,11 @@
 from typing import List, Optional
 
 from geneweaver.core.enum import GeneIdentifier, GenesetTier, Species
+from geneweaver.core.schema.gene import GeneValue
+from geneweaver.core.schema.geneset import GenesetUpload
+from geneweaver.core.schema.score import GenesetScoreType
 from geneweaver.db.query import geneset as geneset_query
+from geneweaver.db.query.geneset.utils import geneset_upload_to_kwargs
 from psycopg import AsyncCursor
 from psycopg.rows import Row
 
@@ -140,3 +144,106 @@ async def by_project_id(
         )
     )
     return await cursor.fetchall()
+
+
+async def add(
+    cursor: AsyncCursor,
+    user_id: int,
+    file_id: int,
+    name: str,
+    abbreviation: str,
+    tier: GenesetTier,
+    species: Species,
+    count: int,
+    score: GenesetScoreType,
+    gene_id_type: GeneIdentifier,
+    description: str = "",
+    publication_id: Optional[int] = None,
+    attribution: Optional[str] = None,
+) -> Optional[Row]:
+    """Add a geneset to the database.
+
+    :param cursor: An async database cursor.
+    :param user_id: The owner of the geneset.
+    :param file_id: The file ID of the geneset's values.
+    :param name: The name of the geneset.
+    :param abbreviation: The abbreviation of the geneset.
+    :param tier: The curation tier of the geneset.
+    :param species: The species of the geneset.
+    :param count: The number of genes in the geneset.
+    :param score: The score of the geneset (GenesetScoreType includes threshold info).
+    :param gene_id_type: The gene ID type of the geneset.
+    :param description: The description of the geneset.
+    :param publication_id: The publication ID of the geneset (not the PubMed ID).
+    :param attribution: The attribution of the geneset.
+    :return: The ID of the added Geneset using fetchone().
+    """
+    await cursor.execute(
+        *geneset_query.add(
+            user_id=user_id,
+            file_id=file_id,
+            name=name,
+            abbreviation=abbreviation,
+            tier=tier,
+            species=species,
+            count=count,
+            score=score,
+            gene_id_type=gene_id_type,
+            description=description,
+            publication_id=publication_id,
+            attribution=attribution,
+        )
+    )
+    return await cursor.fetchone()
+
+
+async def add_geneset_file(
+    cursor: AsyncCursor,
+    values: List[GeneValue],
+    comments: str = "",
+) -> Optional[Row]:
+    """Add a geneset file to the database.
+
+    :param cursor: An async database cursor.
+    :param values: A list of GeneValues to render into a file.
+    :param comments: Comments to include with the file.
+    :return: The ID of the added file using fetchone().
+    """
+    await cursor.execute(
+        *geneset_query.add_geneset_file(
+            values=values,
+            comments=comments,
+        )
+    )
+
+    return await cursor.fetchone()
+
+
+async def add_geneset_full(
+    cursor: AsyncCursor,
+    geneset: GenesetUpload,
+    owner_id: Optional[int] = None,
+    publication_id: Optional[int] = None,
+) -> int:
+    """Add a geneset to the database with all necessary components.
+
+    :param cursor: An async database cursor.
+    :param geneset: An instance of a GenesetUpload schema.
+    :param owner_id: The owner of the geneset.
+    :param publication_id: The (internal) publication ID associated with the Geneset.
+    :return: The geneset ID.
+    """
+    file_id = await add_geneset_file(
+        cursor=cursor,
+        values=geneset.values,
+    )
+    geneset_id = await add(
+        cursor=cursor,
+        user_id=owner_id,
+        file_id=file_id,
+        publication_id=publication_id,
+        **geneset_upload_to_kwargs(geneset)
+    )
+    await cursor.execute(*geneset_query.reparse_geneset_file(geneset_id=geneset_id))
+    await cursor.execute(*geneset_query.process_thresholds(geneset_id=geneset_id))
+    return geneset_id
