@@ -58,10 +58,11 @@ def get(
     """
     params = {}
     query = (
-            SQL("SELECT")
-            + SQL(",").join(GENE_FIELDS + GENE_INFO_FIELDS)
-            + SQL("FROM gene JOIN gene_info")
-            + SQL("ON gene.ode_gene_id = gene_info.ode_gene_id"))
+        SQL("SELECT")
+        + SQL(",").join(GENE_FIELDS + GENE_INFO_FIELDS)
+        + SQL("FROM gene JOIN gene_info")
+        + SQL("ON gene.ode_gene_id = gene_info.ode_gene_id")
+    )
 
     filtering = []
 
