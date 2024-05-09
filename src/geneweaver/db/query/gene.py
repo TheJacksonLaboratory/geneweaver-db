@@ -17,7 +17,6 @@ GENE_FIELDS_MAP = {
 }
 
 GENE_INFO_FIELDS_MAP = {
-    # "ode_gene_id": "id",
     "gi_accession": "accession",
     "gi_symbol": "symbol",
     "gi_name": "name",
