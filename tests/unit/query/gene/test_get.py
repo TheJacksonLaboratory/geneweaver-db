@@ -2,7 +2,7 @@
 
 import pytest
 from geneweaver.core.enum import GeneIdentifier, Species
-from geneweaver.db.query.gene import GENE_FIELDS, GENE_INFO_FIELDS, get
+from geneweaver.db.query.gene import GENE_FIELDS_MAP, GENE_INFO_FIELDS_MAP, get
 
 
 @pytest.mark.parametrize("gene_id", [None, 1, 12345])
@@ -55,10 +55,10 @@ def test_all_kwargs(
 
     str_query = str(query)
 
-    for key, value in GENE_FIELDS.items():
+    for key, value in GENE_FIELDS_MAP.items():
         assert value in str_query
         assert key in str_query
 
-    for key, value in GENE_INFO_FIELDS.items():
+    for key, value in GENE_INFO_FIELDS_MAP.items():
         assert value in str_query
         assert key in str_query
