@@ -16,7 +16,22 @@ GENE_FIELDS_MAP = {
     "ode_date": "date",
 }
 
+GENE_INFO_FIELDS_MAP = {
+    "gi_accession": "accession",
+    "gi_symbol": "symbol",
+    "gi_name": "name",
+    "gi_description": "description",
+    "gi_type": "type",
+    "gi_chromosome": "chromosome",
+    "gi_start_bp": "start_bp",
+    "gi_end_bp": "end_bp",
+    "gi_strand": "strand",
+    "sp_id": "species",
+    "gene_rank": "rank",
+}
+
 GENE_FIELDS = format_sql_fields(GENE_FIELDS_MAP, query_table="gene")
+GENE_INFO_FIELDS = format_sql_fields(GENE_INFO_FIELDS_MAP, query_table="gene_info")
 
 
 def get(
@@ -41,7 +56,12 @@ def get(
     :return:  A query (and params) that can be executed on a cursor.
     """
     params = {}
-    query = SQL("SELECT") + SQL(",").join(GENE_FIELDS) + SQL("FROM gene")
+    query = (
+        SQL("SELECT")
+        + SQL(",").join(GENE_FIELDS + GENE_INFO_FIELDS)
+        + SQL("FROM gene JOIN gene_info")
+        + SQL("ON gene.ode_gene_id = gene_info.ode_gene_id")
+    )
 
     filtering = []
 
