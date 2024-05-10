@@ -2,11 +2,14 @@
 
 # ruff: noqa: ANN001, ANN002, ANN003, ANN201, ANN202
 import functools
-from typing import List, Optional
+from typing import List, Optional, Set, Union
 
+from geneweaver.core.enum import GenesetTier
 from geneweaver.db.exceptions import GeneweaverDoesNotExistError, GeneweaverValueError
 from psycopg import sql
 from psycopg.rows import Row
+
+GenesetTierOrTiers = Union[GenesetTier, Set[GenesetTier]]
 
 
 def unpack_one_item_fetchall_results(results: List[Row]) -> List:

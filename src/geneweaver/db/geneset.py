@@ -2,9 +2,9 @@
 
 from typing import List, Optional
 
-from geneweaver.core.enum import GeneIdentifier, GenesetTier, Species
+from geneweaver.core.enum import GeneIdentifier, Species
 from geneweaver.db.query import geneset as geneset_query
-from geneweaver.db.utils import temp_override_row_factory
+from geneweaver.db.utils import GenesetTierOrTiers, temp_override_row_factory
 from psycopg import Cursor, rows
 from psycopg.rows import Row
 
@@ -14,7 +14,7 @@ def get(
     is_readable_by: Optional[int] = None,
     gs_id: Optional[int] = None,
     owner_id: Optional[int] = None,
-    curation_tier: Optional[GenesetTier] = None,
+    curation_tier: Optional[GenesetTierOrTiers] = None,
     species: Optional[Species] = None,
     name: Optional[str] = None,
     abbreviation: Optional[str] = None,

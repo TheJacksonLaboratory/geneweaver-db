@@ -5,7 +5,7 @@ from typing import Dict, List, Optional, Tuple, Union
 from psycopg.sql import SQL, Composed, Identifier, Placeholder
 
 SQLList = List[Union[Composed, SQL]]
-ParamDict = Dict[str, Union[str, int]]
+ParamDict = Dict[str, Union[str, int, list]]
 OptionalParamDict = Dict[str, Optional[Union[str, int]]]
 
 

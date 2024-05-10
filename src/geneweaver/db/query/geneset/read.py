@@ -4,7 +4,6 @@ from typing import Optional, Tuple
 
 from geneweaver.core.enum import GeneIdentifier, Species
 from geneweaver.db.query.geneset.utils import (
-    GenesetTierOrTiers,
     add_ontology_parameter,
     add_ontology_query,
     format_select_query,
@@ -13,7 +12,7 @@ from geneweaver.db.query.geneset.utils import (
     search,
 )
 from geneweaver.db.query.utils import construct_filters
-from geneweaver.db.utils import limit_and_offset
+from geneweaver.db.utils import GenesetTierOrTiers, limit_and_offset
 from psycopg.sql import SQL, Composed
 
 

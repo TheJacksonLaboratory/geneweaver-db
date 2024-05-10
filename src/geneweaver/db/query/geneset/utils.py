@@ -1,6 +1,6 @@
 """Utility functions for the geneset query."""
 
-from typing import Optional, Set, Tuple, Union
+from typing import Optional, Tuple
 
 from geneweaver.core.enum import GenesetTier
 from geneweaver.db.query.geneset.const import (
@@ -13,9 +13,8 @@ from geneweaver.db.query.utils import (
     ParamDict,
     SQLList,
 )
+from geneweaver.db.utils import GenesetTierOrTiers
 from psycopg.sql import SQL, Composed
-
-GenesetTierOrTiers = Union[GenesetTier, Set[GenesetTier]]
 
 
 def format_select_query(
