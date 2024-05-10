@@ -85,7 +85,7 @@ def get(
             "gs_name": name,
             "gs_abbreviation": abbreviation,
             "pub_id": publication_id,
-            "pub_pubmed": pubmed_id,
+            "pub_pubmed": str(pubmed_id),
             "gs_gene_id_type": int(gene_id_type) if gene_id_type is not None else None,
             "gs_status": status,
         },
