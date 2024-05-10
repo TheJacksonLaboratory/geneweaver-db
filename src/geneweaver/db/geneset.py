@@ -25,6 +25,7 @@ def get(
     limit: Optional[int] = None,
     offset: Optional[int] = None,
     with_publication_info: bool = True,
+    ontology_term: Optional[str] = None,
 ) -> List[Row]:
     """Get genesets from the database.
 
@@ -44,6 +45,7 @@ def get(
     :param limit: Limit the number of results.
     :param offset: Offset the results.
     :param with_publication_info: Include publication info in the return.
+    :param ontology_term: Show only results associated with this ontology term.
 
     :return: list of results using `.fetchall()`
     """
@@ -63,6 +65,7 @@ def get(
             limit=limit,
             offset=offset,
             with_publication_info=with_publication_info,
+            ontology_term=ontology_term,
         )
     )
 
