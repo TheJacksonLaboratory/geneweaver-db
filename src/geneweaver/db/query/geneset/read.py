@@ -4,14 +4,13 @@ from typing import Optional, Tuple
 
 from geneweaver.core.enum import GeneIdentifier, Species
 from geneweaver.db.query.geneset.utils import (
-    GenesetTierOrTiers,
     format_select_query,
     is_readable,
     restrict_tier,
     search,
 )
 from geneweaver.db.query.utils import construct_filters
-from geneweaver.db.utils import limit_and_offset
+from geneweaver.db.utils import GenesetTierOrTiers, limit_and_offset
 from psycopg.sql import SQL, Composed
 
 
