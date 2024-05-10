@@ -24,6 +24,7 @@ async def get(
     offset: Optional[int] = None,
     is_readable_by: Optional[int] = None,
     with_publication_info: bool = True,
+    ontology_term: Optional[str] = None,
 ) -> List[Row]:
     """Get genesets from the database.
 
@@ -43,6 +44,7 @@ async def get(
     :param offset: Offset the results.
     :param is_readable_by: A user ID to check if the user can read the results.
     :param with_publication_info: Include publication info in the return.
+    :param ontology_term: Show only results associated with this ontology term.
 
     :return: list of results using `.fetchall()`
     """
@@ -62,6 +64,7 @@ async def get(
             limit=limit,
             offset=offset,
             with_publication_info=with_publication_info,
+            ontology_term=ontology_term,
         )
     )
 
