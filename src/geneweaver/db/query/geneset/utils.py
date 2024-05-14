@@ -3,6 +3,7 @@
 from typing import Optional, Tuple
 
 from geneweaver.core.enum import GenesetTier
+from geneweaver.core.schema.score import GenesetScoreType
 from geneweaver.db.query.geneset.const import (
     GENESET_FIELDS,
     GENESET_TSVECTOR,
@@ -139,4 +140,28 @@ def restrict_tier(
     if curation_tier is not None:
         existing_filters.append(SQL("geneset.cur_id = ANY(%(curation_tier)s)"))
         existing_params["curation_tier"] = [int(tier) for tier in curation_tier]
+    return existing_filters, existing_params
+
+
+def restrict_threshold_value(
+    existing_filters: SQLList,
+    existing_params: ParamDict,
+    geneset_score_type: Optional[GenesetScoreType] = None,
+) -> Tuple[SQLList, ParamDict]:
+    """Restrict the query by geneset score type.
+
+    :param existing_filters: The existing filters.
+    :param existing_params: The existing parameters.
+    :param geneset_score_type: The score type and value to filter by
+    """
+    if geneset_score_type:
+        score_type = int(geneset_score_type.score_type)
+        threshold_str = geneset_score_type.threshold_as_db_string()
+
+        existing_filters.append(SQL("geneset.gs_threshold_type = %(score_type)s"))
+        existing_filters.append(SQL("geneset.gs_threshold = %(threshold)s"))
+
+        existing_params["score_type"] = score_type
+        existing_params["threshold"] = threshold_str
+
     return existing_filters, existing_params
