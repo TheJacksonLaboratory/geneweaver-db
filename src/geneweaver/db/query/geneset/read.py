@@ -2,14 +2,12 @@
 
 from typing import Optional, Tuple
 
-from geneweaver.core.enum import GeneIdentifier, Species
-from geneweaver.core.schema.score import GenesetScoreType
+from geneweaver.core.enum import GeneIdentifier, ScoreType, Species
 from geneweaver.db.query.geneset.utils import (
     add_ontology_parameter,
     add_ontology_query,
     format_select_query,
     is_readable,
-    restrict_threshold_value,
     restrict_tier,
     search,
 )
@@ -35,7 +33,7 @@ def get(
     is_readable_by: Optional[int] = None,
     with_publication_info: bool = True,
     ontology_term: Optional[str] = None,
-    geneset_score_type: Optional[GenesetScoreType] = None,
+    score_type: Optional[ScoreType] = None,
 ) -> Tuple[Composed, dict]:
     """Get genesets.
 
@@ -56,7 +54,7 @@ def get(
     :param is_readable_by: A user ID to check if the user can read the results.
     :param with_publication_info: Include publication info in the return.
     :param ontology_term: Show only results associated with this ontology term.
-    :param geneset_score_type: Show only results with given score type and value.
+    :param score_type: Show only results with given score type.
     """
     params = {}
     filtering = []
@@ -77,7 +75,6 @@ def get(
     filtering, params = is_readable(filtering, params, is_readable_by)
     filtering, params = search(filtering, params, search_text)
     filtering, params = restrict_tier(filtering, params, curation_tier)
-    filtering, params = restrict_threshold_value(filtering, params, geneset_score_type)
 
     filtering, params = construct_filters(
         filtering,
@@ -92,6 +89,7 @@ def get(
             "pub_pubmed": str(pubmed_id) if pubmed_id is not None else None,
             "gs_gene_id_type": int(gene_id_type) if gene_id_type is not None else None,
             "gs_status": status,
+            "gs_threshold_type": int(score_type),
         },
     )
 
