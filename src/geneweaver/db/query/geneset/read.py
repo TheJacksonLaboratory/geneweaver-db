@@ -89,7 +89,7 @@ def get(
             "pub_pubmed": str(pubmed_id) if pubmed_id is not None else None,
             "gs_gene_id_type": int(gene_id_type) if gene_id_type is not None else None,
             "gs_status": status,
-            "gs_threshold_type": int(score_type),
+            "gs_threshold_type": int(score_type) if score_type is not None else None,
         },
     )
 
