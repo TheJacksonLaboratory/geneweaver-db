@@ -39,7 +39,7 @@ SEARCH_QUERIES = {
 def search_query(
     search_column: Composed,
     search_string: str,
-    search_config: SearchConfig = SearchConfig.SIMPLE,
+    search_config: SearchConfig = SearchConfig.ENGLISH,
     query_type: QueryType = QueryType.WEBSEARCH,
 ) -> Tuple[Composed, dict]:
     """Generate a search query.
