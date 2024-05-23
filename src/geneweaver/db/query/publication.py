@@ -2,7 +2,13 @@
 
 from typing import Iterable, Optional, Tuple
 
-from geneweaver.db.utils import format_sql_fields
+from geneweaver.db.query.search import utils
+from geneweaver.db.query.utils import (
+    ParamDict,
+    SQLList,
+    construct_filters,
+)
+from geneweaver.db.utils import format_sql_fields, limit_and_offset
 from psycopg import rows
 from psycopg.sql import SQL, Composed, Identifier, Placeholder
 
@@ -29,6 +35,7 @@ PUB_INSERT_COLS = SQL(",").join(
 PUB_INSERT_VALS = SQL(",").join(
     [Placeholder(k) for k in PUB_FIELD_MAP.keys() if k != "pub_id"]
 )
+PUB_TSVECTOR = (Identifier("publication") + Identifier("pub_tsvector")).join(".")
 
 
 def get(
@@ -48,9 +55,51 @@ def get(
 ) -> Tuple[Composed, dict]:
     """Get publications by some criteria.
 
-    NOTE: NOT IMPLEMENTED
+    :param pub_id: Show only results with this publication id
+    :param authors: Show only results with these authors
+    :param title: Show only results with this title
+    :param abstract: Show only results with this abstract
+    :param journal: Show only results with this journal
+    :param volume: Show only results with volume
+    :param pages: Show only results with these pages
+    :param month: Show only results with this publication month
+    :param year: Show only results with publication year
+    :param pubmed: Show only results with pubmed id
+    :param search_text: Show only results that match this search text (using PostgreSQL
+                        full-text search).
+    :param limit: Limit the number of results.
+    :param offset: Offset the results.
+
     """
-    raise NotImplementedError()
+    params = {}
+    filtering = []
+    query = PUB_QUERY
+
+    filtering, params = search(filtering, params, search_text)
+
+    filtering, params = construct_filters(
+        filtering,
+        params,
+        {
+            "pub_id": pub_id,
+            "pub_authors": authors,
+            "pub_title": title,
+            "pub_abstract": abstract,
+            "pub_journal": journal,
+            "pub_volume": volume,
+            "pub_pages": pages,
+            "pub_month": month,
+            "pub_year": year,
+            "pub_pubmed": pubmed,
+        },
+    )
+
+    if len(filtering) > 0:
+        query += SQL("WHERE") + SQL("AND").join(filtering)
+
+    query = limit_and_offset(query, limit, offset).join(" ")
+
+    return query, params
 
 
 def by_id(pub_id: int) -> Optional[rows.Row]:
@@ -157,3 +206,21 @@ def add(
     }
 
     return query, params
+
+
+def search(
+    existing_filters: SQLList,
+    existing_params: ParamDict,
+    search_text: Optional[str] = None,
+) -> Tuple[SQLList, ParamDict]:
+    """Add the search filter to the query.
+
+    :param existing_filters: The existing filters.
+    :param existing_params: The existing parameters.
+    :param search_text: The search text to filter by.
+    """
+    if search_text is not None:
+        search_sql, search_params = utils.search_query(PUB_TSVECTOR, search_text)
+        existing_filters.append(search_sql)
+        existing_params.update(search_params)
+    return existing_filters, existing_params
