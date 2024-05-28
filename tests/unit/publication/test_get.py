@@ -1,4 +1,4 @@
-"""Test the general geneset.get function."""
+"""Test the general publication.get function."""
 
 from geneweaver.db.aio.publication import get as async_get
 from geneweaver.db.publication import get
