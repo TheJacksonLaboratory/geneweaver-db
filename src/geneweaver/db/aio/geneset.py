@@ -2,12 +2,13 @@
 
 from typing import List, Optional
 
-from geneweaver.core.enum import GeneIdentifier, GenesetTier, Species
+from geneweaver.core.enum import GeneIdentifier, ScoreType, Species
 from geneweaver.core.schema.gene import GeneValue
 from geneweaver.core.schema.geneset import GenesetUpload
 from geneweaver.core.schema.score import GenesetScoreType
 from geneweaver.db.query import geneset as geneset_query
 from geneweaver.db.query.geneset.utils import geneset_upload_to_kwargs
+from geneweaver.db.utils import GenesetTierOrTiers
 from psycopg import AsyncCursor
 from psycopg.rows import Row
 
@@ -16,7 +17,7 @@ async def get(
     cursor: AsyncCursor,
     gs_id: Optional[int] = None,
     owner_id: Optional[int] = None,
-    curation_tier: Optional[GenesetTier] = None,
+    curation_tier: Optional[GenesetTierOrTiers] = None,
     species: Optional[Species] = None,
     name: Optional[str] = None,
     abbreviation: Optional[str] = None,
@@ -28,6 +29,8 @@ async def get(
     offset: Optional[int] = None,
     is_readable_by: Optional[int] = None,
     with_publication_info: bool = True,
+    ontology_term: Optional[str] = None,
+    score_type: Optional[ScoreType] = None,
 ) -> List[Row]:
     """Get genesets from the database.
 
@@ -47,6 +50,8 @@ async def get(
     :param offset: Offset the results.
     :param is_readable_by: A user ID to check if the user can read the results.
     :param with_publication_info: Include publication info in the return.
+    :param ontology_term: Show only results associated with this ontology term.
+    :param score_type: Show only results with given score type.
 
     :return: list of results using `.fetchall()`
     """
@@ -66,6 +71,8 @@ async def get(
             limit=limit,
             offset=offset,
             with_publication_info=with_publication_info,
+            ontology_term=ontology_term,
+            score_type=score_type,
         )
     )
 

@@ -2,16 +2,17 @@
 
 from typing import Optional, Tuple
 
-from geneweaver.core.enum import GeneIdentifier, Species
+from geneweaver.core.enum import GeneIdentifier, ScoreType, Species
 from geneweaver.db.query.geneset.utils import (
-    GenesetTierOrTiers,
+    add_ontology_parameter,
+    add_ontology_query,
     format_select_query,
     is_readable,
     restrict_tier,
     search,
 )
 from geneweaver.db.query.utils import construct_filters
-from geneweaver.db.utils import limit_and_offset
+from geneweaver.db.utils import GenesetTierOrTiers, limit_and_offset
 from psycopg.sql import SQL, Composed
 
 
@@ -31,6 +32,8 @@ def get(
     offset: Optional[int] = None,
     is_readable_by: Optional[int] = None,
     with_publication_info: bool = True,
+    ontology_term: Optional[str] = None,
+    score_type: Optional[ScoreType] = None,
 ) -> Tuple[Composed, dict]:
     """Get genesets.
 
@@ -50,6 +53,8 @@ def get(
     :param offset: Offset the results.
     :param is_readable_by: A user ID to check if the user can read the results.
     :param with_publication_info: Include publication info in the return.
+    :param ontology_term: Show only results associated with this ontology term.
+    :param score_type: Show only results with given score type.
     """
     params = {}
     filtering = []
@@ -57,6 +62,15 @@ def get(
         with_publication_info=with_publication_info,
         with_publication_join=pubmed_id is not None,
     )
+
+    # expand query to include ontology term if needed
+    if ontology_term:
+        query = add_ontology_query(query=query)
+        filtering, params = add_ontology_parameter(
+            existing_filters=filtering,
+            existing_params=params,
+            ontology_term=ontology_term,
+        )
 
     filtering, params = is_readable(filtering, params, is_readable_by)
     filtering, params = search(filtering, params, search_text)
@@ -72,9 +86,10 @@ def get(
             "gs_name": name,
             "gs_abbreviation": abbreviation,
             "pub_id": publication_id,
-            "publication.pubmed_id": pubmed_id,
+            "pub_pubmed": str(pubmed_id) if pubmed_id is not None else None,
             "gs_gene_id_type": int(gene_id_type) if gene_id_type is not None else None,
             "gs_status": status,
+            "gs_threshold_type": int(score_type) if score_type is not None else None,
         },
     )
 

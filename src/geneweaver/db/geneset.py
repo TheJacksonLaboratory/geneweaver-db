@@ -8,7 +8,8 @@ from geneweaver.core.schema.geneset import GenesetUpload
 from geneweaver.core.schema.score import GenesetScoreType
 from geneweaver.db.query import geneset as geneset_query
 from geneweaver.db.query.geneset.utils import geneset_upload_to_kwargs
-from geneweaver.db.utils import temp_override_row_factory
+from geneweaver.db.utils import GenesetTierOrTiers, temp_override_row_factory
+
 from psycopg import Cursor, rows
 from psycopg.rows import Row
 
@@ -18,7 +19,7 @@ def get(
     is_readable_by: Optional[int] = None,
     gs_id: Optional[int] = None,
     owner_id: Optional[int] = None,
-    curation_tier: Optional[GenesetTier] = None,
+    curation_tier: Optional[GenesetTierOrTiers] = None,
     species: Optional[Species] = None,
     name: Optional[str] = None,
     abbreviation: Optional[str] = None,
@@ -29,6 +30,8 @@ def get(
     limit: Optional[int] = None,
     offset: Optional[int] = None,
     with_publication_info: bool = True,
+    ontology_term: Optional[str] = None,
+    score_type: Optional[ScoreType] = None,
 ) -> List[Row]:
     """Get genesets from the database.
 
@@ -48,6 +51,8 @@ def get(
     :param limit: Limit the number of results.
     :param offset: Offset the results.
     :param with_publication_info: Include publication info in the return.
+    :param ontology_term: Show only results associated with this ontology term.
+    :param score_type: Show only results with given score type.
 
     :return: list of results using `.fetchall()`
     """
@@ -67,6 +72,8 @@ def get(
             limit=limit,
             offset=offset,
             with_publication_info=with_publication_info,
+            ontology_term=ontology_term,
+            score_type=score_type,
         )
     )
 

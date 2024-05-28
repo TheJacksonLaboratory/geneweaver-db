@@ -1,6 +1,6 @@
 """Utility functions for the geneset query."""
 
-from typing import Optional, Set, Tuple, Union
+from typing import Optional, Tuple
 
 from geneweaver.core.enum import GenesetTier
 from geneweaver.core.schema.geneset import GenesetUpload
@@ -14,9 +14,8 @@ from geneweaver.db.query.utils import (
     ParamDict,
     SQLList,
 )
+from geneweaver.db.utils import GenesetTierOrTiers
 from psycopg.sql import SQL, Composed
-
-GenesetTierOrTiers = Union[GenesetTier, Set[GenesetTier]]
 
 
 def format_select_query(
@@ -58,6 +57,34 @@ def format_select_query(
     else:
         query = query + SQL(",").join(GENESET_FIELDS) + SQL("FROM geneset")
     return query
+
+
+def add_ontology_query(query: Composed) -> Composed:
+    """Expand geneset query with join to ontology.
+
+    :param query: geneset base query
+    """
+    ontology_query = (
+        query
+        + SQL("JOIN geneset_ontology ON geneset.gs_id = geneset_ontology.gs_id")
+        + SQL("JOIN ontology ON geneset_ontology.ont_id = ontology.ont_id")
+    )
+
+    return ontology_query
+
+
+def add_ontology_parameter(
+    existing_filters: SQLList, existing_params: ParamDict, ontology_term: str
+) -> Tuple[SQLList, ParamDict]:
+    """Add the ontology term filter to the query.
+
+    :param existing_filters: The existing filters.
+    :param existing_params: The existing parameters.
+    :param ontology_term: The ontology term to filter by.
+    """
+    existing_filters.append(SQL("ontology.ont_ref_id IN(%(ontology_term)s)"))
+    existing_params["ontology_term"] = ontology_term
+    return existing_filters, existing_params
 
 
 def is_readable(
