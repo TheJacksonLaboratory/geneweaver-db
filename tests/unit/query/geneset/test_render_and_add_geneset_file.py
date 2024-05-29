@@ -64,7 +64,7 @@ def test_render_and_add_geneset_file(
 ):
     """Test the render_and_add_geneset_file query generation function."""
     with patch(
-        "geneweaver.db.query.geneset.write.add_geneset_file"
+        "geneweaver.db.query.geneset.write.add_geneset_file_raw"
     ) as mock_add_geneset_file:
         print(mock_add_geneset_file)
         result = add_geneset_file(gene_values, comments)

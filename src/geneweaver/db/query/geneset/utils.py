@@ -2,7 +2,7 @@
 
 from typing import Optional, Tuple
 
-from geneweaver.core.enum import GenesetAccess, GenesetTier
+from geneweaver.core.enum import GenesetTier
 from geneweaver.core.schema.geneset import GenesetUpload
 from geneweaver.db.query.geneset.const import (
     GENESET_FIELDS,
@@ -149,18 +149,14 @@ def geneset_upload_to_kwargs(geneset: GenesetUpload) -> dict:
     :param geneset: The geneset to process.
     :return: A dict of the SQL function kwargs for adding a geneset.
     """
-    tier = (
-        GenesetTier.TIER4
-        if geneset.access == GenesetAccess.PUBLIC
-        else GenesetTier.TIER5
-    )
+    tier = GenesetTier.TIER4 if geneset.private is not True else GenesetTier.TIER5
     return {
         "name": geneset.name,
-        "abbreviation": geneset.label,
+        "abbreviation": geneset.abbreviation,
         "tier": tier,
         "species": geneset.species,
-        "count": len(geneset.gene_list),
-        "score": geneset.score_type,
-        "gene_id_type": geneset.gene_identifier,
+        "count": len(geneset.values),
+        "score": geneset.score,
+        "gene_id_type": geneset.gene_id_type,
         "description": geneset.description,
     }
