@@ -275,13 +275,13 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "geneweaver-core"
-version = "0.9.1"
+version = "0.10.0a0"
 description = "The core of the Jax-Geneweaver Python library"
 optional = false
 python-versions = "<4.0,>=3.9"
 files = [
-    {file = "geneweaver_core-0.9.1-py3-none-any.whl", hash = "sha256:020b2bfa9f7849107fb756fc5486192faf56502c90e3ad37beff39318b5dea7f"},
-    {file = "geneweaver_core-0.9.1.tar.gz", hash = "sha256:a550d6bab23dbd1944308e5e89fedebee7320a571c409b35bccc075c428d3fee"},
+    {file = "geneweaver_core-0.10.0a0-py3-none-any.whl", hash = "sha256:d92c9c9449f2df118b311d168971dc4340ac6c0fa8d72935ae37e8a2f62ae502"},
+    {file = "geneweaver_core-0.10.0a0.tar.gz", hash = "sha256:de2652ae6751915ef3119ce93d630859e8ed8bfc2c413fb636d1072a57251680"},
 ]
 
 [package.dependencies]
@@ -985,4 +985,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "f7a42f2836633267cf7110fd4bd8dbc6b1eefec880b0c26774e17a9d5499de2e"
+content-hash = "13b19d0b79b80fab4898507d2115bb57a273332ec8449c3762b9d677bb286078"
