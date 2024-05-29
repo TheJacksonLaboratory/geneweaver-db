@@ -2,14 +2,13 @@
 
 from typing import List, Optional
 
-from geneweaver.core.enum import GeneIdentifier, GenesetTier, Species
+from geneweaver.core.enum import GeneIdentifier, GenesetTier, ScoreType, Species
 from geneweaver.core.schema.gene import GeneValue
 from geneweaver.core.schema.geneset import GenesetUpload
 from geneweaver.core.schema.score import GenesetScoreType
 from geneweaver.db.query import geneset as geneset_query
 from geneweaver.db.query.geneset.utils import geneset_upload_to_kwargs
 from geneweaver.db.utils import GenesetTierOrTiers, temp_override_row_factory
-
 from psycopg import Cursor, rows
 from psycopg.rows import Row
 
@@ -154,7 +153,7 @@ def by_project_id(
     return cursor.fetchall()
 
 
-def add(
+def add_geneset(
     cursor: Cursor,
     user_id: int,
     file_id: int,
@@ -170,6 +169,12 @@ def add(
     attribution: Optional[str] = None,
 ) -> Optional[Row]:
     """Add a geneset to the database.
+
+    NOTE: This function _only_ adds the geneset file to the database, and does not
+    perform any of the required related tasks for new genesets. You most likely *do not*
+    want to use this function.
+
+    If you are adding a new geneset, you should use the `add` function instead.
 
     :param cursor: A database cursor.
     :param user_id: The owner of the geneset.
@@ -212,6 +217,12 @@ def add_geneset_file(
 ) -> Optional[Row]:
     """Add a geneset file to the database.
 
+    NOTE: This function _only_ adds the geneset file to the database, and does not
+    perform any of the required related tasks for new genesets. You most likely *do not*
+    want to use this function.
+
+    If you are adding a new geneset, you should use the `add` function instead.
+
     :param cursor: A database cursor.
     :param values: A list of GeneValues to render into a file.
     :param comments: Comments to include with the file.
@@ -227,7 +238,7 @@ def add_geneset_file(
     return cursor.fetchone()
 
 
-def add_geneset_full(
+def add(
     cursor: Cursor,
     geneset: GenesetUpload,
     owner_id: Optional[int] = None,
@@ -243,9 +254,9 @@ def add_geneset_full(
     """
     file_id = add_geneset_file(
         cursor=cursor,
-        values=geneset.values,
+        values=geneset.gene_list,
     )
-    geneset_id = add(
+    geneset_id = add_geneset(
         cursor=cursor,
         user_id=owner_id,
         file_id=file_id,
