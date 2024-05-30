@@ -6,6 +6,7 @@ from geneweaver.core.enum import GeneIdentifier
 from geneweaver.core.schema.batch import GenesetValueInput
 from geneweaver.db.exceptions import GeneweaverTypeError
 from psycopg import Cursor
+from psycopg.sql import SQL
 
 
 def format_geneset_values_for_file_insert(
@@ -124,45 +125,65 @@ def insert_geneset_value(
 
 
 def by_geneset_id(
-    cursor: Cursor, geneset_id: int, identifier: Optional[GeneIdentifier] = None
+    cursor: Cursor,
+    geneset_id: int,
+    identifier: Optional[GeneIdentifier] = None,
+    gsv_in_threshold: Optional[bool] = False,
 ) -> list:
     """Retrieve all geneset values associated with a geneset.
 
     :param cursor: The database cursor.
     :param geneset_id: The geneset ID to retrieve values for.
     :param identifier: The gene identifier to return.
+    :param gsv_in_threshold: optional. filter for geneset value that
+     are/aren't in the geneset’s threshold.
 
     :return: A list of geneset values associated with the geneset.
     """
     if identifier is not None:
-        return by_geneset_id_and_identifier(cursor, geneset_id, identifier)
+        return by_geneset_id_and_identifier(
+            cursor, geneset_id, identifier, gsv_in_threshold
+        )
     else:
-        return by_geneset_id_as_uploaded(cursor, geneset_id)
+        return by_geneset_id_as_uploaded(cursor, geneset_id, gsv_in_threshold)
 
 
-def by_geneset_id_as_uploaded(cursor: Cursor, geneset_id: int) -> list:
+def by_geneset_id_as_uploaded(
+    cursor: Cursor, geneset_id: int, gsv_in_threshold: Optional[bool] = False
+) -> list:
     """Retrieve all geneset values associated with a geneset.
 
     :param cursor: The database cursor.
     :param geneset_id: The geneset ID to retrieve values for.
+    :param gsv_in_threshold: optional. filter for geneset value that
+     are/aren't in the geneset’s threshold.
 
     :return: A list of geneset values associated with the geneset.
     """
-    cursor.execute(
+    base_query = SQL(
         """
         SELECT DISTINCT ON (gv.ode_gene_id) gv.*, g.ode_ref_id
         FROM        extsrc.geneset_value gv
         INNER JOIN  extsrc.gene g
         USING       (ode_gene_id)
-        WHERE  gs_id = %(geneset_id)s;
-        """,
-        {"geneset_id": geneset_id},
+        WHERE  gs_id = %(geneset_id)s
+        """
     )
+    params = {"geneset_id": geneset_id}
+
+    if gsv_in_threshold:
+        base_query += SQL("AND gv.gsv_in_threshold = %(gsv_in_threshold)s")
+        params["gsv_in_threshold"] = gsv_in_threshold
+
+    cursor.execute(base_query, params)
     return cursor.fetchall()
 
 
 def by_geneset_id_and_identifier(
-    cursor: Cursor, geneset_id: int, identifier: GeneIdentifier
+    cursor: Cursor,
+    geneset_id: int,
+    identifier: GeneIdentifier,
+    gsv_in_threshold: Optional[bool] = False,
 ) -> list:
     """Retrieve all geneset values associated with a geneset.
 
@@ -173,10 +194,12 @@ def by_geneset_id_and_identifier(
     :param cursor: The database cursor.
     :param geneset_id: The geneset ID to retrieve values for.
     :param identifier: The gene identifier to use.
-
+    :param gsv_in_threshold: optional. filter for geneset value that
+     are/aren't in the geneset’s threshold.
     :return: A list of geneset values associated with the geneset.
+
     """
-    cursor.execute(
+    base_query = SQL(
         """
             SELECT gsv.gs_id, gsv.ode_gene_id, gsv.gsv_value, gsv.gsv_hits,
                    gsv.gsv_source_list, gsv.gsv_value_list,
@@ -229,10 +252,16 @@ def by_geneset_id_and_identifier(
             LEFT OUTER JOIN homology AS h
             ON          gsv.ode_gene_id = h.ode_gene_id
 
-            WHERE h.hom_source_name = 'Homologene' OR
+            WHERE (h.hom_source_name = 'Homologene' OR
                   -- In case the gene doesn't have any homologs
-                  h.hom_source_name IS NULL
-        """,
-        {"geneset_id": geneset_id, "gdb_id": int(identifier)},
+                  h.hom_source_name IS NULL)
+        """
     )
+    params = {"geneset_id": geneset_id, "gdb_id": int(identifier)}
+
+    if gsv_in_threshold:
+        base_query += SQL("AND gsv.gsv_in_threshold = %(gsv_in_threshold)s")
+        params["gsv_in_threshold"] = gsv_in_threshold
+
+    cursor.execute(base_query, params)
     return cursor.fetchall()
