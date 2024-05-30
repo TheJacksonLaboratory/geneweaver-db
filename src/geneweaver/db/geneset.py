@@ -2,8 +2,12 @@
 
 from typing import List, Optional
 
-from geneweaver.core.enum import GeneIdentifier, ScoreType, Species
+from geneweaver.core.enum import GeneIdentifier, GenesetTier, ScoreType, Species
+from geneweaver.core.schema.gene import GeneValue
+from geneweaver.core.schema.geneset import GenesetUpload
+from geneweaver.core.schema.score import GenesetScoreType
 from geneweaver.db.query import geneset as geneset_query
+from geneweaver.db.query.geneset.utils import geneset_upload_to_kwargs
 from geneweaver.db.utils import GenesetTierOrTiers, temp_override_row_factory
 from psycopg import Cursor, rows
 from psycopg.rows import Row
@@ -30,7 +34,7 @@ def get(
 ) -> List[Row]:
     """Get genesets from the database.
 
-    :param cursor: An async database cursor.
+    :param cursor: A database cursor.
     :param is_readable_by: A user ID to check if the user can read the results.
     :param gs_id: Show only results with this geneset ID.
     :param owner_id: Show only results owned by this user ID.
@@ -147,6 +151,121 @@ def by_project_id(
         )
     )
     return cursor.fetchall()
+
+
+def add_geneset(
+    cursor: Cursor,
+    user_id: int,
+    file_id: int,
+    name: str,
+    abbreviation: str,
+    tier: GenesetTier,
+    species: Species,
+    count: int,
+    score: GenesetScoreType,
+    gene_id_type: GeneIdentifier,
+    description: str = "",
+    publication_id: Optional[int] = None,
+    attribution: Optional[str] = None,
+) -> Optional[Row]:
+    """Add a geneset to the database.
+
+    NOTE: This function _only_ adds the geneset file to the database, and does not
+    perform any of the required related tasks for new genesets. You most likely *do not*
+    want to use this function.
+
+    If you are adding a new geneset, you should use the `add` function instead.
+
+    :param cursor: A database cursor.
+    :param user_id: The owner of the geneset.
+    :param file_id: The file ID of the geneset's values.
+    :param name: The name of the geneset.
+    :param abbreviation: The abbreviation of the geneset.
+    :param tier: The curation tier of the geneset.
+    :param species: The species of the geneset.
+    :param count: The number of genes in the geneset.
+    :param score: The score of the geneset (GenesetScoreType includes threshold info).
+    :param gene_id_type: The gene ID type of the geneset.
+    :param description: The description of the geneset.
+    :param publication_id: The publication ID of the geneset (not the PubMed ID).
+    :param attribution: The attribution of the geneset.
+    :return:
+    """
+    cursor.execute(
+        *geneset_query.add(
+            user_id=user_id,
+            file_id=file_id,
+            name=name,
+            abbreviation=abbreviation,
+            tier=tier,
+            species=species,
+            count=count,
+            score=score,
+            gene_id_type=gene_id_type,
+            description=description,
+            publication_id=publication_id,
+            attribution=attribution,
+        )
+    )
+    return cursor.fetchone()
+
+
+def add_geneset_file(
+    cursor: Cursor,
+    values: List[GeneValue],
+    comments: str = "",
+) -> Optional[Row]:
+    """Add a geneset file to the database.
+
+    NOTE: This function _only_ adds the geneset file to the database, and does not
+    perform any of the required related tasks for new genesets. You most likely *do not*
+    want to use this function.
+
+    If you are adding a new geneset, you should use the `add` function instead.
+
+    :param cursor: A database cursor.
+    :param values: A list of GeneValues to render into a file.
+    :param comments: Comments to include with the file.
+    :return: The ID of the added file.
+    """
+    cursor.execute(
+        *geneset_query.add_geneset_file(
+            values=values,
+            comments=comments,
+        )
+    )
+
+    return cursor.fetchone()
+
+
+def add(
+    cursor: Cursor,
+    geneset: GenesetUpload,
+    owner_id: Optional[int] = None,
+    publication_id: Optional[int] = None,
+) -> int:
+    """Add a geneset to the database with all necessary components.
+
+    :param cursor: A database cursor.
+    :param geneset: An instance of a GenesetUpload schema.
+    :param owner_id: The owner of the geneset.
+    :param publication_id: The (internal) publication ID associated with the Geneset.
+    :return: The geneset ID.
+    """
+    file_id = add_geneset_file(
+        cursor=cursor,
+        values=geneset.gene_list,
+    )
+    geneset_id = add_geneset(
+        cursor=cursor,
+        user_id=owner_id,
+        file_id=file_id,
+        publication_id=publication_id,
+        **geneset_upload_to_kwargs(geneset)
+    )
+    cursor.execute(*geneset_query.reparse_geneset_file(geneset_id=geneset_id))
+    cursor.execute(*geneset_query.process_thresholds(geneset_id=geneset_id))
+    return geneset_id
 
 
 # --------------------------------------------------------------------------------------

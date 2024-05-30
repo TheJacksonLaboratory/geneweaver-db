@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 from geneweaver.core.schema.gene import GeneValue
-from geneweaver.db.query.geneset import render_and_add_geneset_file
+from geneweaver.db.query.geneset import add_geneset_file
 
 
 @pytest.mark.parametrize(
@@ -64,10 +64,10 @@ def test_render_and_add_geneset_file(
 ):
     """Test the render_and_add_geneset_file query generation function."""
     with patch(
-        "geneweaver.db.query.geneset.write.add_geneset_file"
+        "geneweaver.db.query.geneset.write.add_geneset_file_raw"
     ) as mock_add_geneset_file:
         print(mock_add_geneset_file)
-        result = render_and_add_geneset_file(gene_values, comments)
+        result = add_geneset_file(gene_values, comments)
         print(result)
         assert mock_add_geneset_file.call_count == 1
         assert expected_size == mock_add_geneset_file.call_args[0][0]

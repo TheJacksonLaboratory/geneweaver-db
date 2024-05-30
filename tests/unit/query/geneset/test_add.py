@@ -1,6 +1,7 @@
 """Test the geneset.write.add query generation function."""
 
-from geneweaver.core.enum import GeneIdentifier, GenesetTier, Species
+from geneweaver.core.enum import GeneIdentifier, GenesetTier, ScoreType, Species
+from geneweaver.core.schema.score import GenesetScoreType
 from geneweaver.db.query.geneset.write import add
 from psycopg.sql import SQL, Composed, Identifier, Placeholder
 
@@ -12,14 +13,13 @@ def test_geneset_add():
         file_id=1,
         name="a string",
         abbreviation="a string",
-        publication_id=1,
         tier=GenesetTier.TIER1,
-        description="a string",
         species=Species.MUS_MUSCULUS,
         count=1,
-        threshold_type="a string",
-        threshold=1.0,
+        score=GenesetScoreType(score_type=ScoreType.P_VALUE, threshold=0.05),
         gene_id_type=GeneIdentifier.GENE_SYMBOL,
+        description="a string",
+        publication_id=1,
         attribution="a string",
     )
     for item in query:

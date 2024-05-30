@@ -1,9 +1,10 @@
 """SQL query generation code for writing genesets."""
 
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from geneweaver.core.enum import GeneIdentifier, GenesetTier, Species
 from geneweaver.core.schema.gene import GeneValue
+from geneweaver.core.schema.score import GenesetScoreType
 from psycopg.sql import SQL, Composed
 
 
@@ -12,15 +13,14 @@ def add(
     file_id: int,
     name: str,
     abbreviation: str,
-    publication_id: int,
     tier: GenesetTier,
-    description: str,
     species: Species,
     count: int,
-    threshold_type: str,
-    threshold: float,
+    score: GenesetScoreType,
     gene_id_type: GeneIdentifier,
-    attribution: str,
+    description: str = "",
+    publication_id: Optional[int] = None,
+    attribution: Optional[str] = None,
 ) -> Tuple[Composed, dict]:
     """Add a geneset to the database.
 
@@ -33,8 +33,7 @@ def add(
     :param description: The description of the geneset.
     :param species: The species of the geneset.
     :param count: The count of the geneset.
-    :param threshold_type: The threshold type of the geneset.
-    :param threshold: The threshold of the geneset.
+    :param score: The threshold type and amount of the geneset.
     :param gene_id_type: The gene ID type of the geneset.
     :param attribution: The attribution of the geneset.
 
@@ -73,8 +72,8 @@ def add(
         "gs_description": description,
         "sp_id": int(species),
         "gs_count": count,
-        "gs_threshold_type": threshold_type,
-        "gs_threshold": threshold,
+        "gs_threshold_type": int(score.score_type),
+        "gs_threshold": score.threshold_as_db_string(),
         "gs_groups": "",
         "gs_gene_id_type": int(gene_id_type),
         "gs_created": "NOW()",
@@ -84,7 +83,7 @@ def add(
     return query, params
 
 
-def render_and_add_geneset_file(
+def add_geneset_file(
     values: List[GeneValue],
     comments: str = "",
 ) -> Tuple[Composed, dict]:
@@ -99,10 +98,10 @@ def render_and_add_geneset_file(
     """
     contents = "\n".join(f"{value.symbol}\t{value.value}" for value in values)
     size = len(contents)
-    return add_geneset_file(size, contents, comments)
+    return add_geneset_file_raw(size, contents, comments)
 
 
-def add_geneset_file(
+def add_geneset_file_raw(
     size: int,
     contents: str,
     comments: str,
@@ -121,4 +120,32 @@ def add_geneset_file(
         + SQL("RETURNING file_id")
     ).join(" ")
     params = {"file_size": size, "file_contents": contents, "file_comments": comments}
+    return query, params
+
+
+def reparse_geneset_file(geneset_id: int) -> Tuple[Composed, dict]:
+    """Call the `reparse_geneset_file` function in the database.
+
+    :param geneset_id: The ID of the geneset to reparse.
+    :return: A query (and params) that can be executed on a cursor.
+    """
+    query = (
+        SQL("SELECT")
+        + SQL("production.reparse_geneset_file($(reparse_geneset_file__geneset_id));")
+    ).join(" ")
+    params = {"reparse_geneset_file__geneset_id": geneset_id}
+    return query, params
+
+
+def process_thresholds(geneset_id: int) -> Tuple[Composed, dict]:
+    """Call the `process_thresholds` function in the database.
+
+    :param geneset_id: The ID of the geneset to process.
+    :return: A query (and params) that can be executed on a cursor.
+    """
+    query = (
+        SQL("SELECT")
+        + SQL("production.process_thresholds($(process_thresholds__geneset_id));")
+    ).join(" ")
+    params = {"process_thresholds__geneset_id": geneset_id}
     return query, params
