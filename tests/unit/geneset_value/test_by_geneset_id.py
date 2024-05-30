@@ -13,6 +13,8 @@ from tests.unit.testing_utils import (
 
 
 @pytest.mark.parametrize("geneset_id", [406756, 105683, 56893])
+@pytest.mark.parametrize("identifier", [None, GeneIdentifier.ENSEMBLE_GENE])
+@pytest.mark.parametrize("gsv_in_threshold", [None, True, False])
 @pytest.mark.parametrize(
     "geneset_value",
     [
@@ -21,10 +23,15 @@ from tests.unit.testing_utils import (
         ["g", "h", "i"],
     ],
 )
-def test_by_geneset_id(geneset_id, geneset_value, cursor):
+def test_by_geneset_id(geneset_id, identifier, gsv_in_threshold, geneset_value, cursor):
     """Test the geneset_values.by_geneset_id function."""
     cursor.fetchall.return_value = geneset_value
-    result = by_geneset_id(cursor, geneset_id)
+    result = by_geneset_id(
+        cursor,
+        geneset_id=geneset_id,
+        identifier=identifier,
+        gsv_in_threshold=gsv_in_threshold,
+    )
     assert result == geneset_value
     assert cursor.execute.call_count == 1
     assert cursor.fetchall.call_count == 1
@@ -47,6 +54,16 @@ def test_by_geneset_id_calls_correct_function(
     _ = by_geneset_id(cursor, 1, identifier=GeneIdentifier.ENSEMBLE_GENE)
     assert mock_as_uploaded.call_count == 1
     assert mock_identifier.call_count == 1
+
+    _ = by_geneset_id(cursor, 1, gsv_in_threshold=True)
+    assert mock_as_uploaded.call_count == 2
+    assert mock_identifier.call_count == 1
+
+    _ = by_geneset_id(
+        cursor, 1, identifier=GeneIdentifier.ENSEMBLE_GENE, gsv_in_threshold=True
+    )
+    assert mock_as_uploaded.call_count == 2
+    assert mock_identifier.call_count == 2
 
 
 test_by_geneset_id_execute_raises_error = create_execute_raises_error_test(
