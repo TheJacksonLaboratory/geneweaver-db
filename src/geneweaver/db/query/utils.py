@@ -69,6 +69,7 @@ def search(
 ) -> Tuple[SQLList, ParamDict]:
     """Add the search filter to the query.
 
+    :param field_ts_vector: proj_tsvector column in db table
     :param existing_filters: The existing filters.
     :param existing_params: The existing parameters.
     :param search_text: The search text to filter by.

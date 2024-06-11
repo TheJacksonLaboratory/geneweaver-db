@@ -31,14 +31,14 @@ def get(
 ) -> Tuple[Composed, dict]:
     """Get projects by any filtering criteria.
 
-    @param project_id:
-    @param owner_id:
-    @param name:
-    @param starred:
-    @param search_text:
-    @param limit:
-    @param offset:
-    @return:
+    :param project_id: Show only results for this project identifier id
+    :param owner_id: Show only results owned by this user ID.
+    :param name: Show only results with this project name
+    :param starred: Show projects with star flag
+    :param search_text: Return projects that match this search text (using PostgreSQL
+                        full-text search).
+    :param limit: Limit the number of results.
+    :param offset: Offset the results.
 
     """
     params = {}

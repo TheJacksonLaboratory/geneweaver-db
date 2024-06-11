@@ -1,4 +1,4 @@
-"""Database code for interacting with Publication table."""
+"""Database code for interacting with Project table."""
 
 from typing import List, Optional
 
