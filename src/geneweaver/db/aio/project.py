@@ -1,14 +1,14 @@
-"""Database code for interacting with Project table."""
+"""Database code for interacting with Publication table."""
 
 from typing import List, Optional
 
 from geneweaver.db.query import project as project_query
-from psycopg import Cursor
+from psycopg import AsyncCursor
 from psycopg.rows import Row
 
 
-def get(
-    cursor: Cursor,
+async def get(
+    cursor: AsyncCursor,
     project_id: Optional[int] = None,
     owner_id: Optional[int] = None,
     name: Optional[str] = None,
@@ -19,7 +19,7 @@ def get(
 ) -> List[Row]:
     """Get projects from the database.
 
-    :param cursor: A database cursor.
+    :param cursor: A database asynch cursor.
     :param project_id: Show only results for this project identifier id
     :param owner_id: Show only results owned by this user ID.
     :param name: Show only results with this project name
@@ -30,7 +30,7 @@ def get(
     :param offset: Offset the results.
     @return:
     """
-    cursor.execute(
+    await cursor.execute(
         *project_query.get(
             project_id=project_id,
             owner_id=owner_id,
@@ -42,4 +42,4 @@ def get(
         )
     )
 
-    return cursor.fetchall()
+    return await cursor.fetchall()

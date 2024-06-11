@@ -2,7 +2,22 @@
 
 from typing import Optional, Tuple
 
-from psycopg.sql import Composed
+from geneweaver.db.query.utils import construct_filters, search
+from geneweaver.db.utils import format_sql_fields, limit_and_offset
+from psycopg.sql import SQL, Composed, Identifier
+
+PROJECT_TSVECTOR = (Identifier("project") + Identifier("pj_tsvector")).join(".")
+
+PROJECT_FIELD_MAP = {
+    "pj_id": "id",
+    "usr_id": "owner_id",
+    "pj_name": "name",
+    "pj_groups": "groups",
+    "pj_notes": "notes",
+    "pj_created": "created",
+    "pj_star": "star",
+}
+PROJECT_FIELDS = format_sql_fields(PROJECT_FIELD_MAP, query_table="project")
 
 
 def get(
@@ -16,9 +31,35 @@ def get(
 ) -> Tuple[Composed, dict]:
     """Get projects by any filtering criteria.
 
-    NOTE: NOT IMPLEMENTED
+    @param project_id:
+    @param owner_id:
+    @param name:
+    @param starred:
+    @param search_text:
+    @param limit:
+    @param offset:
+    @return:
+
     """
-    raise NotImplementedError()
+    params = {}
+    filtering = []
+    query = SQL("SELECT")
+    query = query + SQL(",").join(PROJECT_FIELDS) + SQL("FROM project")
+
+    filtering, params = search(PROJECT_TSVECTOR, filtering, params, search_text)
+
+    filtering, params = construct_filters(
+        filtering,
+        params,
+        {"id": project_id, "usr_id": owner_id, "name": name, "star": starred},
+    )
+
+    if len(filtering) > 0:
+        query += SQL("WHERE") + SQL("AND").join(filtering)
+
+    query = limit_and_offset(query, limit, offset).join(" ")
+
+    return query, params
 
 
 def shared_with_user(
