@@ -19,7 +19,7 @@ async def get(
 ) -> List[Row]:
     """Get projects from the database.
 
-    :param cursor: A database asynch cursor.
+    :param cursor: A database async cursor.
     :param project_id: Show only results for this project identifier id
     :param owner_id: Show only results owned by this user ID.
     :param name: Show only results with this project name
