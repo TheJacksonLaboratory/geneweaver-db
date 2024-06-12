@@ -28,7 +28,7 @@ async def get(
                         full-text search).
     :param limit: Limit the number of results.
     :param offset: Offset the results.
-    @return:
+    :return: list of results using `.fetchall()`
     """
     await cursor.execute(
         *project_query.get(
@@ -40,6 +40,27 @@ async def get(
             limit=limit,
             offset=offset,
         )
+    )
+
+    return await cursor.fetchall()
+
+
+async def shared_with_user(
+    cursor: AsyncCursor,
+    user_id: int,
+    limit: Optional[int] = None,
+    offset: Optional[int] = None,
+) -> List[Row]:
+    """Get projects shared with the given user id.
+
+    :param cursor: A database async cursor.
+    :param user_id: Show only results with projects shared with this user id
+    :param limit: Limit the number of results.
+    :param offset: Offset the results.
+    :return: list of results using `.fetchall()`
+    """
+    await cursor.execute(
+        *project_query.shared_with_user(user_id=user_id, limit=limit, offset=offset)
     )
 
     return await cursor.fetchall()
