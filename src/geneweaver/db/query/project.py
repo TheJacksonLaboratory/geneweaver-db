@@ -105,8 +105,23 @@ def add(
     notes: str,
     starred: bool = False,
 ) -> Tuple[Composed, dict]:
-    """Add a new publication.
+    """Add a new project.
 
-    NOTE: NOT IMPLEMENTED
+    :param user_id: user id to insert
+    :param name: project name to insert
+    :param notes: project notes to insert
+    :param starred: start indicator
+
+    :return: A query (and params) that can be executed on a cursor.
     """
-    raise NotImplementedError()
+    start_char = "t" if starred else "f"
+    params = {"user_id": user_id, "name": name, "notes": notes, "star": start_char}
+
+    values = "VALUES (%(name)s, %(user_id)s, %(notes)s, %(star)s, now())"
+    query = (
+        SQL("INSERT INTO project (pj_name, usr_id, pj_notes, pj_star, pj_created)")
+        + SQL(values)
+        + SQL("RETURNING pj_id")
+    ).join(" ")
+
+    return query, params
