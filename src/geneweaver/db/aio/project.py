@@ -2,6 +2,7 @@
 
 from typing import List, Optional
 
+from geneweaver.core.schema.project import ProjectCreate
 from geneweaver.db.query import project as project_query
 from psycopg import AsyncCursor
 from psycopg.rows import Row
@@ -64,3 +65,22 @@ async def shared_with_user(
     )
 
     return await cursor.fetchall()
+
+
+async def add(
+    cursor: AsyncCursor, project: ProjectCreate, user_id: int, starred: bool = False
+) -> Optional[Row]:
+    """Add a new project.
+
+    :param cursor: A database async cursor
+    :param project: project data for creation
+    :param user_id: user id to insert
+    :param starred: start indicator
+
+    :return: The ID of the added project
+    """
+    await cursor.execute(
+        *project_query.add(user_id=user_id, starred=starred, **project.dict())
+    )
+
+    return await cursor.fetchone()
