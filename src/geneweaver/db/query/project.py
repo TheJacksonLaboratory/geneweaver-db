@@ -40,6 +40,7 @@ def get(
     :param limit: Limit the number of results.
     :param offset: Offset the results.
 
+    :return: A query (and params) that can be executed on a cursor.
     """
     params = {}
     filtering = []
@@ -67,11 +68,35 @@ def shared_with_user(
     limit: Optional[int] = None,
     offset: Optional[int] = None,
 ) -> Tuple[Composed, dict]:
-    """Get project that are shared with a user.
+    """Get projects shared with the given user id.
 
-    NOTE: NOT IMPLEMENTED
+    :param user_id: Show only results with projects shared with this user id
+    :param limit: Limit the number of results.
+    :param offset: Offset the results.
+
+    :return: A query (and params) that can be executed on a cursor.
     """
-    raise NotImplementedError()
+    query_fields = (
+        SQL("COUNT(gs_id),")
+        + SQL(",").join(PROJECT_FIELDS)
+        + SQL(",usr_email AS owner")
+    )
+    query = SQL("SELECT")
+    query = (
+        query
+        + query_fields
+        + SQL("FROM project")
+        + SQL("NATURAL JOIN project2geneset, usr")
+        + SQL("WHERE usr.usr_id=project.usr_id")
+        + SQL("AND project.usr_id<>%(user_id)s")
+        + SQL("AND project_is_readable(%(user_id)s, pj_id)")
+        + SQL("GROUP BY project.usr_id, pj_name, pj_id, owner")
+        + SQL("ORDER BY pj_name")
+    ).join(" ")
+    params = {"user_id": user_id}
+
+    query = limit_and_offset(query, limit, offset).join("")
+    return query, params
 
 
 def add(

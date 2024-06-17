@@ -12,7 +12,7 @@ from geneweaver.db.query.project import PROJECT_FIELD_MAP, get
 @pytest.mark.parametrize("limit", [None, 1, 10])
 @pytest.mark.parametrize("offset", [None, 1, 10])
 def test_all_kwargs(project_id, owner_id, name, starred, search_text, limit, offset):
-    """Test all the kwarg combinations for query.gene.get."""
+    """Test all the kwarg combinations for query.project.get."""
     query, params = get(
         project_id=project_id,
         owner_id=owner_id,
