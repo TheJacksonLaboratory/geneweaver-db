@@ -125,3 +125,44 @@ def add(
     ).join(" ")
 
     return query, params
+
+
+def insert_geneset_to_project(
+    project_id: int, geneset_id: int
+) -> Tuple[Composed, dict]:
+    """Add a genset to a project. Insert association.
+
+    :param project_id: project identifier id to associate with geneset
+    :param geneset_id: geneset identifier to add to project
+
+    :return: A query (and params) that can be executed on a cursor.
+    """
+    params = {"project_id": project_id, "geneset_id": geneset_id}
+    values = "VALUES (%(project_id)s, %(geneset_id)s, now())"
+    query = (
+        SQL("INSERT INTO project2geneset (pj_id, gs_id, modified_on)")
+        + SQL(values)
+        + SQL("RETURNING *")
+    ).join(" ")
+
+    return query, params
+
+
+def remove_geneset_from_project(
+    project_id: int, geneset_id: int
+) -> Tuple[Composed, dict]:
+    """Delete a genset from a project. Remove association.
+
+    :param project_id: project identifier id to associate with geneset
+    :param geneset_id: geneset identifier to add to project
+
+    :return: A query (and params) that can be executed on a cursor.
+    """
+    params = {"project_id": project_id, "geneset_id": geneset_id}
+    query = (
+        SQL("DELETE FROM project2geneset")
+        + SQL("WHERE pj_id = %(project_id)s AND gs_id = %(geneset_id)s")
+        + SQL("RETURNING *")
+    ).join(" ")
+
+    return query, params

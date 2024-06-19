@@ -89,3 +89,43 @@ def add(
     )
 
     return cursor.fetchone()
+
+
+def add_geneset_to_project(
+    cursor: Cursor, project_id: int, geneset_id: int
+) -> Optional[Row]:
+    """Add a genset to a project. Insert association.
+
+    :param cursor: A database cursor
+    :param project_id: project identifier id to associate with geneset
+    :param geneset_id: geneset identifier to add to project
+
+    :return: record of the association
+    """
+    cursor.execute(
+        *project_query.insert_geneset_to_project(
+            project_id=project_id, geneset_id=geneset_id
+        )
+    )
+
+    return cursor.fetchone()
+
+
+def delete_geneset_from_project(
+    cursor: Cursor, project_id: int, geneset_id: int
+) -> Optional[Row]:
+    """Delete a genset from a project. Remove association.
+
+    :param cursor: A database cursor
+    :param project_id: project identifier id to remove association with geneset
+    :param geneset_id: geneset identifier to remove from project
+
+    :return:
+    """
+    cursor.execute(
+        *project_query.remove_geneset_from_project(
+            project_id=project_id, geneset_id=geneset_id
+        )
+    )
+
+    return cursor.fetchone()
