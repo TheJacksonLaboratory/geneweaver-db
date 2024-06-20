@@ -100,7 +100,7 @@ def add_geneset_to_project(
     :param project_id: project identifier id to associate with geneset
     :param geneset_id: geneset identifier to add to project
 
-    :return: record of the association
+    :return: record of created the association (project id, geneset id)
     """
     cursor.execute(
         *project_query.insert_geneset_to_project(
@@ -120,7 +120,7 @@ def delete_geneset_from_project(
     :param project_id: project identifier id to remove association with geneset
     :param geneset_id: geneset identifier to remove from project
 
-    :return:
+    :return: record of the deleted association (project id, geneset id)
     """
     cursor.execute(
         *project_query.remove_geneset_from_project(

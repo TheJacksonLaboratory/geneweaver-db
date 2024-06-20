@@ -142,7 +142,7 @@ def insert_geneset_to_project(
     query = (
         SQL("INSERT INTO project2geneset (pj_id, gs_id, modified_on)")
         + SQL(values)
-        + SQL("RETURNING *")
+        + SQL("RETURNING pj_id, gs_id")
     ).join(" ")
 
     return query, params
@@ -162,7 +162,7 @@ def remove_geneset_from_project(
     query = (
         SQL("DELETE FROM project2geneset")
         + SQL("WHERE pj_id = %(project_id)s AND gs_id = %(geneset_id)s")
-        + SQL("RETURNING *")
+        + SQL("RETURNING pj_id, gs_id")
     ).join(" ")
 
     return query, params
