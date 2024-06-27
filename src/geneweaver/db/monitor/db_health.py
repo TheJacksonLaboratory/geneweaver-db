@@ -49,7 +49,10 @@ def check_gene_count(
 def health_check(
     cursor: Cursor,
 ) -> dict:
-    """Check DB health."""
+    """Check DB health.
+
+    :param cursor: db cursor
+    """
     health_reponse = {}
 
     # gene identifier last update
