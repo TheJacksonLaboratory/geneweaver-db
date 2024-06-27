@@ -57,14 +57,14 @@ def health_check(
 
     # gene identifier last update
     gi_update = check_last_gi_update(cursor=cursor)
-    health_reponse["gene_identifier_last_update"] = gi_update[0]
+    health_reponse["gene_identifier_last_update"] = gi_update
 
     # gene count
     gene_count = check_gene_count(cursor=cursor)
-    health_reponse["gene_count"] = gene_count[0]
+    health_reponse["gene_count"] = gene_count
 
     # geneset count
     geneset_count = check_geneset_count(cursor=cursor)
-    health_reponse["geneset_count"] = geneset_count[0]
+    health_reponse["geneset_count"] = geneset_count
 
     return health_reponse

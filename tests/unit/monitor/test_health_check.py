@@ -11,9 +11,9 @@ from tests.unit.testing_utils import (
 def test_health_check(cursor):
     """Test the db health check."""
     mock_return = {
-        "gene_identifier_last_update": 1,
-        "gene_count": 1,
-        "geneset_count": 1,
+        "gene_identifier_last_update": (1,),
+        "gene_count": (1,),
+        "geneset_count": (1,),
     }
     cursor.fetchone.return_value = (1,)
     result = health_check(cursor)
