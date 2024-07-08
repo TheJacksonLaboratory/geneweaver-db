@@ -30,3 +30,24 @@ def by_geneset(
     )
 
     return cursor.fetchall()
+
+
+def add_ontology_to_geneset(
+    cursor: Cursor, ontology_id: int, geneset_id: int, gso_ref_type: str
+) -> Optional[Row]:
+    """Relate an ontology term with a geneset. Insert association.
+
+    :param cursor: A database cursor
+    :param ontology_id: ontology term id to associate with geneset
+    :param geneset_id: geneset identifier to add to project
+    :param gso_ref_type: geneset ontology reference type
+
+    :return: record of created the association (geneset id, ontology_id)
+    """
+    cursor.execute(
+        *ontology_query.insert_geneset_ontology_association(
+            geneset_id=geneset_id, ontology_id=ontology_id, gso_ref_type=gso_ref_type
+        )
+    )
+
+    return cursor.fetchone()

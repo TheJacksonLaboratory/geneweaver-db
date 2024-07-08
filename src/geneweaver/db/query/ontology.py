@@ -41,3 +41,29 @@ def by_geneset(
     query = limit_and_offset(query, limit, offset).join(" ")
 
     return query, params
+
+
+def insert_geneset_ontology_association(
+    ontology_id: int, geneset_id: int, gso_ref_type: str
+) -> Tuple[Composed, dict]:
+    """Relate an ontology term with a geneset. Insert association.
+
+    :param ontology_id: ontology term id to associate with geneset
+    :param geneset_id: geneset identifier
+    :param gso_ref_type: geneset ontology reference type
+
+    :return: A query (and params) that can be executed on a cursor.
+    """
+    params = {
+        "geneset_id": geneset_id,
+        "ontology_id": ontology_id,
+        "gso_ref_type": gso_ref_type,
+    }
+    values = "VALUES (%(geneset_id)s, %(ontology_id)s, %(gso_ref_type)s)"
+    query = (
+        SQL("INSERT INTO geneset_ontology gs_id, ont_id, gso_ref_type)")
+        + SQL(values)
+        + SQL("RETURNING gs_id, ont_id")
+    ).join(" ")
+
+    return query, params
