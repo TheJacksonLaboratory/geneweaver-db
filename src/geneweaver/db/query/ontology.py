@@ -22,7 +22,7 @@ def by_geneset(
     query = SQL("SELECT")
     query_fields = (
         SQL("geneset.gs_id AS geneset_id")
-        + SQL(",ontology.ont_ref_id AS ontology_id")
+        + SQL(",ontology.ont_ref_id AS ontolog_term_id")
         + SQL(",ontology.ont_name AS name")
         + SQL(",ontology.ont_description as description")
         + SQL(",ontologydb.ontdb_name as source_ontology")
@@ -43,12 +43,12 @@ def by_geneset(
     return query, params
 
 
-def insert_geneset_ontology_association(
-    ontology_id: int, geneset_id: int, gso_ref_type: str
+def insert_geneset_ontology_term_association(
+    ontology_term_id: int, geneset_id: int, gso_ref_type: str
 ) -> Tuple[Composed, dict]:
     """Relate an ontology term with a geneset. Insert association.
 
-    :param ontology_id: ontology term id to associate with geneset
+    :param ontology_term_id: ontology term id to associate with geneset
     :param geneset_id: geneset identifier
     :param gso_ref_type: geneset ontology reference type
 
@@ -56,12 +56,12 @@ def insert_geneset_ontology_association(
     """
     params = {
         "geneset_id": geneset_id,
-        "ontology_id": ontology_id,
+        "ontolog_term_id": ontology_term_id,
         "gso_ref_type": gso_ref_type,
     }
-    values = "VALUES (%(geneset_id)s, %(ontology_id)s, %(gso_ref_type)s)"
+    values = "VALUES (%(geneset_id)s, %(ontolog_term_id)s, %(gso_ref_type)s)"
     query = (
-        SQL("INSERT INTO geneset_ontology gs_id, ont_id, gso_ref_type)")
+        SQL("INSERT INTO geneset_ontology (gs_id, ont_id, gso_ref_type)")
         + SQL(values)
         + SQL("RETURNING gs_id, ont_id")
     ).join(" ")

@@ -19,5 +19,5 @@ def test_all_kwargs(geneset_id, limit, offset):
 
     str_query = str(query)
 
-    for key in ["ontology_id", "name", "description", "source_ontology"]:
+    for key in ["ontolog_term_id", "name", "description", "source_ontology"]:
         assert key in str_query

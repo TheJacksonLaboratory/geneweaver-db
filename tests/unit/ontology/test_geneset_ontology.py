@@ -2,9 +2,9 @@
 
 import pytest
 from geneweaver.db.aio.ontology import (
-    add_ontology_to_geneset as async_add_ontology_to_geneset,
+    add_ontology_term_to_geneset as async_add_ontology_term_to_geneset,
 )
-from geneweaver.db.ontology import add_ontology_to_geneset
+from geneweaver.db.ontology import add_ontology_term_to_geneset
 
 from tests.unit.testing_utils import (
     async_create_execute_raises_error_test,
@@ -17,11 +17,11 @@ from tests.unit.testing_utils import (
 @pytest.mark.parametrize("ont_id", [1])
 @pytest.mark.parametrize("geneset_id", [1])
 @pytest.mark.parametrize("gso_ref_type", ["test"])
-def test_add_ontology_to_geneset(ont_id, geneset_id, gso_ref_type, cursor):
+def test_add_ontology_term_to_geneset(ont_id, geneset_id, gso_ref_type, cursor):
     """Test the ontology.add_ontology_to_geneset function."""
     cursor.fetchone.return_value = (1, 1)
 
-    result = add_ontology_to_geneset(
+    result = add_ontology_term_to_geneset(
         cursor=cursor,
         geneset_id=geneset_id,
         ontology_id=ont_id,
@@ -36,16 +36,16 @@ def test_add_ontology_to_geneset(ont_id, geneset_id, gso_ref_type, cursor):
 @pytest.mark.parametrize("ont_id", [1])
 @pytest.mark.parametrize("geneset_id", [1])
 @pytest.mark.parametrize("gso_ref_type", ["test"])
-async def test_async_add_ontology_to_geneset(
+async def test_async_add_ontology_term_to_geneset(
     ont_id, geneset_id, gso_ref_type, async_cursor
 ):
     """Test the ontology.add_ontology_to_geneset function."""
     async_cursor.fetchone.return_value = (1, 1)
 
-    result = await async_add_ontology_to_geneset(
+    result = await async_add_ontology_term_to_geneset(
         cursor=async_cursor,
         geneset_id=geneset_id,
-        ontology_id=ont_id,
+        ontolog_term_id=ont_id,
         gso_ref_type=gso_ref_type,
     )
     assert result == (1, 1)
@@ -55,17 +55,17 @@ async def test_async_add_ontology_to_geneset(
 
 
 test_add_execute_raises_error = create_execute_raises_error_test(
-    add_ontology_to_geneset, 1, 1, "test"
+    add_ontology_term_to_geneset, 1, 1, "test"
 )
 
 test_add_fetchone_raises_error = create_fetchone_raises_error_test(
-    add_ontology_to_geneset, 1, 1, "test"
+    add_ontology_term_to_geneset, 1, 1, "test"
 )
 
 test_async_add_execute_raises_error = async_create_execute_raises_error_test(
-    async_add_ontology_to_geneset, 1, 1, "test"
+    async_add_ontology_term_to_geneset, 1, 1, "test"
 )
 
 test_async_add_fetchone_raises_error = async_create_fetchone_raises_error_test(
-    async_add_ontology_to_geneset, 1, 1, "test"
+    async_add_ontology_term_to_geneset, 1, 1, "test"
 )
