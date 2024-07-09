@@ -53,3 +53,26 @@ async def add_ontology_term_to_geneset(
     )
 
     return await cursor.fetchone()
+
+
+async def delete_ontology_term_from_geneset(
+    cursor: AsyncCursor, ontology_term_id: int, geneset_id: int, gso_ref_type: str
+) -> Optional[Row]:
+    """Remove ontology term from a geneset. Delete association.
+
+    :param cursor: A database cursor
+    :param ontology_term_id: ontology term id to delete from geneset
+    :param geneset_id: geneset identifier to add to project
+    :param gso_ref_type: geneset ontology reference type
+
+    :return: record of deleted the association (geneset id, ontolog_term_id)
+    """
+    await cursor.execute(
+        *ontology_query.delete_geneset_ontology_term_association(
+            geneset_id=geneset_id,
+            ontology_term_id=ontology_term_id,
+            gso_ref_type=gso_ref_type,
+        )
+    )
+
+    return await cursor.fetchone()
