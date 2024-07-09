@@ -22,7 +22,7 @@ def by_geneset(
     query = SQL("SELECT")
     query_fields = (
         SQL("geneset.gs_id AS geneset_id")
-        + SQL(",ontology.ont_ref_id AS ontology_id")
+        + SQL(",ontology.ont_ref_id AS ontolog_term_id")
         + SQL(",ontology.ont_name AS name")
         + SQL(",ontology.ont_description as description")
         + SQL(",ontologydb.ontdb_name as source_ontology")
@@ -39,5 +39,31 @@ def by_geneset(
     params = {"gs_id": geneset_id}
 
     query = limit_and_offset(query, limit, offset).join(" ")
+
+    return query, params
+
+
+def insert_geneset_ontology_term_association(
+    ontology_term_id: int, geneset_id: int, gso_ref_type: str
+) -> Tuple[Composed, dict]:
+    """Relate an ontology term with a geneset. Insert association.
+
+    :param ontology_term_id: ontology term id to associate with geneset
+    :param geneset_id: geneset identifier
+    :param gso_ref_type: geneset ontology reference type
+
+    :return: A query (and params) that can be executed on a cursor.
+    """
+    params = {
+        "geneset_id": geneset_id,
+        "ontolog_term_id": ontology_term_id,
+        "gso_ref_type": gso_ref_type,
+    }
+    values = "VALUES (%(geneset_id)s, %(ontolog_term_id)s, %(gso_ref_type)s)"
+    query = (
+        SQL("INSERT INTO geneset_ontology (gs_id, ont_id, gso_ref_type)")
+        + SQL(values)
+        + SQL("RETURNING gs_id, ont_id")
+    ).join(" ")
 
     return query, params
