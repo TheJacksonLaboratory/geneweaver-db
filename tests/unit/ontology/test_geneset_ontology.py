@@ -4,7 +4,13 @@ import pytest
 from geneweaver.db.aio.ontology import (
     add_ontology_term_to_geneset as async_add_ontology_term_to_geneset,
 )
-from geneweaver.db.ontology import add_ontology_term_to_geneset
+from geneweaver.db.aio.ontology import (
+    delete_ontology_term_from_geneset as async_delete_ontology_term_from_geneset,
+)
+from geneweaver.db.ontology import (
+    add_ontology_term_to_geneset,
+    delete_ontology_term_from_geneset,
+)
 
 from tests.unit.testing_utils import (
     async_create_execute_raises_error_test,
@@ -24,7 +30,7 @@ def test_add_ontology_term_to_geneset(ont_id, geneset_id, gso_ref_type, cursor):
     result = add_ontology_term_to_geneset(
         cursor=cursor,
         geneset_id=geneset_id,
-        ontology_id=ont_id,
+        ontology_term_id=ont_id,
         gso_ref_type=gso_ref_type,
     )
     assert result == (1, 1)
@@ -54,6 +60,46 @@ async def test_async_add_ontology_term_to_geneset(
     assert async_cursor.fetchall.call_count == 0
 
 
+@pytest.mark.parametrize("ont_id", [1])
+@pytest.mark.parametrize("geneset_id", [1])
+@pytest.mark.parametrize("gso_ref_type", ["test"])
+def test_delete_ontology_term_from_geneset(ont_id, geneset_id, gso_ref_type, cursor):
+    """Test the ontology.delete_ontology_term_from_geneset function."""
+    cursor.fetchone.return_value = (1, 1)
+
+    result = delete_ontology_term_from_geneset(
+        cursor=cursor,
+        geneset_id=geneset_id,
+        ontology_term_id=ont_id,
+        gso_ref_type=gso_ref_type,
+    )
+    assert result == (1, 1)
+    assert cursor.execute.call_count == 1
+    assert cursor.fetchone.call_count == 1
+    assert cursor.fetchall.call_count == 0
+
+
+@pytest.mark.parametrize("ont_id", [1])
+@pytest.mark.parametrize("geneset_id", [1])
+@pytest.mark.parametrize("gso_ref_type", ["test"])
+async def test_async_delete_ontology_term_from_geneset(
+    ont_id, geneset_id, gso_ref_type, async_cursor
+):
+    """Test the ontology.delete_ontology_term_from_geneset function."""
+    async_cursor.fetchone.return_value = (1, 1)
+
+    result = await async_delete_ontology_term_from_geneset(
+        cursor=async_cursor,
+        geneset_id=geneset_id,
+        ontology_term_id=ont_id,
+        gso_ref_type=gso_ref_type,
+    )
+    assert result == (1, 1)
+    assert async_cursor.execute.call_count == 1
+    assert async_cursor.fetchone.call_count == 1
+    assert async_cursor.fetchall.call_count == 0
+
+
 test_add_execute_raises_error = create_execute_raises_error_test(
     add_ontology_term_to_geneset, 1, 1, "test"
 )
@@ -68,4 +114,20 @@ test_async_add_execute_raises_error = async_create_execute_raises_error_test(
 
 test_async_add_fetchone_raises_error = async_create_fetchone_raises_error_test(
     async_add_ontology_term_to_geneset, 1, 1, "test"
+)
+
+test_delete_execute_raises_error = create_execute_raises_error_test(
+    delete_ontology_term_from_geneset, 1, 1, "test"
+)
+
+test_delete_fetchone_raises_error = create_fetchone_raises_error_test(
+    delete_ontology_term_from_geneset, 1, 1, "test"
+)
+
+test_async_delete_execute_raises_error = async_create_execute_raises_error_test(
+    async_delete_ontology_term_from_geneset, 1, 1, "test"
+)
+
+test_async_delete_fetchone_raises_error = async_create_fetchone_raises_error_test(
+    async_delete_ontology_term_from_geneset, 1, 1, "test"
 )
