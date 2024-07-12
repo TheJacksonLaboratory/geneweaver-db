@@ -1,7 +1,6 @@
 """Test the threshold.set_geneset_threshold query generation function."""
 
 import pytest
-from pydantic import ValidationError
 from geneweaver.core.enum import ScoreType
 from geneweaver.core.schema.score import GenesetScoreType
 from geneweaver.db.query.threshold import (
