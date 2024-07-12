@@ -1,6 +1,7 @@
 """Test the threshold.set_geneset_threshold query generation function."""
 
 import pytest
+from pydantic import ValidationError
 from geneweaver.core.enum import ScoreType
 from geneweaver.core.schema.score import GenesetScoreType
 from geneweaver.db.query.threshold import (
@@ -35,6 +36,14 @@ from geneweaver.db.query.threshold import (
 )
 def test_set_geneset_threshold(geneset_id, score_type, threshold):
     """Test the set_geneset_threshold function for both async and sync."""
+    # Threshold_low values are not allowed for score types other than correlation and
+    # effect
+    if (
+        score_type not in [ScoreType.CORRELATION, ScoreType.EFFECT]
+        and "threshold_low" in threshold
+    ):
+        del threshold["threshold_low"]
+
     geneset_score_type = GenesetScoreType(score_type=score_type, **threshold)
     sql, params = set_geneset_value_threshold(geneset_id, geneset_score_type)
 
@@ -103,10 +112,14 @@ def test_set_geneset_threshold_error(geneset_id, score_type, threshold):
     """Test the set_geneset_threshold function for an error."""
     geneset_id = 0
     geneset_score_type = GenesetScoreType(
-        score_type=score_type,
-        threshold_low=threshold["threshold_low"],
+        score_type=ScoreType.CORRELATION,
         threshold=threshold["threshold"],
     )
+
+    # We patch the values back to their invalid state since pydantic will now
+    # complain on initialization. We still want to check that this is caught.
+    geneset_score_type.score_type = score_type
+    geneset_score_type.threshold_low = threshold["threshold_low"]
 
     error_str = (
         "geneset_score_type.threshold must be larger "

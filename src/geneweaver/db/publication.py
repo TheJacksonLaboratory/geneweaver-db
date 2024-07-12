@@ -64,7 +64,7 @@ def add(cursor: Cursor, publication: PublicationInfo) -> Optional[rows.Row]:
 
     :return: optional row using `.fetchone()`
     """
-    cursor.execute(*publication_query.add(**publication.dict()))
+    cursor.execute(*publication_query.add(**publication.model_dump()))
     return cursor.fetchone()
 
 

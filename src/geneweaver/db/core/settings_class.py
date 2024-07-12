@@ -20,7 +20,7 @@ from typing_extensions import Self, Type
 class Settings(BaseSettings):
     """Settings class for the GeneWeaver Database module."""
 
-    DEBUG_MODE = False
+    DEBUG_MODE: bool = False
 
     CONNECTION_SCHEME: str = "postgresql"
 
@@ -48,11 +48,11 @@ class Settings(BaseSettings):
             self.URI = str(
                 PostgresDsn.build(
                     scheme=self.CONNECTION_SCHEME,
-                    user=self.USERNAME,
+                    username=self.USERNAME,
                     password=self.PASSWORD,
                     host=self.SERVER,
-                    port=str(self.PORT),
-                    path=f"/{self.NAME or ''}",
+                    port=self.PORT,
+                    path=f"{self.NAME or ''}",
                 )
             )
         return self
