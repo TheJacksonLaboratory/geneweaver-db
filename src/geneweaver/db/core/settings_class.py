@@ -11,6 +11,7 @@ GWDB_NAME=your_database_name
 
 # ruff: noqa: N805, ANN101, ANN401
 from typing import Optional
+from typing_extensions import Type, Self
 
 from pydantic import PostgresDsn, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -32,13 +33,15 @@ class Settings(BaseSettings):
 
     @field_validator("SERVER", mode="after")
     @classmethod
-    def name_must_contain_space(cls, v: str) -> str:
+    def name_must_contain_space(cls: Type['Settings'], v: str) -> str:
+        """Ensure that the server name is not 'localhost'."""
         if v == "localhost":
             return "127.0.0.1"
         return v
 
     @model_validator(mode="after")
-    def assemble_db_connection(self):
+    def assemble_db_connection(self) -> Self:
+        """Build the database connection string."""
         if isinstance(self.URI, str):
             self.URI = str(PostgresDsn(self.URI))
         else:
@@ -52,6 +55,7 @@ class Settings(BaseSettings):
                     path=f"/{self.NAME or ''}",
                 )
             )
+        return self
 
     model_config = SettingsConfigDict(
         env_prefix="GWDB_", env_file=".env", case_sensitive=True
