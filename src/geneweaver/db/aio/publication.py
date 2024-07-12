@@ -66,7 +66,7 @@ async def add(cursor: AsyncCursor, publication: PublicationInfo) -> Optional[row
 
     :return: optional row using `.fetchone()`
     """
-    await cursor.execute(*publication_query.add(**publication.dict()))
+    await cursor.execute(*publication_query.add(**publication.model_dump()))
     return await cursor.fetchone()
 
 

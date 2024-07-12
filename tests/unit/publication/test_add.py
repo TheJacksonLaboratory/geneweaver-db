@@ -17,7 +17,7 @@ EXAMPLE_PUBLICATION = PublicationInfo(
     abstract="Abstract 1",
     journal="Journal 1",
     pubmed_id="12345678",
-    pages=1,
+    pages="1",
     month="Dec",
     year=2021,
 )

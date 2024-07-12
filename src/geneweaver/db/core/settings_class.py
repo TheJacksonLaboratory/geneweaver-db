@@ -10,15 +10,17 @@ GWDB_NAME=your_database_name
 """
 
 # ruff: noqa: N805, ANN101, ANN401
-from typing import Any, Dict, Optional
+from typing import Optional
 
-from pydantic import BaseSettings, PostgresDsn, validator
+from pydantic import PostgresDsn, field_validator, model_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from typing_extensions import Self, Type
 
 
 class Settings(BaseSettings):
     """Settings class for the GeneWeaver Database module."""
 
-    DEBUG_MODE = False
+    DEBUG_MODE: bool = False
 
     CONNECTION_SCHEME: str = "postgresql"
 
@@ -29,32 +31,32 @@ class Settings(BaseSettings):
     PORT: int = 5432
     URI: Optional[str] = None
 
-    @validator("SERVER", pre=True)
-    def replace_localhost(cls, v: str) -> str:
-        """Replace localhost with 127.0.0.1."""
+    @field_validator("SERVER", mode="after")
+    @classmethod
+    def name_must_contain_space(cls: Type["Settings"], v: str) -> str:
+        """Ensure that the server name is not 'localhost'."""
         if v == "localhost":
             return "127.0.0.1"
         return v
 
-    @validator("URI", pre=True)
-    def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> str:
-        """Build the database connection string, unless one is provided."""
-        if isinstance(v, str):
-            return v
-        return str(
-            PostgresDsn.build(
-                scheme=values.get("CONNECTION_SCHEME"),
-                user=values.get("USERNAME"),
-                password=values.get("PASSWORD"),
-                host=values.get("SERVER"),
-                port=str(values.get("PORT")),
-                path=f"/{values.get('NAME') or ''}",
+    @model_validator(mode="after")
+    def assemble_db_connection(self) -> Self:
+        """Build the database connection string."""
+        if isinstance(self.URI, str):
+            self.URI = str(PostgresDsn(self.URI))
+        else:
+            self.URI = str(
+                PostgresDsn.build(
+                    scheme=self.CONNECTION_SCHEME,
+                    username=self.USERNAME,
+                    password=self.PASSWORD,
+                    host=self.SERVER,
+                    port=self.PORT,
+                    path=f"{self.NAME or ''}",
+                )
             )
-        )
+        return self
 
-    class Config:
-        """Configuration for the BaseSettings class."""
-
-        env_prefix = "GWDB_"
-        env_file = ".env"
-        case_sensitive = True
+    model_config = SettingsConfigDict(
+        env_prefix="GWDB_", env_file=".env", case_sensitive=True
+    )

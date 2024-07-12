@@ -85,7 +85,7 @@ def add(
 
     """
     cursor.execute(
-        *project_query.add(user_id=user_id, starred=starred, **project.dict())
+        *project_query.add(user_id=user_id, starred=starred, **project.model_dump())
     )
 
     return cursor.fetchone()

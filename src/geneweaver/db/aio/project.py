@@ -80,7 +80,7 @@ async def add(
     :return: The ID of the added project
     """
     await cursor.execute(
-        *project_query.add(user_id=user_id, starred=starred, **project.dict())
+        *project_query.add(user_id=user_id, starred=starred, **project.model_dump())
     )
 
     return await cursor.fetchone()
