@@ -11,10 +11,10 @@ GWDB_NAME=your_database_name
 
 # ruff: noqa: N805, ANN101, ANN401
 from typing import Optional
-from typing_extensions import Type, Self
 
 from pydantic import PostgresDsn, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from typing_extensions import Self, Type
 
 
 class Settings(BaseSettings):
