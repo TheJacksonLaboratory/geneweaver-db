@@ -33,7 +33,7 @@ class Settings(BaseSettings):
 
     @field_validator("SERVER", mode="after")
     @classmethod
-    def name_must_contain_space(cls: Type['Settings'], v: str) -> str:
+    def name_must_contain_space(cls: Type["Settings"], v: str) -> str:
         """Ensure that the server name is not 'localhost'."""
         if v == "localhost":
             return "127.0.0.1"
