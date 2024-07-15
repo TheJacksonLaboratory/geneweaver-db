@@ -58,5 +58,5 @@ class Settings(BaseSettings):
         return self
 
     model_config = SettingsConfigDict(
-        env_prefix="GWDB_", env_file=".env", case_sensitive=True
+        env_prefix="GWDB_", env_file=".env", case_sensitive=True, extra="ignore"
     )
