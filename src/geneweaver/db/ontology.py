@@ -76,3 +76,53 @@ def delete_ontology_term_from_geneset(
     )
 
     return cursor.fetchone()
+
+
+def by_ontology_db(
+    cursor: Cursor,
+    ontology_db_id: int,
+    limit: Optional[int] = None,
+    offset: Optional[int] = None,
+) -> List[Row]:
+    """Get ontology terms by ontology DB id from the database.
+
+    :param cursor: An database cursor.
+    :param ontology_db_id: Show only results for this ontology db identifier
+    :param limit: Limit the number of results.
+    :param offset: Offset the results.
+    :return: list of results using `.fetchall()`
+    """
+    cursor.execute(
+        *ontology_query.by_ontology_db(
+            ontology_db_id=ontology_db_id,
+            limit=limit,
+            offset=offset,
+        )
+    )
+
+    return cursor.fetchall()
+
+
+def get_ontology_dbs(
+    cursor: Cursor,
+    ontology_db_id: Optional[int] = None,
+    limit: Optional[int] = None,
+    offset: Optional[int] = None,
+) -> List[Row]:
+    """Get available ontologies from the database.
+
+    :param cursor: A database cursor.
+    :param ontology_db_id: Show only results for this ontology db identifier
+    :param limit: Limit the number of results.
+    :param offset: Offset the results.
+    :return: list of results using `.fetchall()`
+    """
+    cursor.execute(
+        *ontology_query.get_ontology_dbs(
+            ontology_db_id=ontology_db_id,
+            limit=limit,
+            offset=offset,
+        )
+    )
+
+    return cursor.fetchall()
