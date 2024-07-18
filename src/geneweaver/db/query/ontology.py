@@ -95,3 +95,69 @@ def delete_geneset_ontology_term_association(
     ).join(" ")
 
     return query, params
+
+
+def by_ontology_db(
+    ontology_db_id: int,
+    limit: Optional[int] = None,
+    offset: Optional[int] = None,
+) -> Tuple[Composed, dict]:
+    """Create a psycopg query to get ontology terms by ontology id.
+
+    :param ontology_db_id: The ontology DB identifier to search for.
+    :param limit: The limit of results to return.
+    :param offset: The offset of results to return.
+
+    :return: A query (and params) that can be executed on a cursor.
+    """
+    query = SQL("SELECT")
+    query_fields = (
+        SQL("ontology.ont_ref_id AS ontology_term_id")
+        + SQL(",ontology.ont_name AS name")
+        + SQL(",ontology.ont_description as description")
+        + SQL(",ontologydb.ontdb_name as source_ontology")
+    )
+    query = (
+        query
+        + query_fields
+        + SQL("FROM ontology")
+        + SQL("JOIN ontologydb ON ontology.ontdb_id = ontologydb.ontdb_id")
+        + SQL("WHERE ontology.ontdb_id = %(ontology_db_id)s")
+    ).join(" ")
+    params = {"ontology_db_id": ontology_db_id}
+
+    query = limit_and_offset(query, limit, offset).join(" ")
+
+    return query, params
+
+
+def get_ontology_dbs(
+    ontology_db_id: Optional[int] = None,
+    limit: Optional[int] = None,
+    offset: Optional[int] = None,
+) -> Tuple[Composed, dict]:
+    """Create a psycopg query to get ontology terms by ontology id.
+
+    :param ontology_db_id: The ontology DB identifier to search for.
+    :param limit: The limit of results to return.
+    :param offset: The offset of results to return.
+
+    :return: A query (and params) that can be executed on a cursor.
+    """
+    query = SQL("SELECT")
+    query_fields = (
+        SQL("onto_db.ontdb_id AS ontology_db_id")
+        + SQL(",onto_db.ontdb_name AS name")
+        + SQL(",onto_db.ontdb_prefix as prefix")
+        + SQL(",onto_db.ontdb_linkout_url as url")
+    )
+    query = (query + query_fields + SQL("FROM ontologydb as onto_db")).join(" ")
+
+    params = {}
+    if ontology_db_id is not None:
+        query = (query + SQL("WHERE onto_db.ontdb_id = %(ontology_db_id)s")).join(" ")
+        params["ontology_db_id"] = ontology_db_id
+
+    query = limit_and_offset(query, limit, offset).join(" ")
+
+    return query, params

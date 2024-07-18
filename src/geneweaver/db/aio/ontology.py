@@ -19,7 +19,7 @@ async def by_geneset(
     :param geneset_id: Show only results for this geneset identifier
     :param limit: Limit the number of results.
     :param offset: Offset the results.
-    @return:
+    :return: list of results using `.fetchall()`
     """
     await cursor.execute(
         *ontology_query.by_geneset(
@@ -76,3 +76,53 @@ async def delete_ontology_term_from_geneset(
     )
 
     return await cursor.fetchone()
+
+
+async def by_ontology_db(
+    cursor: AsyncCursor,
+    ontology_db_id: int,
+    limit: Optional[int] = None,
+    offset: Optional[int] = None,
+) -> List[Row]:
+    """Get ontology terms by ontology DB id from the database.
+
+    :param cursor: An async database cursor.
+    :param ontology_db_id: Show only results for this ontology db identifier
+    :param limit: Limit the number of results.
+    :param offset: Offset the results.
+    :return: list of results using `.fetchall()`
+    """
+    await cursor.execute(
+        *ontology_query.by_ontology_db(
+            ontology_db_id=ontology_db_id,
+            limit=limit,
+            offset=offset,
+        )
+    )
+
+    return await cursor.fetchall()
+
+
+async def get_ontology_dbs(
+    cursor: AsyncCursor,
+    ontology_db_id: Optional[int] = None,
+    limit: Optional[int] = None,
+    offset: Optional[int] = None,
+) -> List[Row]:
+    """Get ontology ontologies DB from the database.
+
+    :param cursor: An async database cursor.
+    :param ontology_db_id: Show only results for this ontology db identifier
+    :param limit: Limit the number of results.
+    :param offset: Offset the results.
+    :return: list of results using `.fetchall()`
+    """
+    await cursor.execute(
+        *ontology_query.get_ontology_dbs(
+            ontology_db_id=ontology_db_id,
+            limit=limit,
+            offset=offset,
+        )
+    )
+
+    return await cursor.fetchall()
