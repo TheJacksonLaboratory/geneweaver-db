@@ -161,3 +161,29 @@ def get_ontology_dbs(
     query = limit_and_offset(query, limit, offset).join(" ")
 
     return query, params
+
+
+def by_ontology_term(onto_ref_term_id: str) -> Tuple[Composed, dict]:
+    """Create a psycopg query to get ontology term by ontology reference id.
+
+    :param onto_ref_term_id: The ontology term reference identifier to search for.
+    :return: A query (and params) that can be executed on a cursor.
+    """
+    query = SQL("SELECT")
+    query_fields = (
+        SQL("ontology.ont_id AS onto_id")
+        + SQL(",ontology.ont_ref_id AS onto_ref_term_id")
+        + SQL(",ontology.ont_name AS name")
+        + SQL(",ontology.ont_description as description")
+        + SQL(",ontologydb.ontdb_name as source_ontology")
+    )
+    query = (
+        query
+        + query_fields
+        + SQL("FROM ontology")
+        + SQL("JOIN ontologydb ON ontology.ontdb_id = ontologydb.ontdb_id")
+        + SQL("WHERE ontology.ont_ref_id = %(onto_ref_term_id)s")
+    ).join(" ")
+    params = {"onto_ref_term_id": onto_ref_term_id}
+
+    return query, params

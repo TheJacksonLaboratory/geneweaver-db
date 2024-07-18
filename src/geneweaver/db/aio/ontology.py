@@ -126,3 +126,19 @@ async def get_ontology_dbs(
     )
 
     return await cursor.fetchall()
+
+
+async def by_ontology_term(cursor: AsyncCursor, onto_ref_term_id: str) -> List[Row]:
+    """Get ontology term by term ref id from the database.
+
+    :param cursor: An database cursor.
+    :param onto_ref_term_id: The ontology term reference identifier to search for.
+    :return: ontology term record `.fetchone()`
+    """
+    await cursor.execute(
+        *ontology_query.by_ontology_term(
+            onto_ref_term_id=onto_ref_term_id,
+        )
+    )
+
+    return await cursor.fetchone()

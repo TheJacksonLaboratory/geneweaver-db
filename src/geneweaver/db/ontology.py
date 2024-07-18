@@ -126,3 +126,19 @@ def get_ontology_dbs(
     )
 
     return cursor.fetchall()
+
+
+def by_ontology_term(cursor: Cursor, onto_ref_term_id: str) -> List[Row]:
+    """Get ontology term by term ref id from the database.
+
+    :param cursor: An database cursor.
+    :param onto_ref_term_id: The ontology term reference identifier to search for.
+    :return: ontology term record `.fetchone()`
+    """
+    cursor.execute(
+        *ontology_query.by_ontology_term(
+            onto_ref_term_id=onto_ref_term_id,
+        )
+    )
+
+    return cursor.fetchone()
