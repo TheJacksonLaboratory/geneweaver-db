@@ -1,4 +1,4 @@
-"""Test the ontology.by_geneset db function."""
+"""Test the ontology.by_ontology_db db function."""
 
 import pytest
 from geneweaver.db.aio.ontology import (
