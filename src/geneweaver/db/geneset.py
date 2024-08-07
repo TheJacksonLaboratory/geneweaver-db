@@ -1,5 +1,6 @@
 """Geneset database functions."""
 
+from datetime import date
 from typing import List, Optional
 
 from geneweaver.core.enum import GeneIdentifier, GenesetTier, ScoreType, Species
@@ -31,6 +32,12 @@ def get(
     with_publication_info: bool = True,
     ontology_term: Optional[str] = None,
     score_type: Optional[ScoreType] = None,
+    lte_count: Optional[int] = None,
+    gte_count: Optional[int] = None,
+    created_after: Optional[date] = None,
+    created_before: Optional[date] = None,
+    updated_after: Optional[date] = None,
+    updated_before: Optional[date] = None,
 ) -> List[Row]:
     """Get genesets from the database.
 
@@ -47,11 +54,17 @@ def get(
     :param gene_id_type: Show only results with this gene ID type.
     :param search_text: Return genesets that match this search text (using PostgreSQL
                         full-text search).
-    :param limit: Limit the number of results.
-    :param offset: Offset the results.
     :param with_publication_info: Include publication info in the return.
     :param ontology_term: Show only results associated with this ontology term.
     :param score_type: Show only results with given score type.
+    :param lte_count: less than or equal count.
+    :param gte_count: greater than or equal count.
+    :param updated_before: Show only results updated before this date.
+    :param updated_after: Show only results updated after this date.
+    :param created_before: Show only results created before this date.
+    :param created_after: Show only results updated before this date.
+    :param limit: Limit the number of results.
+    :param offset: Offset the results.
 
     :return: list of results using `.fetchall()`
     """
@@ -73,6 +86,12 @@ def get(
             with_publication_info=with_publication_info,
             ontology_term=ontology_term,
             score_type=score_type,
+            lte_count=lte_count,
+            gte_count=gte_count,
+            created_after=created_after,
+            created_before=created_before,
+            updated_after=updated_after,
+            updated_before=updated_before,
         )
     )
 
