@@ -1,5 +1,6 @@
 """SQL query generation code for reading genesets."""
 
+from datetime import date
 from typing import Optional, Tuple
 
 from geneweaver.core.enum import GeneIdentifier, ScoreType, Species
@@ -11,7 +12,7 @@ from geneweaver.db.query.geneset.utils import (
     restrict_tier,
     search,
 )
-from geneweaver.db.query.utils import construct_filters
+from geneweaver.db.query.utils import construct_filters, construct_op_filters
 from geneweaver.db.utils import GenesetTierOrTiers, limit_and_offset
 from psycopg.sql import SQL, Composed
 
@@ -34,6 +35,12 @@ def get(
     with_publication_info: bool = True,
     ontology_term: Optional[str] = None,
     score_type: Optional[ScoreType] = None,
+    lte_count: Optional[int] = None,
+    gte_count: Optional[int] = None,
+    created_after: Optional[date] = None,
+    created_before: Optional[date] = None,
+    updated_after: Optional[date] = None,
+    updated_before: Optional[date] = None,
 ) -> Tuple[Composed, dict]:
     """Get genesets.
 
@@ -55,6 +62,12 @@ def get(
     :param with_publication_info: Include publication info in the return.
     :param ontology_term: Show only results associated with this ontology term.
     :param score_type: Show only results with given score type.
+    :param lte_count: less than or equal count.
+    :param gte_count: greater than or equal count.
+    :param updated_before: Show only results updated before this date.
+    :param updated_after: Show only results updated after this date.
+    :param created_before: Show only results created before this date.
+    :param created_after: Show only results updated before this date.
     """
     params = {}
     filtering = []
@@ -91,6 +104,49 @@ def get(
             "gs_status": status,
             "gs_threshold_type": int(score_type) if score_type is not None else None,
         },
+    )
+
+    filtering, params = construct_op_filters(
+        filters=filtering,
+        params=params,
+        filter_items=[
+            {
+                "field": "gs_count",
+                "value": lte_count,
+                "op": "<=",
+                "place_holder": "count_less_than",
+            },
+            {
+                "field": "gs_count",
+                "value": gte_count,
+                "op": ">=",
+                "place_holder": "count_greater_than",
+            },
+            {
+                "field": "gs_created",
+                "value": created_before,
+                "op": "<=",
+                "place_holder": "created_before",
+            },
+            {
+                "field": "gs_created",
+                "value": created_after,
+                "op": ">=",
+                "place_holder": "created_after",
+            },
+            {
+                "field": "gs_updated",
+                "value": updated_before,
+                "op": "<=",
+                "place_holder": "updated_before",
+            },
+            {
+                "field": "gs_updated",
+                "value": updated_after,
+                "op": ">=",
+                "place_holder": "updated_after",
+            },
+        ],
     )
 
     if len(filtering) > 0:
