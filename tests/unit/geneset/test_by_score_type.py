@@ -6,7 +6,29 @@ from geneweaver.db.aio.geneset import get as async_get
 from geneweaver.db.geneset import get
 
 
-@pytest.mark.parametrize("score_type", [score_type for score_type in ScoreType])
+@pytest.mark.parametrize(
+    "score_type",
+    [
+        None,
+        set(),
+        ScoreType.P_VALUE,
+        ScoreType.Q_VALUE,
+        ScoreType.EFFECT,
+        ScoreType.CORRELATION,
+        ScoreType.BINARY,
+        {ScoreType.P_VALUE},
+        {ScoreType.P_VALUE, ScoreType.Q_VALUE},
+        {ScoreType.P_VALUE, ScoreType.Q_VALUE, ScoreType.EFFECT},
+        {ScoreType.P_VALUE, ScoreType.Q_VALUE, ScoreType.EFFECT, ScoreType.CORRELATION},
+        {
+            ScoreType.P_VALUE,
+            ScoreType.Q_VALUE,
+            ScoreType.EFFECT,
+            ScoreType.CORRELATION,
+            ScoreType.BINARY,
+        },
+    ],
+)
 def test_by_score_type(score_type, example_genesets, cursor):
     """Test the geneset.get function by score type using a mock cursor."""
     cursor.fetchall.return_value = example_genesets
@@ -17,7 +39,29 @@ def test_by_score_type(score_type, example_genesets, cursor):
     assert cursor.fetchall.call_count == 1
 
 
-@pytest.mark.parametrize("score_type", [score_type for score_type in ScoreType])
+@pytest.mark.parametrize(
+    "score_type",
+    [
+        None,
+        set(),
+        ScoreType.P_VALUE,
+        ScoreType.Q_VALUE,
+        ScoreType.EFFECT,
+        ScoreType.CORRELATION,
+        ScoreType.BINARY,
+        {ScoreType.P_VALUE},
+        {ScoreType.P_VALUE, ScoreType.Q_VALUE},
+        {ScoreType.P_VALUE, ScoreType.Q_VALUE, ScoreType.EFFECT},
+        {ScoreType.P_VALUE, ScoreType.Q_VALUE, ScoreType.EFFECT, ScoreType.CORRELATION},
+        {
+            ScoreType.P_VALUE,
+            ScoreType.Q_VALUE,
+            ScoreType.EFFECT,
+            ScoreType.CORRELATION,
+            ScoreType.BINARY,
+        },
+    ],
+)
 async def test_async_by_score_type(score_type, example_genesets, async_cursor):
     """Test the geneset.get function by score type using a mock asynch cursor."""
     async_cursor.fetchall.return_value = example_genesets

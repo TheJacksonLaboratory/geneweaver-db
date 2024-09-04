@@ -3,13 +3,17 @@
 from datetime import date
 from typing import List, Optional
 
-from geneweaver.core.enum import GeneIdentifier, GenesetTier, ScoreType, Species
+from geneweaver.core.enum import GeneIdentifier, GenesetTier, Species
 from geneweaver.core.schema.gene import GeneValue
 from geneweaver.core.schema.geneset import GenesetUpload
 from geneweaver.core.schema.score import GenesetScoreType
 from geneweaver.db.query import geneset as geneset_query
 from geneweaver.db.query.geneset.utils import geneset_upload_to_kwargs
-from geneweaver.db.utils import GenesetTierOrTiers, temp_override_row_factory
+from geneweaver.db.utils import (
+    GenesetScoreTypeOrScoreTypes,
+    GenesetTierOrTiers,
+    temp_override_row_factory,
+)
 from psycopg import Cursor, rows
 from psycopg.rows import Row
 
@@ -31,7 +35,7 @@ def get(
     offset: Optional[int] = None,
     with_publication_info: bool = True,
     ontology_term: Optional[str] = None,
-    score_type: Optional[ScoreType] = None,
+    score_type: Optional[GenesetScoreTypeOrScoreTypes] = None,
     lte_count: Optional[int] = None,
     gte_count: Optional[int] = None,
     created_after: Optional[date] = None,
@@ -56,7 +60,7 @@ def get(
                         full-text search).
     :param with_publication_info: Include publication info in the return.
     :param ontology_term: Show only results associated with this ontology term.
-    :param score_type: Show only results with given score type.
+    :param score_type: Show only results with given score type(s).
     :param lte_count: less than or equal count.
     :param gte_count: greater than or equal count.
     :param updated_before: Show only results updated before this date.
