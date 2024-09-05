@@ -3,17 +3,22 @@
 from datetime import date
 from typing import Optional, Tuple
 
-from geneweaver.core.enum import GeneIdentifier, ScoreType, Species
+from geneweaver.core.enum import GeneIdentifier, Species
 from geneweaver.db.query.geneset.utils import (
     add_ontology_parameter,
     add_ontology_query,
     format_select_query,
     is_readable,
+    restrict_score_type,
     restrict_tier,
     search,
 )
 from geneweaver.db.query.utils import construct_filters, construct_op_filters
-from geneweaver.db.utils import GenesetTierOrTiers, limit_and_offset
+from geneweaver.db.utils import (
+    GenesetScoreTypeOrScoreTypes,
+    GenesetTierOrTiers,
+    limit_and_offset,
+)
 from psycopg.sql import SQL, Composed
 
 
@@ -34,7 +39,7 @@ def get(
     is_readable_by: Optional[int] = None,
     with_publication_info: bool = True,
     ontology_term: Optional[str] = None,
-    score_type: Optional[ScoreType] = None,
+    score_type: Optional[GenesetScoreTypeOrScoreTypes] = None,
     lte_count: Optional[int] = None,
     gte_count: Optional[int] = None,
     created_after: Optional[date] = None,
@@ -88,6 +93,7 @@ def get(
     filtering, params = is_readable(filtering, params, is_readable_by)
     filtering, params = search(filtering, params, search_text)
     filtering, params = restrict_tier(filtering, params, curation_tier)
+    filtering, params = restrict_score_type(filtering, params, score_type)
 
     filtering, params = construct_filters(
         filtering,
@@ -102,7 +108,6 @@ def get(
             "pub_pubmed": str(pubmed_id) if pubmed_id is not None else None,
             "gs_gene_id_type": int(gene_id_type) if gene_id_type is not None else None,
             "gs_status": status,
-            "gs_threshold_type": int(score_type) if score_type is not None else None,
         },
     )
 

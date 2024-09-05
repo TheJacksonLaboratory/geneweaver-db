@@ -2,7 +2,7 @@
 
 from typing import Optional, Tuple
 
-from geneweaver.core.enum import GenesetTier
+from geneweaver.core.enum import GenesetTier, ScoreType
 from geneweaver.core.schema.geneset import GenesetUpload
 from geneweaver.db.query.geneset.const import (
     GENESET_FIELDS,
@@ -14,7 +14,7 @@ from geneweaver.db.query.utils import (
     ParamDict,
     SQLList,
 )
-from geneweaver.db.utils import GenesetTierOrTiers
+from geneweaver.db.utils import GenesetScoreTypeOrScoreTypes, GenesetTierOrTiers
 from psycopg.sql import SQL, Composed
 
 
@@ -140,6 +140,25 @@ def restrict_tier(
     if curation_tier is not None:
         existing_filters.append(SQL("geneset.cur_id = ANY(%(curation_tier)s)"))
         existing_params["curation_tier"] = [int(tier) for tier in curation_tier]
+    return existing_filters, existing_params
+
+
+def restrict_score_type(
+    existing_filters: SQLList,
+    existing_params: ParamDict,
+    score_type: Optional[GenesetScoreTypeOrScoreTypes] = None,
+) -> Tuple[SQLList, ParamDict]:
+    """Restrict the query by score type.
+
+    :param existing_filters: The existing filters.
+    :param existing_params: The existing parameters.
+    :param score_type: The score types to filter by.
+    """
+    if isinstance(score_type, ScoreType):
+        score_type = {score_type}
+    if score_type is not None:
+        existing_filters.append(SQL("geneset.gs_threshold_type = ANY(%(score_type)s)"))
+        existing_params["score_type"] = [int(sc_type) for sc_type in score_type]
     return existing_filters, existing_params
 
 
