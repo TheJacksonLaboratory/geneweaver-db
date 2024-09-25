@@ -2,7 +2,7 @@
 
 from typing import Optional, Tuple
 
-from geneweaver.core.enum import GenesetTier, ScoreType
+from geneweaver.core.enum import GenesetTier, ScoreType, Species
 from geneweaver.core.schema.geneset import GenesetUpload
 from geneweaver.db.query.geneset.const import (
     GENESET_FIELDS,
@@ -14,7 +14,11 @@ from geneweaver.db.query.utils import (
     ParamDict,
     SQLList,
 )
-from geneweaver.db.utils import GenesetScoreTypeOrScoreTypes, GenesetTierOrTiers
+from geneweaver.db.utils import (
+    GenesetScoreTypeOrScoreTypes,
+    GenesetTierOrTiers,
+    SpeciesOrSpeciesSet,
+)
 from psycopg.sql import SQL, Composed
 
 
@@ -159,6 +163,25 @@ def restrict_score_type(
     if score_type is not None:
         existing_filters.append(SQL("geneset.gs_threshold_type = ANY(%(score_type)s)"))
         existing_params["score_type"] = [int(sc_type) for sc_type in score_type]
+    return existing_filters, existing_params
+
+
+def restrict_species(
+    existing_filters: SQLList,
+    existing_params: ParamDict,
+    species: Optional[SpeciesOrSpeciesSet] = None,
+) -> Tuple[SQLList, ParamDict]:
+    """Restrict the query by species.
+
+    :param existing_filters: The existing filters.
+    :param existing_params: The existing parameters.
+    :param species: The species to filter by.
+    """
+    if isinstance(species, Species):
+        species = {species}
+    if species is not None:
+        existing_filters.append(SQL("geneset.species_id = ANY(%(species)s)"))
+        existing_params["species"] = [int(spec) for spec in species]
     return existing_filters, existing_params
 
 

@@ -4,11 +4,12 @@
 import functools
 from typing import List, Optional, Set, Union
 
-from geneweaver.core.enum import GenesetTier, ScoreType
+from geneweaver.core.enum import GenesetTier, ScoreType, Species
 from geneweaver.db.exceptions import GeneweaverDoesNotExistError, GeneweaverValueError
 from psycopg import sql
 from psycopg.rows import Row
 
+SpeciesOrSpeciesSet = Union[Species, Set[Species]]
 GenesetTierOrTiers = Union[GenesetTier, Set[GenesetTier]]
 GenesetScoreTypeOrScoreTypes = Union[ScoreType, Set[ScoreType]]
 

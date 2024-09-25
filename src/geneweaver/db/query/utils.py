@@ -1,5 +1,6 @@
 """Utility functions for the SQL generation functions."""
 
+from datetime import date
 from typing import Dict, List, Optional, Tuple, Union
 
 from geneweaver.db.query.search import utils as search_utils
@@ -76,6 +77,61 @@ def construct_filters(
     return filters, params
 
 
+def add_op_filters(
+    filters: SQLList,
+    params: ParamDict,
+    lte_count: Optional[int] = None,
+    gte_count: Optional[int] = None,
+    created_after: Optional[date] = None,
+    created_before: Optional[date] = None,
+    updated_after: Optional[date] = None,
+    updated_before: Optional[date] = None,
+) -> Tuple[SQLList, ParamDict]:
+    """Add multiple simple filters with operators to the query."""
+    return construct_op_filters(
+        filters=filters,
+        params=params,
+        filter_items=[
+            {
+                "field": "gs_count",
+                "value": lte_count,
+                "op": "<=",
+                "place_holder": "count_less_than",
+            },
+            {
+                "field": "gs_count",
+                "value": gte_count,
+                "op": ">=",
+                "place_holder": "count_greater_than",
+            },
+            {
+                "field": "gs_created",
+                "value": created_before,
+                "op": "<=",
+                "place_holder": "created_before",
+            },
+            {
+                "field": "gs_created",
+                "value": created_after,
+                "op": ">=",
+                "place_holder": "created_after",
+            },
+            {
+                "field": "gs_updated",
+                "value": updated_before,
+                "op": "<=",
+                "place_holder": "updated_before",
+            },
+            {
+                "field": "gs_updated",
+                "value": updated_after,
+                "op": ">=",
+                "place_holder": "updated_after",
+            },
+        ],
+    )
+
+
 def construct_op_filters(
     filters: SQLList,
     params: ParamDict,
@@ -101,8 +157,6 @@ def construct_op_filters(
             place_holder=filter_item.get("place_holder"),
         )
 
-    print(filters)
-    print(params)
     return filters, params
 
 

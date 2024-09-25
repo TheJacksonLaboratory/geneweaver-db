@@ -13,7 +13,10 @@ from geneweaver.db.query.geneset.utils import (
     restrict_tier,
     search,
 )
-from geneweaver.db.query.utils import construct_filters, construct_op_filters
+from geneweaver.db.query.utils import (
+    add_op_filters,
+    construct_filters,
+)
 from geneweaver.db.utils import (
     GenesetScoreTypeOrScoreTypes,
     GenesetTierOrTiers,
@@ -110,48 +113,15 @@ def get(
             "gs_status": status,
         },
     )
-
-    filtering, params = construct_op_filters(
-        filters=filtering,
-        params=params,
-        filter_items=[
-            {
-                "field": "gs_count",
-                "value": lte_count,
-                "op": "<=",
-                "place_holder": "count_less_than",
-            },
-            {
-                "field": "gs_count",
-                "value": gte_count,
-                "op": ">=",
-                "place_holder": "count_greater_than",
-            },
-            {
-                "field": "gs_created",
-                "value": created_before,
-                "op": "<=",
-                "place_holder": "created_before",
-            },
-            {
-                "field": "gs_created",
-                "value": created_after,
-                "op": ">=",
-                "place_holder": "created_after",
-            },
-            {
-                "field": "gs_updated",
-                "value": updated_before,
-                "op": "<=",
-                "place_holder": "updated_before",
-            },
-            {
-                "field": "gs_updated",
-                "value": updated_after,
-                "op": ">=",
-                "place_holder": "updated_after",
-            },
-        ],
+    filtering, params = add_op_filters(
+        filtering,
+        params,
+        lte_count=lte_count,
+        gte_count=gte_count,
+        created_before=created_before,
+        created_after=created_after,
+        updated_before=updated_before,
+        updated_after=updated_after,
     )
 
     if len(filtering) > 0:
