@@ -1,8 +1,12 @@
 """Functions for generating search queries."""
 
 from enum import Enum
-from typing import Tuple
+from typing import Optional, Tuple
 
+from geneweaver.db.query.utils import (
+    ParamDict,
+    SQLList,
+)
 from psycopg.sql import SQL, Composed
 
 
@@ -53,3 +57,23 @@ def search_query(
     """
     query = SEARCH_QUERIES[query_type].format(search_config=str(search_config))
     return search_column + query, {"search": search_string}
+
+
+def search(
+    existing_filters: SQLList,
+    existing_params: ParamDict,
+    tsvector_col: Composed,
+    search_text: Optional[str] = None,
+) -> Tuple[SQLList, ParamDict]:
+    """Add the search filter to the query.
+
+    :param existing_filters: The existing filters.
+    :param existing_params: The existing parameters.
+    :param tsvector_col: The tsvector column to search.
+    :param search_text: The search text to filter by.
+    """
+    if search_text is not None:
+        search_sql, search_params = search_query(tsvector_col, search_text)
+        existing_filters.append(search_sql)
+        existing_params.update(search_params)
+    return existing_filters, existing_params

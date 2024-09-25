@@ -121,11 +121,9 @@ def search(
     :param existing_params: The existing parameters.
     :param search_text: The search text to filter by.
     """
-    if search_text is not None:
-        search_sql, search_params = utils.search_query(GENESET_TSVECTOR, search_text)
-        existing_filters.append(search_sql)
-        existing_params.update(search_params)
-    return existing_filters, existing_params
+    return utils.search(
+        existing_filters, existing_params, GENESET_TSVECTOR, search_text
+    )
 
 
 def restrict_tier(

@@ -9,8 +9,9 @@ from geneweaver.db.query.geneset.utils import (
     restrict_score_type,
     restrict_species,
     restrict_tier,
-    search,
 )
+from geneweaver.db.query.search import const
+from geneweaver.db.query.search.utils import search
 from geneweaver.db.query.utils import add_op_filters, construct_filters
 from geneweaver.db.utils import (
     GenesetScoreTypeOrScoreTypes,
@@ -62,7 +63,9 @@ def genesets(
     )
 
     filtering, params = is_readable(filtering, params, is_readable_by)
-    filtering, params = search(filtering, params, search_text)
+    filtering, params = search(
+        filtering, params, const.SEARCH_COMBINED_COL, search_text
+    )
     filtering, params = restrict_tier(filtering, params, curation_tier)
     filtering, params = restrict_score_type(filtering, params, score_type)
     filtering, params = restrict_species(filtering, params, species)
