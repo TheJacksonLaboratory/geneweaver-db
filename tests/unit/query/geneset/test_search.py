@@ -1,7 +1,8 @@
 """Test the internal _search function for geneset sql generation."""
 
 import pytest
-from geneweaver.db.query.geneset.utils import search
+from geneweaver.db.query.geneset.const import GENESET_TSVECTOR
+from geneweaver.db.query.search.utils import search
 
 
 @pytest.mark.parametrize("filters", [[], ["A"], ["A", "B", "C", "D"]])
@@ -11,7 +12,7 @@ from geneweaver.db.query.geneset.utils import search
 )
 def test_search(filters, params, search_text):
     """Test the internal _search function for geneset sql generation."""
-    result = search(filters, params, search_text)
+    result = search(filters, params, GENESET_TSVECTOR, search_text)
     assert result is not None
 
     filters_copy = filters.copy()

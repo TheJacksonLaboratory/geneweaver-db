@@ -4,6 +4,7 @@ from datetime import date
 from typing import Optional, Tuple
 
 from geneweaver.core.enum import GeneIdentifier, Species
+from geneweaver.db.query.geneset.const import GENESET_TSVECTOR
 from geneweaver.db.query.geneset.utils import (
     add_ontology_parameter,
     add_ontology_query,
@@ -11,9 +12,12 @@ from geneweaver.db.query.geneset.utils import (
     is_readable,
     restrict_score_type,
     restrict_tier,
-    search,
 )
-from geneweaver.db.query.utils import construct_filters, construct_op_filters
+from geneweaver.db.query.search.utils import search
+from geneweaver.db.query.utils import (
+    add_op_filters,
+    construct_filters,
+)
 from geneweaver.db.utils import (
     GenesetScoreTypeOrScoreTypes,
     GenesetTierOrTiers,
@@ -91,7 +95,7 @@ def get(
         )
 
     filtering, params = is_readable(filtering, params, is_readable_by)
-    filtering, params = search(filtering, params, search_text)
+    filtering, params = search(filtering, params, GENESET_TSVECTOR, search_text)
     filtering, params = restrict_tier(filtering, params, curation_tier)
     filtering, params = restrict_score_type(filtering, params, score_type)
 
@@ -110,48 +114,15 @@ def get(
             "gs_status": status,
         },
     )
-
-    filtering, params = construct_op_filters(
-        filters=filtering,
-        params=params,
-        filter_items=[
-            {
-                "field": "gs_count",
-                "value": lte_count,
-                "op": "<=",
-                "place_holder": "count_less_than",
-            },
-            {
-                "field": "gs_count",
-                "value": gte_count,
-                "op": ">=",
-                "place_holder": "count_greater_than",
-            },
-            {
-                "field": "gs_created",
-                "value": created_before,
-                "op": "<=",
-                "place_holder": "created_before",
-            },
-            {
-                "field": "gs_created",
-                "value": created_after,
-                "op": ">=",
-                "place_holder": "created_after",
-            },
-            {
-                "field": "gs_updated",
-                "value": updated_before,
-                "op": "<=",
-                "place_holder": "updated_before",
-            },
-            {
-                "field": "gs_updated",
-                "value": updated_after,
-                "op": ">=",
-                "place_holder": "updated_after",
-            },
-        ],
+    filtering, params = add_op_filters(
+        filtering,
+        params,
+        lte_count=lte_count,
+        gte_count=gte_count,
+        created_before=created_before,
+        created_after=created_after,
+        updated_before=updated_before,
+        updated_after=updated_after,
     )
 
     if len(filtering) > 0:

@@ -1,6 +1,6 @@
 """Constants for use in geneset queries."""
 
-from geneweaver.db.query.publication import PUB_FIELD_MAP
+from geneweaver.db.query.const import PUB_FIELD_MAP
 from geneweaver.db.utils import format_sql_fields
 from psycopg.sql import SQL, Identifier
 

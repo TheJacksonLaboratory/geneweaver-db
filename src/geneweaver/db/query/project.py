@@ -2,7 +2,8 @@
 
 from typing import Optional, Tuple
 
-from geneweaver.db.query.utils import construct_filters, search
+from geneweaver.db.query.search.utils import search
+from geneweaver.db.query.utils import construct_filters
 from geneweaver.db.utils import format_sql_fields, limit_and_offset
 from psycopg.sql import SQL, Composed, Identifier
 
@@ -47,7 +48,7 @@ def get(
     query = SQL("SELECT")
     query = query + SQL(",").join(PROJECT_FIELDS) + SQL("FROM project")
 
-    filtering, params = search(PROJECT_TSVECTOR, filtering, params, search_text)
+    filtering, params = search(filtering, params, PROJECT_TSVECTOR, search_text)
 
     filtering, params = construct_filters(
         filtering,

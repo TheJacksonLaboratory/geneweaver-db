@@ -1,28 +1,20 @@
-"""Full general search of Geneweaver Database."""
+"""Async database interaction code relating to searching."""
 
 from datetime import date
-from typing import Optional, Tuple
+from typing import List, Optional
 
-from geneweaver.db.query.geneset.utils import (
-    format_select_query,
-    is_readable,
-    restrict_score_type,
-    restrict_species,
-    restrict_tier,
-)
-from geneweaver.db.query.search import const
-from geneweaver.db.query.search.utils import search
-from geneweaver.db.query.utils import add_op_filters, construct_filters
+from geneweaver.db.query import search
 from geneweaver.db.utils import (
     GenesetScoreTypeOrScoreTypes,
     GenesetTierOrTiers,
     SpeciesOrSpeciesSet,
-    limit_and_offset,
 )
-from psycopg.sql import SQL, Composed
+from psycopg import AsyncCursor
+from psycopg.rows import Row
 
 
-def genesets(
+async def geneset(
+    cursor: AsyncCursor,
     search_text: str,
     is_readable_by: Optional[int] = None,
     publication_id: Optional[int] = None,
@@ -36,12 +28,13 @@ def genesets(
     created_after: Optional[date] = None,
     updated_before: Optional[date] = None,
     updated_after: Optional[date] = None,
-    limit: Optional[int] = 25,
-    offset: Optional[int] = 0,
+    limit: Optional[int] = None,
+    offset: Optional[int] = None,
     _status: Optional[str] = "normal",
-) -> Tuple[Composed, dict]:
+) -> List[Row]:
     """Search genesets using all relevant metadata fields.
 
+    :param cursor: An async database cursor.
     :param search_text: Return genesets that match this search text.
     :param is_readable_by: A user ID to check if the user can read the results.
     :param publication_id: Show only results with this publication ID (internal).
@@ -59,45 +52,25 @@ def genesets(
     :param offset: Offset the results.
     :param _status: Show only results with this status. Default is "normal".
     """
-    params = {}
-    filtering = []
-
-    query = format_select_query() + SQL(
-        "JOIN geneset_search gs ON gs.gs_id = geneset.gs_id"
+    await cursor.execute(
+        *search.genesets(
+            search_text,
+            is_readable_by=is_readable_by,
+            publication_id=publication_id,
+            pubmed_id=pubmed_id,
+            species=species,
+            curation_tier=curation_tier,
+            score_type=score_type,
+            lte_count=lte_count,
+            gte_count=gte_count,
+            created_before=created_before,
+            created_after=created_after,
+            updated_before=updated_before,
+            updated_after=updated_after,
+            limit=limit,
+            offset=offset,
+            _status=_status,
+        )
     )
 
-    filtering, params = is_readable(filtering, params, is_readable_by)
-    filtering, params = search(
-        filtering, params, const.SEARCH_COMBINED_COL, search_text
-    )
-    filtering, params = restrict_tier(filtering, params, curation_tier)
-    filtering, params = restrict_score_type(filtering, params, score_type)
-    filtering, params = restrict_species(filtering, params, species)
-
-    filtering, params = add_op_filters(
-        filtering,
-        params,
-        lte_count=lte_count,
-        gte_count=gte_count,
-        created_before=created_before,
-        created_after=created_after,
-        updated_before=updated_before,
-        updated_after=updated_after,
-    )
-
-    filtering, params = construct_filters(
-        filtering,
-        params,
-        {
-            "pub_id": publication_id,
-            "pub_pubmed": str(pubmed_id) if pubmed_id is not None else None,
-            "gs_status": _status,
-        },
-    )
-
-    if len(filtering) > 0:
-        query += SQL("WHERE") + SQL("AND").join(filtering)
-
-    query = limit_and_offset(query, limit, offset).join(" ")
-
-    return query, params
+    return await cursor.fetchall()
