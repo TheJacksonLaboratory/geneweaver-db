@@ -6,10 +6,8 @@ from geneweaver.core.enum import GenesetTier, ScoreType, Species
 from geneweaver.core.schema.geneset import GenesetUpload
 from geneweaver.db.query.geneset.const import (
     GENESET_FIELDS,
-    GENESET_TSVECTOR,
     PUB_FIELDS,
 )
-from geneweaver.db.query.search import utils
 from geneweaver.db.query.utils import (
     ParamDict,
     SQLList,
@@ -108,22 +106,6 @@ def is_readable(
         )
         existing_params["is_readable_by"] = is_readable_by
     return existing_filters, existing_params
-
-
-def search(
-    existing_filters: SQLList,
-    existing_params: ParamDict,
-    search_text: Optional[str] = None,
-) -> Tuple[SQLList, ParamDict]:
-    """Add the search filter to the query.
-
-    :param existing_filters: The existing filters.
-    :param existing_params: The existing parameters.
-    :param search_text: The search text to filter by.
-    """
-    return utils.search(
-        existing_filters, existing_params, GENESET_TSVECTOR, search_text
-    )
 
 
 def restrict_tier(

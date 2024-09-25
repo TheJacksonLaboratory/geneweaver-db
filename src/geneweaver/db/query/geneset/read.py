@@ -4,6 +4,7 @@ from datetime import date
 from typing import Optional, Tuple
 
 from geneweaver.core.enum import GeneIdentifier, Species
+from geneweaver.db.query.geneset.const import GENESET_TSVECTOR
 from geneweaver.db.query.geneset.utils import (
     add_ontology_parameter,
     add_ontology_query,
@@ -11,8 +12,8 @@ from geneweaver.db.query.geneset.utils import (
     is_readable,
     restrict_score_type,
     restrict_tier,
-    search,
 )
+from geneweaver.db.query.search.utils import search
 from geneweaver.db.query.utils import (
     add_op_filters,
     construct_filters,
@@ -94,7 +95,7 @@ def get(
         )
 
     filtering, params = is_readable(filtering, params, is_readable_by)
-    filtering, params = search(filtering, params, search_text)
+    filtering, params = search(filtering, params, GENESET_TSVECTOR, search_text)
     filtering, params = restrict_tier(filtering, params, curation_tier)
     filtering, params = restrict_score_type(filtering, params, score_type)
 

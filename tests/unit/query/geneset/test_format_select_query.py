@@ -2,9 +2,9 @@
 
 # ruff: noqa: C901
 import pytest
+from geneweaver.db.query.const import PUB_FIELD_MAP
 from geneweaver.db.query.geneset.const import GENESET_FIELDS_MAP
 from geneweaver.db.query.geneset.utils import format_select_query
-from geneweaver.db.query.publication import PUB_FIELD_MAP
 
 
 @pytest.mark.parametrize("with_publication_info", [None, True, False])

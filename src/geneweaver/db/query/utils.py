@@ -3,7 +3,6 @@
 from datetime import date
 from typing import Dict, List, Optional, Tuple, Union
 
-from geneweaver.db.query.search import utils as search_utils
 from psycopg.sql import SQL, Composed, Identifier, Placeholder
 
 SQLList = List[Union[Composed, SQL]]
@@ -158,25 +157,3 @@ def construct_op_filters(
         )
 
     return filters, params
-
-
-def search(
-    field_ts_vector: str,
-    existing_filters: SQLList,
-    existing_params: ParamDict,
-    search_text: Optional[str] = None,
-) -> Tuple[SQLList, ParamDict]:
-    """Add the search filter to the query.
-
-    :param field_ts_vector: proj_tsvector column in db table
-    :param existing_filters: The existing filters.
-    :param existing_params: The existing parameters.
-    :param search_text: The search text to filter by.
-    """
-    if search_text is not None:
-        search_sql, search_params = search_utils.search_query(
-            field_ts_vector, search_text
-        )
-        existing_filters.append(search_sql)
-        existing_params.update(search_params)
-    return existing_filters, existing_params
