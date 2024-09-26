@@ -17,7 +17,7 @@ from geneweaver.db.utils import (
     GenesetTierOrTiers,
     SpeciesOrSpeciesSet,
 )
-from psycopg.sql import SQL, Composed
+from psycopg.sql import SQL, Composed, Identifier
 
 
 def format_select_query(
@@ -93,16 +93,20 @@ def is_readable(
     existing_filters: SQLList,
     existing_params: ParamDict,
     is_readable_by: Optional[int] = None,
+    gs_id_table: str = "geneset",
 ) -> Tuple[SQLList, ParamDict]:
     """Add the is_readable filter to the query.
 
     :param existing_filters: The existing filters.
     :param existing_params: The existing parameters.
     :param is_readable_by: The user ID to filter by.
+    :param gs_id_table: The table to filter by.
     """
     if is_readable_by is not None:
         existing_filters.append(
-            SQL("production.geneset_is_readable2(%(is_readable_by)s, geneset.gs_id)")
+            SQL(
+                "production.geneset_is_readable2(%(is_readable_by)s, {table}.gs_id)"
+            ).format(table=Identifier(gs_id_table))
         )
         existing_params["is_readable_by"] = is_readable_by
     return existing_filters, existing_params
