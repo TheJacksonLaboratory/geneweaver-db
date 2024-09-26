@@ -2,9 +2,9 @@
 
 from datetime import date
 from typing import Dict, List, Optional, Tuple, Union
-from typing_extensions import LiteralString
 
-from psycopg.sql import SQL, Composed, Identifier, Placeholder, Literal
+from psycopg.sql import SQL, Composed, Identifier, Placeholder
+from typing_extensions import LiteralString
 
 SQLList = List[Union[Composed, SQL]]
 ParamDict = Dict[str, Union[str, int, list]]
