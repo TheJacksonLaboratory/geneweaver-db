@@ -106,7 +106,7 @@ def is_readable(
         existing_filters.append(
             SQL(
                 "production.geneset_is_readable2(%(is_readable_by)s, {table}.gs_id)"
-            ).format(gs_id_table=Identifier(gs_id_table))
+            ).format(table=Identifier(gs_id_table))
         )
         existing_params["is_readable_by"] = is_readable_by
     return existing_filters, existing_params
