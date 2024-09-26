@@ -63,7 +63,7 @@ def genesets(
     filtering = []
 
     query = format_select_query() + SQL(
-        "JOIN geneset_search gs ON gs.gs_id = geneset.gs_id"
+        "JOIN geneset_search ON geneset_search.gs_id = geneset.gs_id"
     )
 
     filtering, params = is_readable(filtering, params, is_readable_by)

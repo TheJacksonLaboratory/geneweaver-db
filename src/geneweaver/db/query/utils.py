@@ -2,8 +2,9 @@
 
 from datetime import date
 from typing import Dict, List, Optional, Tuple, Union
+from typing_extensions import LiteralString
 
-from psycopg.sql import SQL, Composed, Identifier, Placeholder
+from psycopg.sql import SQL, Composed, Identifier, Placeholder, Literal
 
 SQLList = List[Union[Composed, SQL]]
 ParamDict = Dict[str, Union[str, int, list]]
@@ -16,8 +17,9 @@ def construct_filter(
     params: ParamDict,
     filter_name: str,
     filter_value: Optional[Union[str, int]],
-    operator: Optional[str] = None,
+    operator: LiteralString = "=",
     place_holder: Optional[str] = None,
+    table: Optional[str] = None,
 ) -> Tuple[SQLList, ParamDict]:
     """Construct a simple filter for a query.
 
@@ -27,6 +29,7 @@ def construct_filter(
     :param filter_value: The filter value to construct.
     :param operator: sql operator
     :param place_holder: parameter placeholder name
+    :param table: table name
 
     :return: The constructed filters and parameters.
 
@@ -35,15 +38,17 @@ def construct_filter(
         place_holder = filter_name
 
     if filter_value is not None:
-        if operator:
-            filter_str = "{filter_name} " + operator + " {param_name}"
+        if table:
+            filter_str = SQL("{table}.{filter_name} {operator} {param_name}")
         else:
-            filter_str = "{filter_name} = {param_name}"
+            filter_str = SQL("{filter_name} {operator} {param_name}")
 
         filters.append(
-            SQL(filter_str).format(
+            filter_str.format(
                 filter_name=Identifier(filter_name),
                 param_name=Placeholder(place_holder),
+                operator=SQL(operator),
+                table=Identifier(table) if table else None,
             )
         )
         params[place_holder] = filter_value
@@ -54,6 +59,7 @@ def construct_filters(
     filters: SQLList,
     params: ParamDict,
     filter_items: OptionalParamDict,
+    table: Optional[str] = None,
 ) -> Tuple[SQLList, ParamDict]:
     """Construct multiple simple filters for a query.
 
@@ -62,15 +68,13 @@ def construct_filters(
     :param filters: The existing filters.
     :param params: The existing parameters.
     :param filter_items: The filter items to construct.
+    :param table: table name
 
     :return: The constructed filters and parameters.
     """
     for filter_name, filter_value in filter_items.items():
         filters, params = construct_filter(
-            filters,
-            params,
-            filter_name,
-            filter_value,
+            filters, params, filter_name, filter_value, table=table
         )
 
     return filters, params
