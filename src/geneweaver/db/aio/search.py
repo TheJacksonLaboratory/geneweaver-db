@@ -13,7 +13,7 @@ from psycopg import AsyncCursor
 from psycopg.rows import Row
 
 
-async def geneset(
+async def genesets(
     cursor: AsyncCursor,
     search_text: str,
     is_readable_by: Optional[int] = None,
