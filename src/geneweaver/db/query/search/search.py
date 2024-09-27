@@ -66,7 +66,7 @@ def genesets(
         "JOIN geneset_search ON geneset_search.gs_id = geneset.gs_id"
     )
 
-    filtering, params = is_readable(filtering, params, is_readable_by)
+    filtering, params = is_readable(filtering, params, is_readable_by, "geneset_search")
     filtering, params = search(
         filtering, params, const.SEARCH_COMBINED_COL, search_text
     )
@@ -83,6 +83,16 @@ def genesets(
         created_after=created_after,
         updated_before=updated_before,
         updated_after=updated_after,
+        table="geneset",
+    )
+
+    filtering, params = construct_filters(
+        filtering,
+        params,
+        {
+            "gs_status": _status,
+        },
+        table="geneset",
     )
 
     filtering, params = construct_filters(
@@ -91,8 +101,8 @@ def genesets(
         {
             "pub_id": publication_id,
             "pub_pubmed": str(pubmed_id) if pubmed_id is not None else None,
-            "gs_status": _status,
         },
+        table="geneset_search",
     )
 
     if len(filtering) > 0:

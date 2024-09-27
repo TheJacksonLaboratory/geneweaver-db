@@ -89,8 +89,20 @@ def add_op_filters(
     created_before: Optional[date] = None,
     updated_after: Optional[date] = None,
     updated_before: Optional[date] = None,
+    table: Optional[str] = None,
 ) -> Tuple[SQLList, ParamDict]:
-    """Add multiple simple filters with operators to the query."""
+    """Add multiple simple filters with operators to the query.
+
+    :param filters: The existing filters.
+    :param params: The existing parameters.
+    :param lte_count: The count less than value.
+    :param gte_count: The count greater than value.
+    :param created_before: Show only results created before this date.
+    :param created_after: Show only results updated before this date.
+    :param updated_before: Show only results updated before this date.
+    :param updated_after: Show only results updated after this date.
+    :param table: table name
+    """
     return construct_op_filters(
         filters=filters,
         params=params,
@@ -132,6 +144,7 @@ def add_op_filters(
                 "place_holder": "updated_after",
             },
         ],
+        table=table,
     )
 
 
@@ -139,6 +152,7 @@ def construct_op_filters(
     filters: SQLList,
     params: ParamDict,
     filter_items: [dict],
+    table: Optional[str] = None,
 ) -> Tuple[SQLList, ParamDict]:
     """Construct multiple simple filters with operators for a query.
 
@@ -147,6 +161,7 @@ def construct_op_filters(
     :param filters: The existing filters.
     :param params: The existing parameters.
     :param filter_items: The filter items to construct.
+    :param table: table name
 
     :return: The constructed filters and parameters.
     """
@@ -158,6 +173,7 @@ def construct_op_filters(
             filter_value=filter_item.get("value"),
             operator=filter_item.get("op"),
             place_holder=filter_item.get("place_holder"),
+            table=table,
         )
 
     return filters, params
