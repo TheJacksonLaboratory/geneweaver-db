@@ -164,7 +164,7 @@ def restrict_species(
     if isinstance(species, Species):
         species = {species}
     if species is not None:
-        existing_filters.append(SQL("geneset.species_id = ANY(%(species)s)"))
+        existing_filters.append(SQL("geneset.sp_id = ANY(%(species)s)"))
         existing_params["species"] = [int(spec) for spec in species]
     return existing_filters, existing_params
 
