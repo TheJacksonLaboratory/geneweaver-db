@@ -83,6 +83,17 @@ def genesets(
         created_after=created_after,
         updated_before=updated_before,
         updated_after=updated_after,
+        table="geneset",
+    )
+
+    filtering, params = construct_filters(
+        filtering,
+        params,
+        {
+            "gs_status": _status,
+
+        },
+        table="geneset",
     )
 
     filtering, params = construct_filters(
@@ -91,9 +102,8 @@ def genesets(
         {
             "pub_id": publication_id,
             "pub_pubmed": str(pubmed_id) if pubmed_id is not None else None,
-            "gs_status": _status,
         },
-        table="geneset",
+        table="geneset_search",
     )
 
     if len(filtering) > 0:
