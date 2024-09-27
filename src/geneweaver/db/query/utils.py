@@ -144,7 +144,7 @@ def add_op_filters(
                 "place_holder": "updated_after",
             },
         ],
-        table=table
+        table=table,
     )
 
 

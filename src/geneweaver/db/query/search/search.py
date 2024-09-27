@@ -91,7 +91,6 @@ def genesets(
         params,
         {
             "gs_status": _status,
-
         },
         table="geneset",
     )
