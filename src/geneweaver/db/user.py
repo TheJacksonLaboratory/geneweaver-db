@@ -21,6 +21,7 @@ The functions that return a single value from a user record are:
 
 from typing import List, Optional
 
+from geneweaver.db.query import user
 from geneweaver.db.utils import temp_override_row_factory
 from psycopg import Cursor, rows
 
@@ -67,10 +68,7 @@ def by_api_key(cursor: Cursor, api_key: str) -> List:
 
     :return: list of results using `.fetchall()`
     """
-    cursor.execute(
-        """SELECT * FROM production.usr WHERE apikey = %(api_key)s;""",
-        {"api_key": api_key},
-    )
+    cursor.execute(*user.by_api_key(api_key))
     return cursor.fetchall()
 
 
@@ -82,10 +80,7 @@ def by_sso_id(cursor: Cursor, sso_id: str) -> List:
 
     :return: list of results using `.fetchall()`
     """
-    cursor.execute(
-        """SELECT * FROM production.usr WHERE usr_sso_id = %(sso_id)s;""",
-        {"sso_id": sso_id},
-    )
+    cursor.execute(*user.by_sso_id(sso_id))
     return cursor.fetchall()
 
 
@@ -98,13 +93,7 @@ def by_sso_id_and_email(cursor: Cursor, sso_id: str, email: str) -> List:
 
     :return: list of results using `.fetchall()`
     """
-    cursor.execute(
-        """
-        SELECT * FROM production.usr
-        WHERE usr_sso_id = %(sso_id)s AND usr_email = %(email)s;
-        """,
-        {"sso_id": sso_id, "email": email},
-    )
+    cursor.execute(*user.by_sso_id_and_email(sso_id, email))
     return cursor.fetchall()
 
 
@@ -116,10 +105,7 @@ def by_user_id(cursor: Cursor, user_id: int) -> List:
 
     :return: list of results using `.fetchall()`
     """
-    cursor.execute(
-        """SELECT * FROM production.usr WHERE usr_id = %(user_id)s;""",
-        {"user_id": user_id},
-    )
+    cursor.execute(*user.by_id(user_id))
     return cursor.fetchall()
 
 
@@ -131,10 +117,7 @@ def by_email(cursor: Cursor, email: str) -> List:
 
     :return: list of results using `.fetchall()`
     """
-    cursor.execute(
-        """SELECT * FROM production.usr WHERE usr_email = %(email)s;""",
-        {"email": email},
-    )
+    cursor.execute(*user.by_email(email))
     return cursor.fetchall()
 
 
@@ -147,15 +130,9 @@ def email_exists(cursor: Cursor, email: str) -> bool:
 
     :return: True if the email exists, otherwise False.
     """
-    cursor.execute(
-        """ SELECT count(*) FROM usr
-            WHERE usr_email = %s
-        """,
-        (email,),
-    )
-    existing = int(cursor.fetchone()[0])
-
-    return existing > 0
+    cursor.execute(*user.email_exists(email))
+    exists = bool(cursor.fetchone()[0])
+    return exists
 
 
 @temp_override_row_factory(rows.tuple_row)
@@ -167,15 +144,38 @@ def sso_id_exists(cursor: Cursor, sso_id: str) -> bool:
 
     :return: True if the sso id exists, otherwise False.
     """
-    cursor.execute(
-        """ SELECT count(*) FROM usr
-            WHERE usr_sso_id = %s
-        """,
-        (sso_id,),
-    )
-    existing = int(cursor.fetchone()[0])
+    cursor.execute(*user.sso_id_exists(sso_id))
+    exists = bool(cursor.fetchone()[0])
+    return exists
 
-    return existing > 0
+
+@temp_override_row_factory(rows.tuple_row)
+def is_curator_or_higher(cursor: Cursor, user_id: int) -> bool:
+    """Check if a user is a curator or higher.
+
+    :param cursor: The database cursor.
+    :param user_id: The user id to check.
+
+    :return: True if the user is a curator or higher, otherwise False.
+    """
+    cursor.execute(*user.is_curator_or_higher(user_id))
+    exists = bool((cursor.fetchone())[0])
+    return exists
+
+
+@temp_override_row_factory(rows.tuple_row)
+def is_assigned_curation(cursor: Cursor, user_id: int, geneset_id: int) -> bool:
+    """Check if a user is assigned curation.
+
+    :param cursor: The database cursor.
+    :param user_id: The user id to check.
+    :param geneset_id: The geneset id to check.
+
+    :return: True if the user is assigned curation, otherwise False.
+    """
+    cursor.execute(*user.is_assigned_curation(user_id, geneset_id))
+    exists = bool((cursor.fetchone())[0])
+    return exists
 
 
 @temp_override_row_factory(rows.tuple_row)

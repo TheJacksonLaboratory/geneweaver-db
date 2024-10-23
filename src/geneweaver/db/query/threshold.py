@@ -3,6 +3,7 @@
 from typing import Tuple
 
 from geneweaver.core.schema.score import GenesetScoreType
+from geneweaver.db.query import user
 from psycopg.sql import SQL, Composed
 
 
@@ -99,4 +100,40 @@ def set_geneset_value_threshold(
 
     query = query.join(" ")
 
+    return query, params
+
+
+def user_can_set_threshold(user_id: int, geneset_id: int) -> Tuple[Composed, dict]:
+    """Check if a user can set the threshold of a geneset.
+
+    A user can set the threshold of a geneset if:
+        - They own the Geneset, or
+        - They are an admin, or
+        - They are a curator, or
+        - They are assigned curation on the geneset.
+
+    :param user_id: The ID of the user to check.
+    :param geneset_id: The ID of the geneset to check.
+    :return: A query (and params) that can be executed on a cursor.
+    """
+    params = {"user_id": user_id, "geneset_id": geneset_id}
+    query = (
+        SQL("SELECT EXISTS(")
+        + SQL("SELECT 1")
+        + SQL("FROM geneset g")
+        + SQL("WHERE g.gs_id = %(geneset_id)s")
+        +
+        # The user must either
+        # 1) own the geneset, or
+        SQL("AND g.usr_id = %(user_id)s")
+        +
+        # 2) be a curator or an admin, or
+        SQL("OR")
+        + user.is_curator_or_higher__query()
+        +
+        # 3) be assigned curation on the geneset.
+        SQL("OR")
+        + user.is_assigned_curation__query()
+        + SQL(");")
+    ).join(" ")
     return query, params

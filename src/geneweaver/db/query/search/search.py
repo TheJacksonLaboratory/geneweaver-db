@@ -66,7 +66,7 @@ def genesets(
         "JOIN geneset_search ON geneset_search.gs_id = geneset.gs_id"
     )
 
-    filtering, params = is_readable(filtering, params, is_readable_by, "geneset_search")
+    filtering, params = is_readable(filtering, params, is_readable_by)
     filtering, params = search(
         filtering, params, const.SEARCH_COMBINED_COL, search_text
     )
