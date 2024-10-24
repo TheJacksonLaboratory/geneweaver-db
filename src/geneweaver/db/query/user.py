@@ -8,7 +8,7 @@ from psycopg.sql import SQL, Composed
 USER_FIELD_MAP = {
     "usr_id": "id",
     "usr_email": "email",
-    "user_prefs": "prefs",
+    "usr_prefs": "prefs",
     "is_guest": "is_guest",
     "usr_first_name": "first_name",
     "usr_last_name": "last_name",
