@@ -19,8 +19,9 @@ The functions that return a single value from a user record are:
 - user_id_from_sso_id
 """
 
-from typing import List, Optional
+from typing import Optional
 
+from geneweaver.core.schema.user import User
 from geneweaver.db.query import user
 from geneweaver.db.utils import temp_override_row_factory
 from psycopg import Cursor, rows
@@ -60,7 +61,18 @@ def user_id_from_sso_id(cursor: Cursor, sso_id: str) -> Optional[int]:
     return result[0] if result else None
 
 
-def by_api_key(cursor: Cursor, api_key: str) -> List:
+def __fetch_and_return_user(cursor: Cursor) -> Optional[User]:
+    """Fetch and return a user from the cursor.
+
+    :param cursor: The database cursor.
+
+    :return: The user if found, otherwise None.
+    """
+    result = cursor.fetchone()
+    return User(**result) if result else None
+
+
+def by_api_key(cursor: Cursor, api_key: str) -> Optional[User]:
     """Get user info by api key.
 
     :param cursor: The database cursor.
@@ -69,10 +81,10 @@ def by_api_key(cursor: Cursor, api_key: str) -> List:
     :return: list of results using `.fetchall()`
     """
     cursor.execute(*user.by_api_key(api_key))
-    return cursor.fetchall()
+    return __fetch_and_return_user(cursor)
 
 
-def by_sso_id(cursor: Cursor, sso_id: str) -> List:
+def by_sso_id(cursor: Cursor, sso_id: str) -> Optional[User]:
     """Get user info by sso id.
 
     :param cursor: The database cursor.
@@ -81,10 +93,10 @@ def by_sso_id(cursor: Cursor, sso_id: str) -> List:
     :return: list of results using `.fetchall()`
     """
     cursor.execute(*user.by_sso_id(sso_id))
-    return cursor.fetchall()
+    return __fetch_and_return_user(cursor)
 
 
-def by_sso_id_and_email(cursor: Cursor, sso_id: str, email: str) -> List:
+def by_sso_id_and_email(cursor: Cursor, sso_id: str, email: str) -> Optional[User]:
     """Get user info by sso id and email.
 
     :param cursor: The database cursor.
@@ -94,10 +106,10 @@ def by_sso_id_and_email(cursor: Cursor, sso_id: str, email: str) -> List:
     :return: list of results using `.fetchall()`
     """
     cursor.execute(*user.by_sso_id_and_email(sso_id, email))
-    return cursor.fetchall()
+    return __fetch_and_return_user(cursor)
 
 
-def by_user_id(cursor: Cursor, user_id: int) -> List:
+def by_user_id(cursor: Cursor, user_id: int) -> Optional[User]:
     """Get user info by user id.
 
     :param cursor: The database cursor.
@@ -106,10 +118,10 @@ def by_user_id(cursor: Cursor, user_id: int) -> List:
     :return: list of results using `.fetchall()`
     """
     cursor.execute(*user.by_id(user_id))
-    return cursor.fetchall()
+    return __fetch_and_return_user(cursor)
 
 
-def by_email(cursor: Cursor, email: str) -> List:
+def by_email(cursor: Cursor, email: str) -> Optional[User]:
     """Get user info by email.
 
     :param cursor: The database cursor.
@@ -118,7 +130,7 @@ def by_email(cursor: Cursor, email: str) -> List:
     :return: list of results using `.fetchall()`
     """
     cursor.execute(*user.by_email(email))
-    return cursor.fetchall()
+    return __fetch_and_return_user(cursor)
 
 
 @temp_override_row_factory(rows.tuple_row)
