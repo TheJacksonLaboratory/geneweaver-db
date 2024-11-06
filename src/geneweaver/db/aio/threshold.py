@@ -2,9 +2,11 @@
 
 from geneweaver.core.schema.score import GenesetScoreType
 from geneweaver.db.query import threshold as threshold_query
-from psycopg import AsyncCursor
+from geneweaver.db.utils import temp_override_row_factory
+from psycopg import AsyncCursor, rows
 
 
+@temp_override_row_factory(rows.tuple_row)
 async def user_can_set_threshold(
     cursor: AsyncCursor, user_id: int, geneset_id: int
 ) -> bool:
