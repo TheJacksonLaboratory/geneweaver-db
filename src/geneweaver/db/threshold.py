@@ -14,7 +14,7 @@ def user_can_set_threshold(cursor: Cursor, user_id: int, geneset_id: int) -> boo
     :return: True if the user can set the threshold, False otherwise.
     """
     cursor.execute(*threshold_query.user_can_set_threshold(user_id, geneset_id))
-    return bool(cursor.fetchone())
+    return bool(cursor.fetchone()[0])
 
 
 def set_geneset_threshold(
