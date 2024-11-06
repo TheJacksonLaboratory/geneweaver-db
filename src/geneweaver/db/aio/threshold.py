@@ -16,7 +16,7 @@ async def user_can_set_threshold(
     :return: True if the user can set the threshold, False otherwise.
     """
     await cursor.execute(*threshold_query.user_can_set_threshold(user_id, geneset_id))
-    return bool(await cursor.fetchone())
+    return bool((await cursor.fetchone())[0])
 
 
 async def set_geneset_threshold(
