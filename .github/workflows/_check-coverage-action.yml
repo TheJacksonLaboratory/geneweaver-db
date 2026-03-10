@@ -52,13 +52,13 @@ jobs:
           | awk '/- coverage: /{flag=1} flag' > coverage_report.txt
       - name: Upload coverage report
         if: '!cancelled()'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: coverage_report.txt
       - name: Upload coverage report
         if: '!cancelled()'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-report-html
           path: htmlcov
