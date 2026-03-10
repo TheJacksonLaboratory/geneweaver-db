@@ -19,7 +19,7 @@ EXAMPLE_PUBLICATION = PublicationInfo(
     pubmed_id="12345678",
     pages="1",
     month="Dec",
-    year=2021,
+    year="2021",
 )
 
 test_add_execute_raises_error = create_execute_raises_error_test(

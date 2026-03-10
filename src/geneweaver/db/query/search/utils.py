@@ -73,7 +73,9 @@ def search(
     :param search_text: The search text to filter by.
     """
     if search_text is not None:
-        search_sql, search_params = search_query(tsvector_col, search_text)
+        search_sql, search_params = search_query(
+            tsvector_col, search_text, query_type=QueryType.PLAINTO
+        )
         existing_filters.append(search_sql)
         existing_params.update(search_params)
     return existing_filters, existing_params
