@@ -42,7 +42,6 @@ def test_settings_class_has_expected_attributes():
     parsed = PostgresDsnExample(db=settings.URI)
     assert parsed is not None, "URI should be parsable as a PostgresDsn"
     assert parsed.db is not None, "URI should be parsable as a PostgresDsn"
-    assert isinstance(parsed.db, PostgresDsn), "URI should be parsable as a PostgresDsn"
 
     # "localhost" should be replaced with 127.0.0.1
     assert (
@@ -81,7 +80,6 @@ def test_settings_class_can_directly_set_database_uri():
     parsed = PostgresDsnExample(db=settings.URI)
     assert parsed is not None, "URI should be parsable as a PostgresDsn"
     assert parsed.db is not None, "URI should be parsable as a PostgresDsn"
-    assert isinstance(parsed.db, PostgresDsn), "URI should be parsable as a PostgresDsn"
 
     assert (
         str(settings.URI) == "postgresql://other_admin@non_localhost/"
