@@ -284,7 +284,7 @@ def add(
         user_id=owner_id,
         file_id=file_id,
         publication_id=publication_id,
-        **geneset_upload_to_kwargs(geneset)
+        **geneset_upload_to_kwargs(geneset),
     )
     cursor.execute(*geneset_query.reparse_geneset_file(geneset_id=geneset_id))
     cursor.execute(*geneset_query.process_thresholds(geneset_id=geneset_id))
